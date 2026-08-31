@@ -1,189 +1,42 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pra Toda Vida | Construtora e Fábrica de Blocos de Cimento</title>
-    <meta name="description" content="Pra Toda Vida - Construtora civil e fábrica de blocos de cimento de alta resistência.">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta name="description" content="Pra Toda Vida - Construtora civil e fábrica de blocos de cimento de alta resistência. Blocos estruturais, vedação e serviços completos de construção.">
+    <meta name="description" content="Pra Toda Vida - Construtora civil e fábrica de blocos de cimento de alta resistência. Calculadora de blocos e serviços completos de construção.">
+    <!-- Favicon / Ícone da Aba do Navegador -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PDF.js CDN para Leitor de Planta em PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" href="favicon.png">
 </head>
 <body>
-
-    <!-- Header / Navegação -->
-    <header class="header">
-        <div class="container nav-container">
-            <a href="#" class="logo-link">
-                <img src="logo.png" alt="Pra Toda Vida Logo" class="logo-img">
-            </a>
-            <nav class="navbar" id="navbar">
                 <a href="#home">Início</a>
                 <a href="#sobre">Sobre Nós</a>
                 <a href="#blocos">Fábrica de Blocos</a>
+                <a href="#calculadora">Calculadora de Planta</a>
+                <a href="#comparativo">Bloco vs Cerâmica</a>
                 <a href="#servicos">Construtora</a>
+                <a href="#diferenciais">Diferenciais</a>
                 <a href="#contato" class="btn-nav">Fazer Orçamento</a>
             </nav>
             <button class="menu-toggle" id="menuToggle" aria-label="Abrir Menu">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="container hero-content">
-            <span class="badge">Construtora & Fábrica de Blocos</span>
-            <h1>Construindo com Solidez e Qualidade <span class="highlight">Pra Toda Vida</span></h1>
-            <p>Fabricação própria de blocos de cimento de alta resistência e execução completa de obras residenciais e comerciais. Economize comprando direto da fábrica!</p>
-            <div class="hero-buttons">
-                <a href="https://wa.me/71983834217?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20um%20or%C3%A7amento." target="_blank" class="btn btn-primary">
+                <a href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20um%20or%C3%A7amento." target="_blank" class="btn btn-primary">
                     <i class="fa-brands fa-whatsapp"></i> Orçamento no WhatsApp
                 </a>
                 <a href="#blocos" class="btn btn-secondary">Ver Blocos de Cimento</a>
+                <a href="#calculadora" class="btn btn-secondary"><i class="fa-solid fa-calculator"></i> Calcular Minha Planta</a>
             </div>
         </div>
     </section>
-
-    <!-- Barra de Diferenciais -->
-    <section class="stats-bar">
-        <div class="container stats-grid">
-            <div class="stat-item">
-                <i class="fa-solid fa-industry"></i>
-                <div>
-                    <h3>Direto da Fábrica</h3>
-                    <p>Melhor custo-benefício da região</p>
-                </div>
-            </div>
-            <div class="stat-item">
-                <i class="fa-solid fa-shield-halved"></i>
-                <div>
-                    <h3>Alta Resistência</h3>
-                    <p>Blocos normatizados e testados</p>
-                </div>
-            </div>
-            <div class="stat-item">
-                <i class="fa-solid fa-truck-fast"></i>
-                <div>
-                    <h3>Entrega Rápida</h3>
-                    <p>Frota própria para sua obra</p>
-                </div>
-            </div>
-            <div class="stat-item">
-                <i class="fa-solid fa-helmet-safety"></i>
-                <div>
-                    <h3>Obras Qualificadas</h3>
-                    <p>Equipe especializada em construção</p>
-                </div>
-            </div>
         </div>
     </section>
-
-    <!-- Sobre Nós -->
-    <section id="sobre" class="section sobre-section">
-        <div class="container sobre-grid">
-            <div class="sobre-text">
-                <span class="section-subtitle">Quem Somos</span>
-                <h2>Sua obra em boas mãos do bloco ao acabamento</h2>
-                <p>A <strong>Pra Toda Vida</strong> une a força da fabricação própria de artefatos de cimento à excelência na execução de obras da construção civil.</p>
-                <p>Nossa missão é fornecer materiais de altíssima durabilidade e entregar projetos residenciais e comerciais com pontualidade e segurança.</p>
-            </div>
-            <div class="sobre-card">
-                <img src="logo.png" alt="Logo Pra Toda Vida" class="sobre-logo">
-                <h3>Pra Toda Vida</h3>
-                <p>Qualidade e resistência em cada detalhe da sua construção.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Fábrica de Blocos -->
-    <section id="blocos" class="section blocos-section">
-        <div class="container">
-            <div class="section-title">
-                <span class="section-subtitle">Nossos Produtos</span>
-                <h2>Fábrica de Blocos de Cimento</h2>
-                <p>Blocos de alta prensagem e cura adequada para garantia de máxima resistência mecânica.</p>
-            </div>
-
-            <div class="products-grid">
-                <div class="product-card">
-                    <div class="product-icon"><i class="fa-solid fa-cubes"></i></div>
-                    <h3>Bloco Estrutural (14x19x39)</h3>
-                    <p>Ideal para alvenaria estrutural, dispensando vigas e pilares em determinados projetos.</p>
-                    <a href="https://wa.me/71983834217?text=Ol%C3%A1!%20Tenho%20interesse%20no%20Bloco%20Estrutural." target="_blank" class="btn-card">Solicitar Cotação</a>
-                </div>
-                <div class="product-card">
-                    <div class="product-icon"><i class="fa-solid fa-border-all"></i></div>
-                    <h3>Bloco de Vedação (09x19x39)</h3>
-                    <p>Perfeito para fechamento de vãos em estruturas de concreto armado com grande economia.</p>
-                    <a href="https://wa.me/71983834217?text=Ol%C3%A1!%20Tenho%20interesse%20no%20Bloco%20de%20Ved%C3%A3o." target="_blank" class="btn-card">Solicitar Cotação</a>
-                </div>
-                <div class="product-card">
-                    <div class="product-icon"><i class="fa-solid fa-layer-group"></i></div>
-                    <h3>Meio Bloco & Canaletas</h3>
-                    <p>Complementos indispensáveis para evitar quebras no canteiro e agilizar a obra.</p>
-                    <a href="https://wa.me/71983834217?text=Ol%C3%A1!%20Tenho%20interesse%20em%20Canaletas." target="_blank" class="btn-card">Solicitar Cotação</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Serviços da Construtora -->
-    <section id="servicos" class="section servicos-section">
-        <div class="container">
-            <div class="section-title light">
-                <span class="section-subtitle">Engenharia e Execução</span>
-                <h2>Serviços de Construtora</h2>
-            </div>
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon"><i class="fa-solid fa-house-chimney"></i></div>
-                    <h3>Construção Residencial</h3>
-                    <p>Casas e sobrados com gestão eficiente do material e acompanhamento técnico.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon"><i class="fa-solid fa-building"></i></div>
-                    <h3>Obras Comerciais</h3>
-                    <p>Galpões e salas comerciais com rapidez e rigidez estrutural.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon"><i class="fa-solid fa-hammer"></i></div>
-                    <h3>Reformas e Ampliações</h3>
-                    <p>Modernização e expansão de imóveis existentes com segurança.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contato -->
-    <section id="contato" class="section contato-section">
-        <div class="container">
-            <div class="contact-box">
-                <div class="contact-info">
-                    <h2>Fale Conosco</h2>
-                    <p>Precisa de blocos para sua obra ou quer construir com a gente? Atendimento rápido pelo WhatsApp:</p>
-                    <a href="https://wa.me/71983834217?text=Ol%C3%A1!%20Vim%20pelo%20site." target="_blank" class="btn btn-whatsapp-lg">
-                        <i class="fa-brands fa-whatsapp"></i> Conversar no WhatsApp
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2026 Pra Toda Vida. Todos os direitos reservados.</p>
-        </div>
-    </footer>
-
-    <!-- Botão Flutuante do WhatsApp -->
-    <a href="https://wa.me/71983834217?text=Ol%C3%A1!%20Vim%20pelo%20site." target="_blank" class="whatsapp-float">
-        <i class="fa-brands fa-whatsapp"></i>
-    </a>
-</body>
-</html>
+    <!-- Calculadora de Blocos com Upload de Planta PDF -->
+    <section id="calculadora" class="section calculadora-section">
