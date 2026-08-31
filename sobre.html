@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Nós | Pra Toda Vida Construtora e Fábrica de Blocos</title>
+    <meta name="description" content="Saiba mais sobre a Pra Toda Vida - Construtora civil e fábrica de blocos de cimento de alta resistência.">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header / Navegação -->
+    <header class="header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo-link">
+                <img src="logo.png" alt="Pra Toda Vida Logo" class="logo-img">
+            </a>
+            <nav class="navbar" id="navbar">
+                <a href="index.html">Início</a>
+                <a href="sobre.html" class="active">Sobre Nós</a>
+                <a href="blocos.html">Fábrica de Blocos</a>
+                <a href="calculadora.html">Calculadora de Planta</a>
+                <a href="comparativo.html">Bloco vs Cerâmica</a>
+                <a href="construtora.html">Construtora</a>
+                <a href="contato.html" class="btn-nav">Fazer Orçamento</a>
+            </nav>
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Conteúdo Exclusivo: Sobre Nós -->
+    <main>
+        <section class="section sobre-section">
+            <div class="container sobre-grid">
+                <div class="sobre-text">
+                    <span class="section-subtitle">Quem Somos</span>
+                    <h2>Sua obra em boas mãos do bloco ao acabamento</h2>
+                    <p>A <strong>Pra Toda Vida</strong> une a força da fabricação própria de artefatos de cimento à excelência na execução de obras da construção civil.</p>
+                    <p>Nossa missão é fornecer materiais de altíssima durabilidade e entregar projetos residenciais e comerciais com pontualidade, segurança e o melhor acabamento.</p>
+                    
+                    <ul class="check-list">
+                        <li><i class="fa-solid fa-circle-check"></i> Controle de qualidade rigoroso na produção de blocos</li>
+                        <li><i class="fa-solid fa-circle-check"></i> Atendimento personalizado para pequenas, médias e grandes obras</li>
+                        <li><i class="fa-solid fa-circle-check"></i> Transparência, pontualidade e compromisso com o cliente</li>
+                    </ul>
+                    
+                    <div style="margin-top: 30px;">
+                        <a href="contato.html" class="btn btn-secondary">Falar com a Equipe</a>
+                    </div>
+                </div>
+                <div class="sobre-card">
+                    <img src="logo.png" alt="Logo Pra Toda Vida" class="sobre-logo">
+                    <h3>Pra Toda Vida</h3>
+                    <p>Qualidade e resistência em cada detalhe da sua construção.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <img src="logo.png" alt="Pra Toda Vida Logo" class="footer-logo">
+                <p>Pra Toda Vida - Construtora & Fábrica de Blocos de Cimento. Qualidade e resistência garantidas.</p>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Pra Toda Vida. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botão Flutuante do WhatsApp -->
+    <a href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Vim%20pela%20p%C3%A1gina%20Sobre%20N%C3%B3s." target="_blank" class="whatsapp-float">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <script>
+        const toggleBtn = document.getElementById('menuToggle');
+        const navbar = document.getElementById('navbar');
+        if (toggleBtn && navbar) {
+            toggleBtn.addEventListener('click', () => navbar.classList.toggle('active'));
+        }
+    </script>
+</body>
+</html>
