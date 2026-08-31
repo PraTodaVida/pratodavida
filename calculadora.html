@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Planta PDF | Pra Toda Vida Construtora e Fábrica de Blocos</title>
+    <meta name="description" content="Anexe a planta da sua obra em PDF e calcule a quantidade exata de blocos de cimento necessários.">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PDF.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header / Navegação -->
+    <header class="header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo-link">
+                <img src="logo.png" alt="Pra Toda Vida Logo" class="logo-img">
+            </a>
+            <nav class="navbar" id="navbar">
+                <a href="index.html">Início</a>
+                <a href="sobre.html">Sobre Nós</a>
+                <a href="blocos.html">Fábrica de Blocos</a>
+                <a href="calculadora.html" class="active">Calculadora de Planta</a>
+                <a href="comparativo.html">Bloco vs Cerâmica</a>
+                <a href="construtora.html">Construtora</a>
+                <a href="contato.html" class="btn-nav">Fazer Orçamento</a>
+            </nav>
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Conteúdo Exclusivo: Calculadora de Planta PDF -->
+    <main>
+        <section class="section calculadora-section">
+            <div class="container">
+                <div class="section-title">
+                    <span class="section-subtitle">Ferramenta Interativa</span>
+                    <h2>Calculadora de Blocos & Planta em PDF</h2>
+                    <p>Anexe a planta da sua obra em PDF ou imagem e insira as medidas para saber exatamente quantos blocos de cimento você precisará comprar.</p>
+                </div>
+
+                <div class="calc-grid">
+                    <!-- Coluna de Upload e Entrada -->
+                    <div class="calc-card input-card">
+                        <h3>1. Anexe sua Planta e Insira as Medidas</h3>
+                        
+                        <div class="dropzone" id="dropzone">
+                            <i class="fa-solid fa-file-pdf pdf-icon"></i>
+                            <p><strong>Clique aqui ou arraste a Planta em PDF / Imagem</strong></p>
+                            <span class="file-hint">Formatos suportados: PDF, PNG, JPG</span>
+                            <input type="file" id="pdfInput" accept=".pdf,image/*">
+                        </div>
+
+                        <div id="pdfPreviewArea" class="pdf-preview-area" style="display: none;">
+                            <p id="pdfFileName" class="pdf-filename"><i class="fa-solid fa-circle-check"></i> Arquivo carregado</p>
+                            <canvas id="pdfCanvas" class="pdf-canvas"></canvas>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="calcComprimento">Perímetro Total das Paredes (Metros):</label>
+                                <input type="number" id="calcComprimento" placeholder="Ex: 40" value="40" step="0.5">
+                                <small>Soma do comprimento de todas as paredes</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="calcAltura">Altura da Parede / Pé Direito (Metros):</label>
+                                <input type="number" id="calcAltura" placeholder="Ex: 2.8" value="2.8" step="0.1">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="calcVaos">Desconto de Portas e Janelas (m²):</label>
+                                <input type="number" id="calcVaos" placeholder="Ex: 12" value="12" step="0.5">
+                                <small>Área aproximada dos vãos de portas e janelas</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="calcMargem">Margem de Segurança (Quebra):</label>
+                                <select id="calcMargem">
+                                    <option value="0.05">5% (Recomendado)</option>
+                                    <option value="0.10" selected>10% (Padrão de Obra)</option>
+                                    <option value="0.15">15% (Obras com muitos cortes)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coluna de Resultados -->
+                    <div class="calc-card result-card">
+                        <h3>2. Resultado do Cálculo</h3>
+                        <p class="result-intro">Valores estimados com base no rendimento do <strong>Bloco 14x19x39 cm (12,5 blocos/m²)</strong>:</p>
+
+                        <div class="results-list">
+                            <div class="res-item">
+                                <span>Área Bruta de Paredes:</span>
+                                <strong id="resAreaBruta">112.00 m²</strong>
+                            </div>
+                            <div class="res-item">
+                                <span>Área Líquida (sem portas/janelas):</span>
+                                <strong id="resAreaLiquida">100.00 m²</strong>
+                            </div>
+                            <div class="res-item highlight-res">
+                                <span>Blocos Exatos Necessários:</span>
+                                <strong id="resBlocosExatos">1250 unidades</strong>
+                            </div>
+                            <div class="res-item main-result">
+                                <span>Total Recomendado (com margem):</span>
+                                <strong id="resBlocosFinais">1375 unidades</strong>
+                            </div>
+                            <div class="res-item">
+                                <span>Argamassa Estimada (20kg):</span>
+                                <strong id="resArgamassa">40 sacos</strong>
+                            </div>
+                        </div>
+
+                        <div class="calc-cta-box">
+                            <p>Deseja receber a cotação exata com entrega na sua obra?</p>
+                            <a id="btnWhatsappCalc" href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Fiz%20o%20c%C3%A1lculo%20no%20site%20para%20uma%20%C3%A1rea%20de%20100m%C2%B2%20e%20preciso%20de%201375%20blocos.%20Gostaria%20de%20um%20or%C3%A7amento!" target="_blank" class="btn btn-primary btn-calc-wa">
+                                <i class="fa-brands fa-whatsapp"></i> Enviar Cálculo via WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <img src="logo.png" alt="Pra Toda Vida Logo" class="footer-logo">
+                <p>Pra Toda Vida - Construtora & Fábrica de Blocos de Cimento. Qualidade e resistência garantidas.</p>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Pra Toda Vida. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botão Flutuante do WhatsApp -->
+    <a href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Vim%20pela%20Calculadora." target="_blank" class="whatsapp-float">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <script>
+        if (window.pdfjsLib) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+
+        const toggleBtn = document.getElementById('menuToggle');
+        const navbar = document.getElementById('navbar');
+        if (toggleBtn && navbar) {
+            toggleBtn.addEventListener('click', () => navbar.classList.toggle('active'));
+        }
+
+        const pdfInput = document.getElementById('pdfInput');
+        const pdfCanvas = document.getElementById('pdfCanvas');
+        const pdfPreviewArea = document.getElementById('pdfPreviewArea');
+        const pdfFileName = document.getElementById('pdfFileName');
+
+        if (pdfInput) {
+            pdfInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                pdfFileName.innerHTML = `<i class="fa-solid fa-circle-check"></i> Planta anexada: <strong>${file.name}</strong>`;
+                pdfPreviewArea.style.display = 'block';
+
+                if (file.type === 'application/pdf') {
+                    const fileReader = new FileReader();
+                    fileReader.onload = function() {
+                        const typedarray = new Uint8Array(this.result);
+                        pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
+                            pdf.getPage(1).then(function(page) {
+                                const viewport = page.getViewport({ scale: 0.8 });
+                                const canvasContext = pdfCanvas.getContext('2d');
+                                pdfCanvas.height = viewport.height;
+                                pdfCanvas.width = viewport.width;
+
+                                page.render({
+                                    canvasContext: canvasContext,
+                                    viewport: viewport
+                                });
+                            });
+                        });
+                    };
+                    fileReader.readAsArrayBuffer(file);
+                } else if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = new Image();
+                        img.onload = function() {
+                            const scale = Math.min(600 / img.width, 1);
+                            pdfCanvas.width = img.width * scale;
+                            pdfCanvas.height = img.height * scale;
+                            const ctx = pdfCanvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, pdfCanvas.width, pdfCanvas.height);
+                        };
+                        img.src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function calcularBlocos() {
+            const comprimento = parseFloat(document.getElementById('calcComprimento').value) || 0;
+            const altura = parseFloat(document.getElementById('calcAltura').value) || 0;
+            const vaos = parseFloat(document.getElementById('calcVaos').value) || 0;
+            const margem = parseFloat(document.getElementById('calcMargem').value) || 0.10;
+
+            const areaBruta = comprimento * altura;
+            const areaLiquida = Math.max(0, areaBruta - vaos);
+            
+            const blocosExatos = Math.ceil(areaLiquida * 12.5);
+            const blocosFinais = Math.ceil(blocosExatos * (1 + margem));
+            const argamassaSacos = Math.ceil(areaLiquida * 0.4);
+
+            document.getElementById('resAreaBruta').innerText = areaBruta.toFixed(2) + ' m²';
+            document.getElementById('resAreaLiquida').innerText = areaLiquida.toFixed(2) + ' m²';
+            document.getElementById('resBlocosExatos').innerText = blocosExatos + ' unidades';
+            document.getElementById('resBlocosFinais').innerText = blocosFinais + ' unidades';
+            document.getElementById('resArgamassa').innerText = argamassaSacos + ' sacos (20kg)';
+
+            const msg = `Ol%C3%A1!%20Fiz%20o%20c%C3%A1lculo%20no%20site%20da%20Pra%20Toda%20Vida:%0A-%20%C3%81rea%20L%C3%ADquida:%20${areaLiquida.toFixed(2)}m%C2%B2%0A-%20Total%20de%20Blocos:%20${blocosFinais}%20unidades%0A-%20Argamassa:%20${argamassaSacos}%20sacos%0AGostaria%20de%20solicitar%20um%20or%C3%A7amento!`;
+            document.getElementById('btnWhatsappCalc').href = `https://wa.me/5500000000000?text=${msg}`;
+        }
+
+        ['calcComprimento', 'calcAltura', 'calcVaos', 'calcMargem'].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.addEventListener('input', calcularBlocos);
+        });
+
+        document.addEventListener('DOMContentLoaded', calcularBlocos);
+    </script>
+</body>
+</html>
