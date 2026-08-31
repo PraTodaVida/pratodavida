@@ -32,6 +32,27 @@ body {
     line-height: 1.6;
 }
 
+/* Sistema de Telas / Páginas (Uma Tela por Clique) */
+.page-view {
+    display: none;
+    animation: fadeIn 0.35s ease-in-out;
+}
+
+.page-view.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Utilities */
 .container {
     width: 90%;
@@ -122,33 +143,51 @@ ul {
     padding: 12px 0;
 }
 
+/* Ajuste e Padronização de Tamanho das Logos */
 .logo-img {
-    height: 55px;
+    height: 48px;
+    max-height: 48px;
+    width: auto;
+    max-width: 180px;
     object-fit: contain;
+    display: block;
+}
+
+.sobre-logo, .contact-logo, .footer-logo {
+    max-width: 180px;
+    max-height: 80px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto 16px;
+    display: block;
 }
 
 .navbar {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
 }
 
 .navbar a {
     font-family: var(--font-heading);
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     color: var(--dark-color);
     transition: var(--transition);
+    padding: 6px 10px;
+    border-radius: 4px;
 }
 
-.navbar a:hover {
+.navbar a:hover, .navbar a.active {
     color: var(--primary-color);
+    background-color: rgba(13, 71, 161, 0.06);
 }
 
 .btn-nav {
     background-color: var(--primary-color);
     color: #ffffff !important;
-    padding: 8px 18px;
+    padding: 8px 18px !important;
     border-radius: 4px;
 }
 
@@ -241,6 +280,13 @@ ul {
     display: flex;
     align-items: center;
     gap: 16px;
+    transition: var(--transition);
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.stat-item:hover {
+    background-color: var(--light-bg);
 }
 
 .stat-item i {
@@ -257,6 +303,62 @@ ul {
 .stat-item p {
     font-size: 0.85rem;
     color: var(--gray-text);
+}
+
+/* Atalhos Rápidos da Home */
+.home-shortcuts {
+    background-color: var(--light-bg);
+}
+
+.shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+}
+
+.shortcut-card {
+    background: #ffffff;
+    border: 1px solid var(--gray-light);
+    border-radius: 10px;
+    padding: 28px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+
+.shortcut-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    border-color: var(--primary-color);
+}
+
+.shortcut-card i {
+    font-size: 2.2rem;
+    color: var(--primary-color);
+    margin-bottom: 16px;
+}
+
+.shortcut-card h3 {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.shortcut-card p {
+    font-size: 0.9rem;
+    color: var(--gray-text);
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.link-arrow {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 /* Common Section Layout */
@@ -341,11 +443,6 @@ ul {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     text-align: center;
     border: 1px solid var(--gray-light);
-}
-
-.sobre-logo {
-    max-width: 220px;
-    margin-bottom: 20px;
 }
 
 .sobre-card h3 {
@@ -562,7 +659,7 @@ ul {
     font-size: 0.95rem;
 }
 
-/* Seção Comparativa: Bloco de Cimento vs Tijolo Baiano */
+/* Seção Comparativa */
 .comparativo-section {
     background-color: var(--light-bg);
 }
@@ -855,11 +952,6 @@ ul {
     border-left: 1px solid var(--gray-light);
 }
 
-.contact-logo {
-    max-width: 180px;
-    margin-bottom: 20px;
-}
-
 .contact-cta h3 {
     font-family: var(--font-heading);
     font-size: 1.4rem;
@@ -902,11 +994,6 @@ ul {
     color: #94a3b8;
     padding: 40px 0;
     text-align: center;
-}
-
-.footer-logo {
-    height: 50px;
-    margin-bottom: 16px;
 }
 
 .footer-brand p {
