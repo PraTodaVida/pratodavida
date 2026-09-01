@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Planta PDF | Pra Toda Vida Construtora e Fábrica de Blocos</title>
-    <meta name="description" content="Anexe a planta da sua obra em PDF, selecione a área, responda ao assistente interativo e calcule a quantidade exata de blocos de cimento.">
+    <title>Calculadora de Planta PDF & Simulação 3D | Pra Toda Vida</title>
+    <meta name="description" content="Anexe a planta da sua obra em PDF, meça os segmentos e veja a parede 3D em blocos de cimento sendo construída em tempo real.">
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- PDF.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- Three.js CDN para Renderização 3D da Parede em Blocos -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -41,14 +43,14 @@
         </div>
     </header>
 
-    <!-- Conteúdo Exclusivo: Calculadora Interativa com Upload de Planta PDF -->
+    <!-- Conteúdo Exclusivo: Calculadora Interativa + Simulação 3D -->
     <main>
         <section class="section calculadora-section">
             <div class="container">
                 <div class="section-title">
-                    <span class="section-subtitle">Assistente Inteligente de Projetos</span>
-                    <h2>Calculadora de Planta PDF & Perímetro</h2>
-                    <p>Anexe a planta da sua obra em PDF, selecione o tipo de área (casa toda, muro ou cômodo) e responda ao assistente para obter o cálculo exato de blocos.</p>
+                    <span class="section-subtitle">Tecnologia & Engenharia</span>
+                    <h2>Calculadora de Planta PDF & Modelo 3D</h2>
+                    <p>Anexe a planta da sua obra, clique nas paredes para preencher as dimensões automaticamente e veja a maquete 3D da sua alvenaria em tempo real.</p>
                 </div>
 
                 <!-- 1. Dropzone de Upload de PDF/Imagem -->
@@ -56,7 +58,7 @@
                     <div class="dropzone" id="dropzone">
                         <i class="fa-solid fa-file-pdf pdf-icon"></i>
                         <h3><strong>Clique ou Arraste sua Planta em PDF aqui</strong></h3>
-                        <p>Visualização interativa automática do arquivo de projeto.</p>
+                        <p>Preenchimento automático das dimensões ao clicar nos pontos da planta.</p>
                         <span class="file-hint">Formatos suportados: PDF, PNG, JPG</span>
                         <input type="file" id="pdfInput" accept=".pdf,image/*">
                     </div>
@@ -70,50 +72,77 @@
                                 <button type="button" class="btn-tool" onclick="limparMarcacoes()"><i class="fa-solid fa-rotate-left"></i> Limpar Marcadores</button>
                             </div>
                         </div>
-                        <p class="canvas-instruction"><i class="fa-solid fa-hand-pointer"></i> <em>Clique na planta abaixo para marcar os pontos das paredes e medir segmentos em tempo real!</em></p>
+                        <p class="canvas-instruction"><i class="fa-solid fa-hand-pointer"></i> <em>Clique nos pontos da planta para medir paredes e preencher as dimensões automaticamente!</em></p>
                         <div class="canvas-wrapper">
                             <canvas id="pdfCanvas" class="pdf-canvas"></canvas>
                         </div>
                         <div id="marcadorStats" class="marcador-stats">
                             <span>Pontos Marcados: <strong id="qtdPontos">0</strong></span>
-                            <span>Perímetro Medido na Planta: <strong id="medidaPlanta">0.00 m</strong></span>
+                            <span>Perímetro Calculado da Planta: <strong id="medidaPlanta">0.00 m</strong></span>
                         </div>
                     </div>
                 </div>
 
+                <!-- 2. SIMULADOR 3D INTERATIVO DA PAREDE DE BLOCOS -->
+                <div class="calc-card view3d-card mb-40">
+                    <div class="view3d-header">
+                        <div>
+                            <h3><i class="fa-solid fa-cube"></i> Simulação 3D em Tempo Real da Parede em Blocos</h3>
+                            <p class="view3d-sub">Modelo tridimensional construído fiada por fiada com blocos de cimento normatizados.</p>
+                        </div>
+                        <span class="badge-3d"><i class="fa-solid fa-arrows-spin"></i> Clique e arraste para girar em 3D</span>
+                    </div>
+
+                    <div class="canvas3d-wrapper">
+                        <div id="canvas3dContainer"></div>
+                    </div>
+
+                    <div class="stats3d-bar">
+                        <div class="stat3d-item">
+                            <span>Comprimento 3D:</span>
+                            <strong id="lbl3DComprimento">40.00 m</strong>
+                        </div>
+                        <div class="stat3d-item">
+                            <span>Altura 3D:</span>
+                            <strong id="lbl3DAltura">2.80 m</strong>
+                        </div>
+                        <div class="stat3d-item highlight3d">
+                            <span>Blocos 3D Renderizados:</span>
+                            <strong id="lbl3DBlocos">1375 un</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Formulário de Perguntas e Resposta -->
                 <div class="calc-grid">
-                    <!-- 2. Assistente Guiado por Perguntas (Formulário) -->
                     <div class="calc-card input-card">
-                        <h3 class="wizard-title"><i class="fa-solid fa-list-check"></i> Assistente de Seleção de Área</h3>
+                        <h3 class="wizard-title"><i class="fa-solid fa-list-check"></i> Dimensões & Especificações da Obra</h3>
 
                         <!-- Pergunta 1: Tipo de Área -->
                         <div class="q-group">
-                            <label class="q-label">1. Qual o tipo de área do projeto?</label>
+                            <label class="q-label">1. Tipo de Projeto:</label>
                             <div class="area-options">
                                 <button type="button" class="opt-card active" onclick="setAreaTipo('casa', this)">
                                     <i class="fa-solid fa-house"></i>
                                     <strong>Casa Completa</strong>
-                                    <span>Paredes internas e externas</span>
                                 </button>
                                 <button type="button" class="opt-card" onclick="setAreaTipo('muro', this)">
                                     <i class="fa-solid fa-border-all"></i>
                                     <strong>Muro Externo</strong>
-                                    <span>Perímetro de divisa</span>
                                 </button>
                                 <button type="button" class="opt-card" onclick="setAreaTipo('comodo', this)">
                                     <i class="fa-solid fa-door-open"></i>
                                     <strong>Cômodo / Reforma</strong>
-                                    <span>Quarto, sala ou edícula</span>
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Pergunta 2: Forma de Cálculo do Perímetro -->
+                        <!-- Pergunta 2: Modo do Perímetro -->
                         <div class="q-group">
-                            <label class="q-label">2. Como deseja informar o perímetro das paredes?</label>
+                            <label class="q-label">2. Modo de Perímetro das Paredes:</label>
                             <div class="calc-mode-switch">
-                                <label><input type="radio" name="calcMode" value="terreno" checked onchange="toggleCalcMode('terreno')"> Dimensões do Terreno/Casa (Comprimento x Largura)</label>
-                                <label><input type="radio" name="calcMode" value="direto" onchange="toggleCalcMode('direto')"> Perímetro Total das Paredes (Metros Lineares)</label>
+                                <label><input type="radio" name="calcMode" id="modeRadioTerreno" value="terreno" checked onchange="toggleCalcMode('terreno')"> Dimensões da Casa/Terreno (Comprimento x Largura)</label>
+                                <label><input type="radio" name="calcMode" id="modeRadioDireto" value="direto" onchange="toggleCalcMode('direto')"> Perímetro Total das Paredes (Preenchido Automático ao clicar na planta)</label>
                             </div>
 
                             <div id="modeTerreno" class="form-grid mt-15">
@@ -133,18 +162,18 @@
                             </div>
                         </div>
 
-                        <!-- Pergunta 3: Pé Direito & Desconto de Vãos -->
+                        <!-- Pergunta 3 e 4 -->
                         <div class="form-grid mt-15">
                             <div class="form-group">
                                 <label for="calcAltura">3. Altura da Parede (m):</label>
                                 <input type="number" id="calcAltura" value="2.8" step="0.1">
                             </div>
                             <div class="form-group">
-                                <label for="calcVaosPreset">4. Esquadrias (Portas/Janelas):</label>
+                                <label for="calcVaosPreset">4. Portas e Janelas (Vãos):</label>
                                 <select id="calcVaosPreset" onchange="setVaosPreset(this.value)">
-                                    <option value="6">Poucos Vãos (~6 m² descontados)</option>
-                                    <option value="12" selected>Médio Padrão (~12 m² descontados)</option>
-                                    <option value="20">Muitos Vãos/Vidros (~20 m² descontados)</option>
+                                    <option value="6">Poucos Vãos (~6 m²)</option>
+                                    <option value="12" selected>Médio Padrão (~12 m²)</option>
+                                    <option value="20">Muitos Vãos (~20 m²)</option>
                                     <option value="custom">Personalizado</option>
                                 </select>
                             </div>
@@ -155,9 +184,9 @@
                             <input type="number" id="calcVaosCustom" value="12" step="0.5">
                         </div>
 
-                        <!-- Pergunta 5: Modelo do Bloco de Cimento -->
+                        <!-- Pergunta 5: Modelo do Bloco -->
                         <div class="form-group mt-15">
-                            <label for="calcModeloBloco">5. Modelo de Bloco de Cimento Escolhido:</label>
+                            <label for="calcModeloBloco">5. Modelo de Bloco de Cimento:</label>
                             <select id="calcModeloBloco">
                                 <option value="14x19x39" selected>Bloco Estrutural 14x19x39 cm (12,5 un/m²)</option>
                                 <option value="09x19x39">Bloco de Vedação 09x19x39 cm (12,5 un/m²)</option>
@@ -166,14 +195,14 @@
                         </div>
                     </div>
 
-                    <!-- 3. Coluna de Resultado Final -->
+                    <!-- Coluna de Resultado Final -->
                     <div class="calc-card result-card">
-                        <h3><i class="fa-solid fa-calculator"></i> Resultado do Cálculo</h3>
-                        <p class="result-intro">Resumo gerado automaticamente com base nas escolhas selecionadas:</p>
+                        <h3><i class="fa-solid fa-calculator"></i> Resultado Final do Cálculo</h3>
+                        <p class="result-intro">Métricas calculadas instantaneamente com entrega na sua obra:</p>
 
                         <div class="results-list">
                             <div class="res-item">
-                                <span>Tipo de Área:</span>
+                                <span>Tipo de Projeto:</span>
                                 <strong id="resTipoArea">Casa Completa</strong>
                             </div>
                             <div class="res-item">
@@ -199,9 +228,9 @@
                         </div>
 
                         <div class="calc-cta-box">
-                            <p>Envie o resumo das suas seleções para nossa equipe via WhatsApp para receber a cotação oficial com entrega!</p>
-                            <a id="btnWhatsappCalc" href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Fiz%20o%20c%C3%A1lculo%20no%20site." target="_blank" class="btn btn-primary btn-calc-wa">
-                                <i class="fa-brands fa-whatsapp"></i> Enviar Cálculo via WhatsApp
+                            <p>Envie este cálculo com maquete 3D direto para o nosso WhatsApp <strong>(71) 98383-4217</strong>:</p>
+                            <a id="btnWhatsappCalc" href="https://wa.me/5571983834217?text=Ol%C3%A1!%20Fiz%20o%20c%C3%A1lculo%20no%20site." target="_blank" class="btn btn-primary btn-calc-wa">
+                                <i class="fa-brands fa-whatsapp"></i> Enviar Cálculo para WhatsApp (71) 98383-4217
                             </a>
                         </div>
                     </div>
@@ -218,36 +247,39 @@
                 <p>Pra Toda Vida - Construtora & Fábrica de Blocos de Cimento. Qualidade e resistência garantidas.</p>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Pra Toda Vida. Todos os direitos reservados.</p>
+                <p>&copy; 2026 Pra Toda Vida. Todos os direitos reservados. WhatsApp: (71) 98383-4217</p>
             </div>
         </div>
     </footer>
 
     <!-- Botão Flutuante do WhatsApp -->
-    <a href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Vim%20pela%20Calculadora." target="_blank" class="whatsapp-float">
+    <a href="https://wa.me/5571983834217?text=Ol%C3%A1!%20Vim%20pela%20Calculadora." target="_blank" class="whatsapp-float">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
-    <!-- JavaScript Avançado do Assistente e Marcador no PDF -->
+    <!-- JavaScript Avançado: Leitor PDF + Preenchimento Automático + Engine 3D Three.js -->
     <script>
         if (window.pdfjsLib) {
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         }
 
-        // Menu Mobile Toggle
+        // Toggle do Menu Mobile
         const toggleBtn = document.getElementById('menuToggle');
         const navbar = document.getElementById('navbar');
         if (toggleBtn && navbar) {
             toggleBtn.addEventListener('click', () => navbar.classList.toggle('active'));
         }
 
-        // Variáveis do Estado do Assistente
+        // Estado do Assistente
         let tipoAreaSelecionada = 'Casa Completa';
         let pontosMarcados = [];
         let canvasCtx = null;
         let imgOriginal = null;
 
-        // Troca de Tipo de Área
+        // Variaveis Three.js 3D
+        let scene, camera, renderer, wallGroup;
+        let isMouseDown = false, mouseX = 0, mouseY = 0;
+
         function setAreaTipo(tipo, btnEl) {
             document.querySelectorAll('.opt-card').forEach(b => b.classList.remove('active'));
             btnEl.classList.add('active');
@@ -260,7 +292,6 @@
             calcularBlocos();
         }
 
-        // Troca de Modo de Cálculo do Perímetro
         function toggleCalcMode(modo) {
             const modeTerreno = document.getElementById('modeTerreno');
             const modeDireto = document.getElementById('modeDireto');
@@ -275,7 +306,6 @@
             calcularBlocos();
         }
 
-        // Predefinição de Desconto de Vãos
         function setVaosPreset(val) {
             const customBox = document.getElementById('customVaosBox');
             if (val === 'custom') {
@@ -286,7 +316,7 @@
             calcularBlocos();
         }
 
-        // Renderização e Carregamento de PDF / Imagem
+        // Upload e Renderização da Planta PDF
         const pdfInput = document.getElementById('pdfInput');
         const pdfCanvas = document.getElementById('pdfCanvas');
         const pdfPreviewArea = document.getElementById('pdfPreviewArea');
@@ -317,7 +347,6 @@
                                     canvasContext: canvasCtx,
                                     viewport: viewport
                                 }).promise.then(() => {
-                                    // Salvar estado original do canvas
                                     imgOriginal = canvasCtx.getImageData(0, 0, pdfCanvas.width, pdfCanvas.height);
                                 });
                             });
@@ -342,7 +371,7 @@
                 }
             });
 
-            // Clique interativo no Canvas para marcar paredes no PDF
+            // Clique interativo no Canvas -> Preenche as dimensões automaticamente e gera maquete 3D!
             pdfCanvas.addEventListener('click', function(e) {
                 const rect = pdfCanvas.getBoundingClientRect();
                 const x = e.clientX - rect.left;
@@ -353,14 +382,11 @@
             });
         }
 
-        // Desenhar Marcadores de Parede no PDF
         function desenharMarcadores() {
             if (!canvasCtx || !imgOriginal) return;
 
-            // Restaura imagem original da planta
             canvasCtx.putImageData(imgOriginal, 0, 0);
 
-            // Desenha linhas entre os pontos marcados
             if (pontosMarcados.length > 0) {
                 canvasCtx.beginPath();
                 canvasCtx.strokeStyle = '#ef4444';
@@ -373,7 +399,6 @@
                 }
                 canvasCtx.stroke();
 
-                // Desenha os pontos vermelhos
                 for (let i = 0; i < pontosMarcados.length; i++) {
                     const p = pontosMarcados[i];
                     canvasCtx.beginPath();
@@ -409,17 +434,134 @@
                 distTotalPixels += Math.sqrt(dx*dx + dy*dy);
             }
 
-            // Escala estimada: 15 pixels = 1 metro
-            const metrosEstimados = (distTotalPixels / 15).toFixed(2);
+            // Escala estimada (14.5 pixels = 1m)
+            const metrosEstimados = (distTotalPixels / 14.5).toFixed(2);
             document.getElementById('medidaPlanta').innerText = metrosEstimados + ' m';
 
-            if (metrosEstimados > 0) {
+            // PREENCHIMENTO AUTOMÁTICO DAS DIMENSÕES
+            if (parseFloat(metrosEstimados) > 0) {
                 document.getElementById('calcPerimetroDireto').value = metrosEstimados;
+                
+                // Ativa automaticamente o modo de perímetro direto
+                document.getElementById('modeRadioDireto').checked = true;
+                toggleCalcMode('direto');
             }
             calcularBlocos();
         }
 
-        // Função de Cálculo Geral
+        // ==========================================
+        // ENGINE 3D THREE.JS DE PAREDE DE BLOCOS
+        // ==========================================
+        function init3D() {
+            const container = document.getElementById('canvas3dContainer');
+            if (!container || !window.THREE) return;
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0f172a);
+
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 3, 12);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            container.appendChild(renderer.domElement);
+
+            // Iluminação 3D
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(10, 20, 15);
+            scene.add(dirLight);
+
+            // Grupo da Parede
+            wallGroup = new THREE.Group();
+            scene.add(wallGroup);
+
+            // Controles do Mouse para Rotacionar 3D
+            const dom = renderer.domElement;
+            dom.addEventListener('mousedown', e => { isMouseDown = true; mouseX = e.clientX; mouseY = e.clientY; });
+            dom.addEventListener('mouseup', () => { isMouseDown = false; });
+            dom.addEventListener('mouseleave', () => { isMouseDown = false; });
+            dom.addEventListener('mousemove', e => {
+                if (!isMouseDown || !wallGroup) return;
+                const deltaX = e.clientX - mouseX;
+                const deltaY = e.clientY - mouseY;
+                wallGroup.rotation.y += deltaX * 0.01;
+                wallGroup.rotation.x += deltaY * 0.01;
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+
+            // Animação 3D contínua
+            function animate() {
+                requestAnimationFrame(animate);
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Resize responsivo
+            window.addEventListener('resize', () => {
+                if (!container || !renderer || !camera) return;
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        }
+
+        // CONSTRUTOR DA PAREDE 3D DE BLOCOS DE CIMENTO
+        function update3DWall(perimetro, altura) {
+            if (!wallGroup || !window.THREE) return;
+
+            // Limpa parede anterior
+            while (wallGroup.children.length > 0) {
+                wallGroup.remove(wallGroup.children[0]);
+            }
+
+            // Dimensões do bloco em metros no modelo 3D (14x19x39)
+            const blockW = 0.39;
+            const blockH = 0.19;
+            const blockD = 0.14;
+            const mortar = 0.01;
+
+            // Escala visual limitada para a tela 3D
+            const visLength = Math.min(perimetro, 8.0);
+            const cols = Math.floor(visLength / (blockW + mortar));
+            const rows = Math.floor(altura / (blockH + mortar));
+
+            // Materiais do Bloco de Cimento e Junta de Argamassa
+            const blockMat = new THREE.MeshStandardMaterial({ color: 0x8a929a, roughness: 0.8 });
+            const blockGeo = new THREE.BoxGeometry(blockW, blockH, blockD);
+
+            const startX = -((cols * (blockW + mortar)) / 2);
+            const startY = 0;
+
+            // Constrói a parede fiada por fiada com amarração cruzada de blocos
+            for (let r = 0; r < rows; r++) {
+                const rowOffset = (r % 2 === 1) ? (blockW / 2) : 0;
+                for (let c = 0; c < cols; c++) {
+                    const blockMesh = new THREE.Mesh(blockGeo, blockMat);
+                    const posX = startX + c * (blockW + mortar) + rowOffset;
+                    const posY = startY + r * (blockH + mortar) + blockH / 2;
+                    blockMesh.position.set(posX, posY, 0);
+                    wallGroup.add(blockMesh);
+                }
+            }
+
+            // Adiciona piso de cimento 3D
+            const floorGeo = new THREE.PlaneGeometry(12, 12);
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, side: THREE.DoubleSide });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = Math.PI / 2;
+            floor.position.y = 0;
+            wallGroup.add(floor);
+
+            // Ajusta a câmera 3D
+            wallGroup.position.set(0, -1, 0);
+        }
+
+        // Função Principal de Cálculo
         function calcularBlocos() {
             let perimetro = 0;
             const isTerreno = document.querySelector('input[name="calcMode"]:checked').value === 'terreno';
@@ -427,7 +569,7 @@
             if (isTerreno) {
                 const comp = parseFloat(document.getElementById('calcComprimentoTerreno').value) || 0;
                 const larg = parseFloat(document.getElementById('calcLarguraTerreno').value) || 0;
-                perimetro = (comp + larg) * 2; // Perímetro de 4 paredes
+                perimetro = (comp + larg) * 2;
             } else {
                 perimetro = parseFloat(document.getElementById('calcPerimetroDireto').value) || 0;
             }
@@ -447,18 +589,27 @@
             const areaBruta = perimetro * altura;
             const areaLiquida = Math.max(0, areaBruta - vaos);
             const blocosExatos = Math.ceil(areaLiquida * 12.5);
-            const blocosFinais = Math.ceil(blocosExatos * 1.10); // 10% margem
+            const blocosFinais = Math.ceil(blocosExatos * 1.10);
             const argamassaSacos = Math.ceil(areaLiquida * 0.4);
 
+            // Atualiza interface do usuário
             document.getElementById('resPerimetro').innerText = perimetro.toFixed(2) + ' m';
             document.getElementById('resAreaLiquida').innerText = areaLiquida.toFixed(2) + ' m²';
             document.getElementById('resBlocosExatos').innerText = blocosExatos + ' unidades';
             document.getElementById('resBlocosFinais').innerText = blocosFinais + ' unidades';
             document.getElementById('resArgamassa').innerText = argamassaSacos + ' sacos (20kg)';
 
-            // Mensagem completa formatada para o WhatsApp
-            const msg = `Ol%C3%A1!%20Fiz%20o%20c%C3%A1lculo%20no%20assistente%20da%20Pra%20Toda%20Vida:%0A-%20Tipo%20de%20%C3%81rea:%20${encodeURIComponent(tipoAreaSelecionada)}%0A-%20Per%C3%ADmetro:%20${perimetro.toFixed(2)}m%0A-%20%C3%81rea%20L%C3%ADquida:%20${areaLiquida.toFixed(2)}m%C2%B2%0A-%20Bloco:%20${encodeURIComponent(modeloBloco)}%0A-%20Total%20de%20Blocos:%20${blocosFinais}%20unidades%0A-%20Argamassa:%20${argamassaSacos}%20sacos%0AGostaria%20de%20receber%20um%20or%C3%A7amento!`;
-            document.getElementById('btnWhatsappCalc').href = `https://wa.me/5500000000000?text=${msg}`;
+            // Atualiza estatísticas do Card 3D
+            document.getElementById('lbl3DComprimento').innerText = perimetro.toFixed(2) + ' m';
+            document.getElementById('lbl3DAltura').innerText = altura.toFixed(2) + ' m';
+            document.getElementById('lbl3DBlocos').innerText = blocosFinais + ' un';
+
+            // ATUALIZA O MODELO 3D EM TEMPO REAL
+            update3DWall(perimetro, altura);
+
+            // Mensagem formatada para o WhatsApp real da construtora (71) 98383-4217
+            const msg = `Ol%C3%A1!%20Fiz%20o%20c%C3%A1lculo%20no%20site%20da%20Pra%20Toda%20Vida:%0A-%20Tipo%20de%20Obra:%20${encodeURIComponent(tipoAreaSelecionada)}%0A-%20Per%C3%ADmetro:%20${perimetro.toFixed(2)}m%0A-%20%C3%81rea%20L%C3%ADquida:%20${areaLiquida.toFixed(2)}m%C2%B2%0A-%20Bloco:%20${encodeURIComponent(modeloBloco)}%0A-%20Total%20de%20Blocos:%20${blocosFinais}%20unidades%0A-%20Argamassa:%20${argamassaSacos}%20sacos%0AGostaria%20de%20receber%20um%20or%C3%A7amento!`;
+            document.getElementById('btnWhatsappCalc').href = `https://wa.me/5571983834217?text=${msg}`;
         }
 
         // Registrar escutas nos campos do formulário
@@ -467,7 +618,10 @@
             if (el) el.addEventListener('input', calcularBlocos);
         });
 
-        document.addEventListener('DOMContentLoaded', calcularBlocos);
+        document.addEventListener('DOMContentLoaded', () => {
+            init3D();
+            calcularBlocos();
+        });
     </script>
 </body>
 </html>
