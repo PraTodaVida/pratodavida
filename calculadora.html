@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Planta PDF | Pra Toda Vida Construtora e Fábrica de Blocos</title>
-    <meta name="description" content="Anexe a planta da sua obra em PDF e calcule a quantidade exata de blocos de cimento necessários.">
+    <meta name="description" content="Anexe a planta da sua obra em PDF, selecione a área, responda ao assistente interativo e calcule a quantidade exata de blocos de cimento.">
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
@@ -41,82 +41,155 @@
         </div>
     </header>
 
-    <!-- Conteúdo Exclusivo: Calculadora de Planta PDF -->
+    <!-- Conteúdo Exclusivo: Calculadora Interativa com Upload de Planta PDF -->
     <main>
         <section class="section calculadora-section">
             <div class="container">
                 <div class="section-title">
-                    <span class="section-subtitle">Ferramenta Interativa</span>
-                    <h2>Calculadora de Blocos & Planta em PDF</h2>
-                    <p>Anexe a planta da sua obra em PDF ou imagem e insira as medidas para saber exatamente quantos blocos de cimento você precisará comprar.</p>
+                    <span class="section-subtitle">Assistente Inteligente de Projetos</span>
+                    <h2>Calculadora de Planta PDF & Perímetro</h2>
+                    <p>Anexe a planta da sua obra em PDF, selecione o tipo de área (casa toda, muro ou cômodo) e responda ao assistente para obter o cálculo exato de blocos.</p>
+                </div>
+
+                <!-- 1. Dropzone de Upload de PDF/Imagem -->
+                <div class="calc-card upload-card mb-40">
+                    <div class="dropzone" id="dropzone">
+                        <i class="fa-solid fa-file-pdf pdf-icon"></i>
+                        <h3><strong>Clique ou Arraste sua Planta em PDF aqui</strong></h3>
+                        <p>Visualização interativa automática do arquivo de projeto.</p>
+                        <span class="file-hint">Formatos suportados: PDF, PNG, JPG</span>
+                        <input type="file" id="pdfInput" accept=".pdf,image/*">
+                    </div>
+
+                    <!-- Área de Visualização e Marcador Interativo no PDF -->
+                    <div id="pdfPreviewArea" class="pdf-preview-area" style="display: none;">
+                        <div class="preview-header">
+                            <p id="pdfFileName" class="pdf-filename"><i class="fa-solid fa-circle-check"></i> Planta Carregada</p>
+                            <div class="canvas-tools">
+                                <span class="tool-title"><i class="fa-solid fa-pen-ruler"></i> Marcador Interativo de Paredes:</span>
+                                <button type="button" class="btn-tool" onclick="limparMarcacoes()"><i class="fa-solid fa-rotate-left"></i> Limpar Marcadores</button>
+                            </div>
+                        </div>
+                        <p class="canvas-instruction"><i class="fa-solid fa-hand-pointer"></i> <em>Clique na planta abaixo para marcar os pontos das paredes e medir segmentos em tempo real!</em></p>
+                        <div class="canvas-wrapper">
+                            <canvas id="pdfCanvas" class="pdf-canvas"></canvas>
+                        </div>
+                        <div id="marcadorStats" class="marcador-stats">
+                            <span>Pontos Marcados: <strong id="qtdPontos">0</strong></span>
+                            <span>Perímetro Medido na Planta: <strong id="medidaPlanta">0.00 m</strong></span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="calc-grid">
-                    <!-- Coluna de Upload e Entrada -->
+                    <!-- 2. Assistente Guiado por Perguntas (Formulário) -->
                     <div class="calc-card input-card">
-                        <h3>1. Anexe sua Planta e Insira as Medidas</h3>
-                        
-                        <div class="dropzone" id="dropzone">
-                            <i class="fa-solid fa-file-pdf pdf-icon"></i>
-                            <p><strong>Clique aqui ou arraste a Planta em PDF / Imagem</strong></p>
-                            <span class="file-hint">Formatos suportados: PDF, PNG, JPG</span>
-                            <input type="file" id="pdfInput" accept=".pdf,image/*">
+                        <h3 class="wizard-title"><i class="fa-solid fa-list-check"></i> Assistente de Seleção de Área</h3>
+
+                        <!-- Pergunta 1: Tipo de Área -->
+                        <div class="q-group">
+                            <label class="q-label">1. Qual o tipo de área do projeto?</label>
+                            <div class="area-options">
+                                <button type="button" class="opt-card active" onclick="setAreaTipo('casa', this)">
+                                    <i class="fa-solid fa-house"></i>
+                                    <strong>Casa Completa</strong>
+                                    <span>Paredes internas e externas</span>
+                                </button>
+                                <button type="button" class="opt-card" onclick="setAreaTipo('muro', this)">
+                                    <i class="fa-solid fa-border-all"></i>
+                                    <strong>Muro Externo</strong>
+                                    <span>Perímetro de divisa</span>
+                                </button>
+                                <button type="button" class="opt-card" onclick="setAreaTipo('comodo', this)">
+                                    <i class="fa-solid fa-door-open"></i>
+                                    <strong>Cômodo / Reforma</strong>
+                                    <span>Quarto, sala ou edícula</span>
+                                </button>
+                            </div>
                         </div>
 
-                        <div id="pdfPreviewArea" class="pdf-preview-area" style="display: none;">
-                            <p id="pdfFileName" class="pdf-filename"><i class="fa-solid fa-circle-check"></i> Arquivo carregado</p>
-                            <canvas id="pdfCanvas" class="pdf-canvas"></canvas>
+                        <!-- Pergunta 2: Forma de Cálculo do Perímetro -->
+                        <div class="q-group">
+                            <label class="q-label">2. Como deseja informar o perímetro das paredes?</label>
+                            <div class="calc-mode-switch">
+                                <label><input type="radio" name="calcMode" value="terreno" checked onchange="toggleCalcMode('terreno')"> Dimensões do Terreno/Casa (Comprimento x Largura)</label>
+                                <label><input type="radio" name="calcMode" value="direto" onchange="toggleCalcMode('direto')"> Perímetro Total das Paredes (Metros Lineares)</label>
+                            </div>
+
+                            <div id="modeTerreno" class="form-grid mt-15">
+                                <div class="form-group">
+                                    <label for="calcComprimentoTerreno">Comprimento (m):</label>
+                                    <input type="number" id="calcComprimentoTerreno" value="10" step="0.5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="calcLarguraTerreno">Largura (m):</label>
+                                    <input type="number" id="calcLarguraTerreno" value="10" step="0.5">
+                                </div>
+                            </div>
+
+                            <div id="modeDireto" class="form-group mt-15" style="display:none;">
+                                <label for="calcPerimetroDireto">Perímetro Total das Paredes (Metros Lineares):</label>
+                                <input type="number" id="calcPerimetroDireto" value="40" step="0.5" placeholder="Ex: 40">
+                            </div>
                         </div>
 
-                        <div class="form-grid">
+                        <!-- Pergunta 3: Pé Direito & Desconto de Vãos -->
+                        <div class="form-grid mt-15">
                             <div class="form-group">
-                                <label for="calcComprimento">Perímetro Total das Paredes (Metros):</label>
-                                <input type="number" id="calcComprimento" placeholder="Ex: 40" value="40" step="0.5">
-                                <small>Soma do comprimento de todas as paredes</small>
+                                <label for="calcAltura">3. Altura da Parede (m):</label>
+                                <input type="number" id="calcAltura" value="2.8" step="0.1">
                             </div>
-
                             <div class="form-group">
-                                <label for="calcAltura">Altura da Parede / Pé Direito (Metros):</label>
-                                <input type="number" id="calcAltura" placeholder="Ex: 2.8" value="2.8" step="0.1">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="calcVaos">Desconto de Portas e Janelas (m²):</label>
-                                <input type="number" id="calcVaos" placeholder="Ex: 12" value="12" step="0.5">
-                                <small>Área aproximada dos vãos de portas e janelas</small>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="calcMargem">Margem de Segurança (Quebra):</label>
-                                <select id="calcMargem">
-                                    <option value="0.05">5% (Recomendado)</option>
-                                    <option value="0.10" selected>10% (Padrão de Obra)</option>
-                                    <option value="0.15">15% (Obras com muitos cortes)</option>
+                                <label for="calcVaosPreset">4. Esquadrias (Portas/Janelas):</label>
+                                <select id="calcVaosPreset" onchange="setVaosPreset(this.value)">
+                                    <option value="6">Poucos Vãos (~6 m² descontados)</option>
+                                    <option value="12" selected>Médio Padrão (~12 m² descontados)</option>
+                                    <option value="20">Muitos Vãos/Vidros (~20 m² descontados)</option>
+                                    <option value="custom">Personalizado</option>
                                 </select>
                             </div>
                         </div>
+
+                        <div id="customVaosBox" class="form-group mt-15" style="display:none;">
+                            <label for="calcVaosCustom">Área Exata de Vãos (m²):</label>
+                            <input type="number" id="calcVaosCustom" value="12" step="0.5">
+                        </div>
+
+                        <!-- Pergunta 5: Modelo do Bloco de Cimento -->
+                        <div class="form-group mt-15">
+                            <label for="calcModeloBloco">5. Modelo de Bloco de Cimento Escolhido:</label>
+                            <select id="calcModeloBloco">
+                                <option value="14x19x39" selected>Bloco Estrutural 14x19x39 cm (12,5 un/m²)</option>
+                                <option value="09x19x39">Bloco de Vedação 09x19x39 cm (12,5 un/m²)</option>
+                                <option value="19x19x39">Bloco Pesado Revestido 19x19x39 cm (12,5 un/m²)</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <!-- Coluna de Resultados -->
+                    <!-- 3. Coluna de Resultado Final -->
                     <div class="calc-card result-card">
-                        <h3>2. Resultado do Cálculo</h3>
-                        <p class="result-intro">Valores estimados com base no rendimento do <strong>Bloco 14x19x39 cm (12,5 blocos/m²)</strong>:</p>
+                        <h3><i class="fa-solid fa-calculator"></i> Resultado do Cálculo</h3>
+                        <p class="result-intro">Resumo gerado automaticamente com base nas escolhas selecionadas:</p>
 
                         <div class="results-list">
                             <div class="res-item">
-                                <span>Área Bruta de Paredes:</span>
-                                <strong id="resAreaBruta">112.00 m²</strong>
+                                <span>Tipo de Área:</span>
+                                <strong id="resTipoArea">Casa Completa</strong>
                             </div>
                             <div class="res-item">
-                                <span>Área Líquida (sem portas/janelas):</span>
+                                <span>Perímetro Total:</span>
+                                <strong id="resPerimetro">40.00 m</strong>
+                            </div>
+                            <div class="res-item">
+                                <span>Área Líquida de Parede:</span>
                                 <strong id="resAreaLiquida">100.00 m²</strong>
                             </div>
                             <div class="res-item highlight-res">
-                                <span>Blocos Exatos Necessários:</span>
+                                <span>Blocos Exatos:</span>
                                 <strong id="resBlocosExatos">1250 unidades</strong>
                             </div>
                             <div class="res-item main-result">
-                                <span>Total Recomendado (com margem):</span>
+                                <span>Total com Margem (10%):</span>
                                 <strong id="resBlocosFinais">1375 unidades</strong>
                             </div>
                             <div class="res-item">
@@ -126,8 +199,8 @@
                         </div>
 
                         <div class="calc-cta-box">
-                            <p>Deseja receber a cotação exata com entrega na sua obra?</p>
-                            <a id="btnWhatsappCalc" href="https://wa.me/71983834217?text=Ol%C3%A1!%20Fiz%20o%20c%C3%A1lculo%20no%20site%20para%20uma%20%C3%A1rea%20de%20100m%C2%B2%20e%20preciso%20de%201375%20blocos.%20Gostaria%20de%20um%20or%C3%A7amento!" target="_blank" class="btn btn-primary btn-calc-wa">
+                            <p>Envie o resumo das suas seleções para nossa equipe via WhatsApp para receber a cotação oficial com entrega!</p>
+                            <a id="btnWhatsappCalc" href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Fiz%20o%20c%C3%A1lculo%20no%20site." target="_blank" class="btn btn-primary btn-calc-wa">
                                 <i class="fa-brands fa-whatsapp"></i> Enviar Cálculo via WhatsApp
                             </a>
                         </div>
@@ -151,21 +224,69 @@
     </footer>
 
     <!-- Botão Flutuante do WhatsApp -->
-    <a href="https://wa.me/71983834217?text=Ol%C3%A1!%20Vim%20pela%20Calculadora." target="_blank" class="whatsapp-float">
+    <a href="https://wa.me/5500000000000?text=Ol%C3%A1!%20Vim%20pela%20Calculadora." target="_blank" class="whatsapp-float">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
+    <!-- JavaScript Avançado do Assistente e Marcador no PDF -->
     <script>
         if (window.pdfjsLib) {
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
         }
 
+        // Menu Mobile Toggle
         const toggleBtn = document.getElementById('menuToggle');
         const navbar = document.getElementById('navbar');
         if (toggleBtn && navbar) {
             toggleBtn.addEventListener('click', () => navbar.classList.toggle('active'));
         }
 
+        // Variáveis do Estado do Assistente
+        let tipoAreaSelecionada = 'Casa Completa';
+        let pontosMarcados = [];
+        let canvasCtx = null;
+        let imgOriginal = null;
+
+        // Troca de Tipo de Área
+        function setAreaTipo(tipo, btnEl) {
+            document.querySelectorAll('.opt-card').forEach(b => b.classList.remove('active'));
+            btnEl.classList.add('active');
+
+            if (tipo === 'casa') tipoAreaSelecionada = 'Casa Completa';
+            else if (tipo === 'muro') tipoAreaSelecionada = 'Muro Externo / Divisa';
+            else if (tipo === 'comodo') tipoAreaSelecionada = 'Cômodo / Reforma';
+
+            document.getElementById('resTipoArea').innerText = tipoAreaSelecionada;
+            calcularBlocos();
+        }
+
+        // Troca de Modo de Cálculo do Perímetro
+        function toggleCalcMode(modo) {
+            const modeTerreno = document.getElementById('modeTerreno');
+            const modeDireto = document.getElementById('modeDireto');
+
+            if (modo === 'terreno') {
+                modeTerreno.style.display = 'grid';
+                modeDireto.style.display = 'none';
+            } else {
+                modeTerreno.style.display = 'none';
+                modeDireto.style.display = 'block';
+            }
+            calcularBlocos();
+        }
+
+        // Predefinição de Desconto de Vãos
+        function setVaosPreset(val) {
+            const customBox = document.getElementById('customVaosBox');
+            if (val === 'custom') {
+                customBox.style.display = 'block';
+            } else {
+                customBox.style.display = 'none';
+            }
+            calcularBlocos();
+        }
+
+        // Renderização e Carregamento de PDF / Imagem
         const pdfInput = document.getElementById('pdfInput');
         const pdfCanvas = document.getElementById('pdfCanvas');
         const pdfPreviewArea = document.getElementById('pdfPreviewArea');
@@ -176,8 +297,10 @@
                 const file = e.target.files[0];
                 if (!file) return;
 
-                pdfFileName.innerHTML = `<i class="fa-solid fa-circle-check"></i> Planta anexada: <strong>${file.name}</strong>`;
+                pdfFileName.innerHTML = `<i class="fa-solid fa-circle-check"></i> Planta Carregada: <strong>${file.name}</strong>`;
                 pdfPreviewArea.style.display = 'block';
+                pontosMarcados = [];
+                atualizarMarcadoresStats();
 
                 if (file.type === 'application/pdf') {
                     const fileReader = new FileReader();
@@ -185,14 +308,17 @@
                         const typedarray = new Uint8Array(this.result);
                         pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
                             pdf.getPage(1).then(function(page) {
-                                const viewport = page.getViewport({ scale: 0.8 });
-                                const canvasContext = pdfCanvas.getContext('2d');
+                                const viewport = page.getViewport({ scale: 0.85 });
                                 pdfCanvas.height = viewport.height;
                                 pdfCanvas.width = viewport.width;
+                                canvasCtx = pdfCanvas.getContext('2d');
 
                                 page.render({
-                                    canvasContext: canvasContext,
+                                    canvasContext: canvasCtx,
                                     viewport: viewport
+                                }).promise.then(() => {
+                                    // Salvar estado original do canvas
+                                    imgOriginal = canvasCtx.getImageData(0, 0, pdfCanvas.width, pdfCanvas.height);
                                 });
                             });
                         });
@@ -203,45 +329,142 @@
                     reader.onload = function(event) {
                         const img = new Image();
                         img.onload = function() {
-                            const scale = Math.min(600 / img.width, 1);
+                            const scale = Math.min(650 / img.width, 1);
                             pdfCanvas.width = img.width * scale;
                             pdfCanvas.height = img.height * scale;
-                            const ctx = pdfCanvas.getContext('2d');
-                            ctx.drawImage(img, 0, 0, pdfCanvas.width, pdfCanvas.height);
+                            canvasCtx = pdfCanvas.getContext('2d');
+                            canvasCtx.drawImage(img, 0, 0, pdfCanvas.width, pdfCanvas.height);
+                            imgOriginal = canvasCtx.getImageData(0, 0, pdfCanvas.width, pdfCanvas.height);
                         };
                         img.src = event.target.result;
                     };
                     reader.readAsDataURL(file);
                 }
             });
+
+            // Clique interativo no Canvas para marcar paredes no PDF
+            pdfCanvas.addEventListener('click', function(e) {
+                const rect = pdfCanvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                pontosMarcados.push({x, y});
+                desenharMarcadores();
+            });
         }
 
-        function calcularBlocos() {
-            const comprimento = parseFloat(document.getElementById('calcComprimento').value) || 0;
-            const altura = parseFloat(document.getElementById('calcAltura').value) || 0;
-            const vaos = parseFloat(document.getElementById('calcVaos').value) || 0;
-            const margem = parseFloat(document.getElementById('calcMargem').value) || 0.10;
+        // Desenhar Marcadores de Parede no PDF
+        function desenharMarcadores() {
+            if (!canvasCtx || !imgOriginal) return;
 
-            const areaBruta = comprimento * altura;
-            const areaLiquida = Math.max(0, areaBruta - vaos);
+            // Restaura imagem original da planta
+            canvasCtx.putImageData(imgOriginal, 0, 0);
+
+            // Desenha linhas entre os pontos marcados
+            if (pontosMarcados.length > 0) {
+                canvasCtx.beginPath();
+                canvasCtx.strokeStyle = '#ef4444';
+                canvasCtx.lineWidth = 3;
+
+                for (let i = 0; i < pontosMarcados.length; i++) {
+                    const p = pontosMarcados[i];
+                    if (i === 0) canvasCtx.moveTo(p.x, p.y);
+                    else canvasCtx.lineTo(p.x, p.y);
+                }
+                canvasCtx.stroke();
+
+                // Desenha os pontos vermelhos
+                for (let i = 0; i < pontosMarcados.length; i++) {
+                    const p = pontosMarcados[i];
+                    canvasCtx.beginPath();
+                    canvasCtx.arc(p.x, p.y, 6, 0, 2 * Math.PI);
+                    canvasCtx.fillStyle = '#0d47a1';
+                    canvasCtx.fill();
+                    canvasCtx.strokeStyle = '#ffffff';
+                    canvasCtx.lineWidth = 2;
+                    canvasCtx.stroke();
+                }
+            }
+
+            atualizarMarcadoresStats();
+        }
+
+        function limparMarcacoes() {
+            pontosMarcados = [];
+            if (canvasCtx && imgOriginal) {
+                canvasCtx.putImageData(imgOriginal, 0, 0);
+            }
+            atualizarMarcadoresStats();
+        }
+
+        function atualizarMarcadoresStats() {
+            document.getElementById('qtdPontos').innerText = pontosMarcados.length;
             
+            let distTotalPixels = 0;
+            for (let i = 1; i < pontosMarcados.length; i++) {
+                const p1 = pontosMarcados[i-1];
+                const p2 = pontosMarcados[i];
+                const dx = p2.x - p1.x;
+                const dy = p2.y - p1.y;
+                distTotalPixels += Math.sqrt(dx*dx + dy*dy);
+            }
+
+            // Escala estimada: 15 pixels = 1 metro
+            const metrosEstimados = (distTotalPixels / 15).toFixed(2);
+            document.getElementById('medidaPlanta').innerText = metrosEstimados + ' m';
+
+            if (metrosEstimados > 0) {
+                document.getElementById('calcPerimetroDireto').value = metrosEstimados;
+            }
+            calcularBlocos();
+        }
+
+        // Função de Cálculo Geral
+        function calcularBlocos() {
+            let perimetro = 0;
+            const isTerreno = document.querySelector('input[name="calcMode"]:checked').value === 'terreno';
+
+            if (isTerreno) {
+                const comp = parseFloat(document.getElementById('calcComprimentoTerreno').value) || 0;
+                const larg = parseFloat(document.getElementById('calcLarguraTerreno').value) || 0;
+                perimetro = (comp + larg) * 2; // Perímetro de 4 paredes
+            } else {
+                perimetro = parseFloat(document.getElementById('calcPerimetroDireto').value) || 0;
+            }
+
+            const altura = parseFloat(document.getElementById('calcAltura').value) || 2.8;
+            
+            let vaos = 12;
+            const vaosPreset = document.getElementById('calcVaosPreset').value;
+            if (vaosPreset === 'custom') {
+                vaos = parseFloat(document.getElementById('calcVaosCustom').value) || 0;
+            } else {
+                vaos = parseFloat(vaosPreset) || 0;
+            }
+
+            const modeloBloco = document.getElementById('calcModeloBloco').value;
+
+            const areaBruta = perimetro * altura;
+            const areaLiquida = Math.max(0, areaBruta - vaos);
             const blocosExatos = Math.ceil(areaLiquida * 12.5);
-            const blocosFinais = Math.ceil(blocosExatos * (1 + margem));
+            const blocosFinais = Math.ceil(blocosExatos * 1.10); // 10% margem
             const argamassaSacos = Math.ceil(areaLiquida * 0.4);
 
-            document.getElementById('resAreaBruta').innerText = areaBruta.toFixed(2) + ' m²';
+            document.getElementById('resPerimetro').innerText = perimetro.toFixed(2) + ' m';
             document.getElementById('resAreaLiquida').innerText = areaLiquida.toFixed(2) + ' m²';
             document.getElementById('resBlocosExatos').innerText = blocosExatos + ' unidades';
             document.getElementById('resBlocosFinais').innerText = blocosFinais + ' unidades';
             document.getElementById('resArgamassa').innerText = argamassaSacos + ' sacos (20kg)';
 
-            const msg = `Ol%C3%A1!%20Fiz%20o%20c%C3%A1lculo%20no%20site%20da%20Pra%20Toda%20Vida:%0A-%20%C3%81rea%20L%C3%ADquida:%20${areaLiquida.toFixed(2)}m%C2%B2%0A-%20Total%20de%20Blocos:%20${blocosFinais}%20unidades%0A-%20Argamassa:%20${argamassaSacos}%20sacos%0AGostaria%20de%20solicitar%20um%20or%C3%A7amento!`;
-            document.getElementById('btnWhatsappCalc').href = `https://wa.me/71983834217?text=${msg}`;
+            // Mensagem completa formatada para o WhatsApp
+            const msg = `Ol%C3%A1!%20Fiz%20o%20c%C3%A1lculo%20no%20assistente%20da%20Pra%20Toda%20Vida:%0A-%20Tipo%20de%20%C3%81rea:%20${encodeURIComponent(tipoAreaSelecionada)}%0A-%20Per%C3%ADmetro:%20${perimetro.toFixed(2)}m%0A-%20%C3%81rea%20L%C3%ADquida:%20${areaLiquida.toFixed(2)}m%C2%B2%0A-%20Bloco:%20${encodeURIComponent(modeloBloco)}%0A-%20Total%20de%20Blocos:%20${blocosFinais}%20unidades%0A-%20Argamassa:%20${argamassaSacos}%20sacos%0AGostaria%20de%20receber%20um%20or%C3%A7amento!`;
+            document.getElementById('btnWhatsappCalc').href = `https://wa.me/5500000000000?text=${msg}`;
         }
 
-        ['calcComprimento', 'calcAltura', 'calcVaos', 'calcMargem'].forEach(id => {
+        // Registrar escutas nos campos do formulário
+        ['calcComprimentoTerreno', 'calcLarguraTerreno', 'calcPerimetroDireto', 'calcAltura', 'calcVaosCustom', 'calcModeloBloco'].forEach(id => {
             const el = document.getElementById(id);
-            if(el) el.addEventListener('input', calcularBlocos);
+            if (el) el.addEventListener('input', calcularBlocos);
         });
 
         document.addEventListener('DOMContentLoaded', calcularBlocos);
