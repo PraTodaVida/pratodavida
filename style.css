@@ -283,7 +283,7 @@ ul {
     font-size: 1.05rem;
 }
 
-/* BARRA DE FERRAMENTAS CAD (Paredes, Portas, Janelas, Vidros) */
+/* BARRA DE FERRAMENTAS CAD E CONTROLES DE ZOOM DO PDF */
 .cad-toolbar-card {
     background: #ffffff;
     border: 1px solid var(--gray-light);
@@ -312,10 +312,57 @@ ul {
 .mode-status {
     font-size: 0.85rem;
     color: var(--gray-text);
+    display: block;
+    margin-top: 4px;
 }
 
 .mode-status strong {
     color: var(--primary-color);
+}
+
+.pdf-zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--light-bg);
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--gray-light);
+}
+
+.zoom-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gray-text);
+}
+
+.btn-zoom-pdf {
+    background: #ffffff;
+    border: 1px solid var(--gray-light);
+    color: var(--dark-color);
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    transition: var(--transition);
+}
+
+.btn-zoom-pdf:hover {
+    background: var(--primary-color);
+    color: #ffffff;
+    border-color: var(--primary-color);
+}
+
+.lbl-zoom {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    min-width: 45px;
+    text-align: center;
 }
 
 .tools-grid {
@@ -335,7 +382,6 @@ ul {
     display: flex;
     flex-direction: column;
     align-items: center;
-
 }
 
 .btn-cad i {
@@ -384,7 +430,7 @@ ul {
     color: #dc2626;
 }
 
-/* Área do Canvas CAD 2D */
+/* Área do Canvas CAD 2D e Magnetismo Snap */
 .pdf-preview-area {
     background: #0f172a;
     padding: 24px;
@@ -400,10 +446,14 @@ ul {
     margin-bottom: 12px;
 }
 
-.scale-info {
-    color: #60a5fa;
+.snap-badge-info {
+    color: #25d366;
     font-size: 0.82rem;
-    font-weight: 600;
+    font-weight: 700;
+    background: rgba(37, 211, 102, 0.1);
+    padding: 4px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(37, 211, 102, 0.2);
 }
 
 .canvas-wrapper {
@@ -443,7 +493,7 @@ ul {
     color: #60a5fa;
 }
 
-/* Card da Maquete 3D */
+/* Card da Maquete 3D & Ferramentas 3D */
 .view3d-card {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     color: #ffffff;
@@ -475,19 +525,42 @@ ul {
     margin-top: 4px;
 }
 
-.badge-3d {
-    background: rgba(59, 130, 246, 0.2);
-    color: #60a5fa;
-    border: 1px solid rgba(96, 165, 250, 0.3);
-    padding: 6px 14px;
-    border-radius: 20px;
+.controls3d-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-3d-tool {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #ffffff;
+    padding: 8px 14px;
+    border-radius: 6px;
     font-size: 0.8rem;
     font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-3d-tool:hover {
+    background: #334155;
+    border-color: #60a5fa;
+}
+
+.highlight-btn3d {
+    background: #2563eb;
+    border-color: #3b82f6;
+}
+
+.highlight-btn3d:hover {
+    background: #1d4ed8;
 }
 
 .canvas3d-wrapper {
     width: 100%;
-    height: 420px;
+    height: 440px;
     background: #090d16;
     border-radius: 8px;
     overflow: hidden;
