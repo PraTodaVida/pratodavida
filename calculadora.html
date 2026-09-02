@@ -1,1 +1,932 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Planta PDF & Projeto 3D Parede por Parede | Pra Toda Vida</title>
+    <meta name="description" content="Desenhe paredes a cada 2 cliques no seu PDF com magnetismo de interseções, controle de zoom e maquete 3D interativa.">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- PDF.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+    <!-- Header / Navegação -->
+    <header class="header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo-link">
+                <img src="logo.png" alt="Pra Toda Vida Logo" class="logo-img">
+            </a>
+            <nav class="navbar" id="navbar">
+                <a href="index.html">Início</a>
+                <a href="sobre.html">Sobre Nós</a>
+                <a href="blocos.html">Fábrica de Blocos</a>
+                <a href="calculadora.html" class="active">Calculadora de Planta</a>
+                <a href="comparativo.html">Bloco vs Cerâmica</a>
+                <a href="construtora.html">Construtora</a>
+                <a href="contato.html" class="btn-nav">Fazer Orçamento</a>
+            </nav>
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Conteúdo Exclusivo: CAD 2D com Snap/Magnetismo + Gerador 3D com Orbit/Pan/Zoom -->
+    <main>
+        <section class="section calculadora-section">
+            <div class="container">
+                <div class="section-title">
+                    <span class="section-subtitle">Engenharia Interativa CAD & 3D</span>
+                    <h2>Projeto Parede por Parede & Modelo 3D Interativo</h2>
+                    <p>A cada 2 cliques no PDF, desenhe o contorno exato da casa com magnetismo de cantos/interseções. Rotacione, mova e aproxime a maquete 3D completa em tempo real.</p>
+                </div>
+
+                <!-- 1. Dropzone de Upload de PDF/Imagem -->
+                <div class="calc-card upload-card mb-30">
+                    <div class="dropzone" id="dropzone">
+                        <i class="fa-solid fa-file-pdf pdf-icon"></i>
+                        <h3><strong>Clique ou Arraste a Planta em PDF / Imagem aqui</strong></h3>
+                        <p>Carregue o desenho técnico da sua obra para começar a marcar o perfil das paredes com precisão.</p>
+                        <span class="file-hint">Formatos suportados: PDF, PNG, JPG</span>
+                        <input type="file" id="pdfInput" accept=".pdf,image/*">
+                    </div>
+                </div>
+
+                <!-- 2. Barra de Ferramentas CAD (Paredes, Portas, Janelas, Vidros e Zoom PDF) -->
+                <div class="calc-card cad-toolbar-card mb-30">
+                    <div class="toolbar-header">
+                        <div>
+                            <h3><i class="fa-solid fa-toolbox"></i> Ferramentas de Construção & Magnetismo</h3>
+                            <span class="mode-status" id="modeStatusText">Modo Atual: <strong id="lblModoAtual">Desenhar Parede (2 Cliques)</strong></span>
+                        </div>
+                        
+                        <!-- Controles de Zoom da Planta PDF -->
+                        <div class="pdf-zoom-controls">
+                            <span class="zoom-title"><i class="fa-solid fa-magnifying-glass"></i> Zoom Planta PDF:</span>
+                            <button type="button" class="btn-zoom-pdf" onclick="zoomPDF(1.25)" title="Aumentar Zoom Planta"><i class="fa-solid fa-plus"></i></button>
+                            <span id="lblPdfZoom" class="lbl-zoom">100%</span>
+                            <button type="button" class="btn-zoom-pdf" onclick="zoomPDF(0.8)" title="Diminuir Zoom Planta"><i class="fa-solid fa-minus"></i></button>
+                            <button type="button" class="btn-zoom-pdf" onclick="resetZoomPDF()" title="Resetar Zoom"><i class="fa-solid fa-compress"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="tools-grid">
+                        <button type="button" class="btn-cad active" id="btnToolParede" onclick="setCadTool('parede')">
+                            <i class="fa-solid fa-cubes-stacked"></i>
+                            <span>Desenhar Parede</span>
+                            <small>2 cliques (Snap Interseção)</small>
+                        </button>
+
+                        <button type="button" class="btn-cad" id="btnToolPorta" onclick="setCadTool('porta')">
+                            <i class="fa-solid fa-door-closed"></i>
+                            <span>Inserir Porta</span>
+                            <small>Clique na parede (0.90m)</small>
+                        </button>
+
+                        <button type="button" class="btn-cad" id="btnToolJanela" onclick="setCadTool('janela')">
+                            <i class="fa-solid fa-window-maximize"></i>
+                            <span>Inserir Janela</span>
+                            <small>Clique na parede (1.20m)</small>
+                        </button>
+
+                        <button type="button" class="btn-cad" id="btnToolBasculante" onclick="setCadTool('basculante')">
+                            <i class="fa-solid fa-border-top-left"></i>
+                            <span>Inserir Basculante</span>
+                            <small>Clique na parede (0.60m)</small>
+                        </button>
+
+                        <button type="button" class="btn-cad" id="btnToolVidro" onclick="setCadTool('vidro')">
+                            <i class="fa-solid fa-square-poll-vertical"></i>
+                            <span>Painel de Vidro</span>
+                            <small>Clique na parede (1.00m)</small>
+                        </button>
+
+                        <button type="button" class="btn-cad btn-undo" onclick="undoUltimaParede()">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>Desfazer Útil</span>
+                            <small>Apaga última parede</small>
+                        </button>
+
+                        <button type="button" class="btn-cad btn-clear" onclick="limparTudoCAD()">
+                            <i class="fa-solid fa-trash-can"></i>
+                            <span>Limpar Projeto</span>
+                            <small>Recomeçar do zero</small>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. Área de Visualização e Desenho 2D na Planta PDF -->
+                <div id="pdfPreviewArea" class="calc-card mb-40" style="display: none;">
+                    <div class="preview-header">
+                        <p id="pdfFileName" class="pdf-filename"><i class="fa-solid fa-circle-check"></i> Planta Carregada</p>
+                        <div class="snap-badge-info"><i class="fa-solid fa-magnet"></i> Magnetismo de Cantos Ativo (Snap)</div>
+                    </div>
+                    <p class="canvas-instruction" id="instructionText"><i class="fa-solid fa-hand-pointer"></i> <strong>Passo 1:</strong> Clique na planta para marcar o INÍCIO da parede... (O cursor trava automaticamente nos cantos!)</p>
+                    
+                    <div class="canvas-wrapper">
+                        <canvas id="pdfCanvas" class="pdf-canvas"></canvas>
+                    </div>
+
+                    <div id="cadStatsBar" class="cad-stats-bar mt-15">
+                        <div class="cad-stat-item">
+                            <span>Total de Paredes:</span>
+                            <strong id="lblQtdParedes">0</strong>
+                        </div>
+                        <div class="cad-stat-item">
+                            <span>Perímetro Acumulado:</span>
+                            <strong id="lblMetrosParedes">0.00 m</strong>
+                        </div>
+                        <div class="cad-stat-item">
+                            <span>Esquadrias (Portas/Janelas):</span>
+                            <strong id="lblQtdEsquadrias">0</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. GERADOR 3D REAL DA CASA (COM CONTROLES DE ZOOM, PAN E ROTAÇÃO) -->
+                <div class="calc-card view3d-card mb-40">
+                    <div class="view3d-header">
+                        <div>
+                            <h3><i class="fa-solid fa-cube"></i> Maquete 3D Interativa da Casa</h3>
+                            <p class="view3d-sub">Rotacione (botão esquerdo), Mova (botão direito / Shift+clique) e Zoom (roda do mouse ou botões abaixo).</p>
+                        </div>
+                        <div class="controls3d-toolbar">
+                            <button type="button" class="btn-3d-tool" onclick="zoom3D(0.8)" title="Aproximar Zoom 3D"><i class="fa-solid fa-plus"></i> Zoom +</button>
+                            <button type="button" class="btn-3d-tool" onclick="zoom3D(1.25)" title="Afastar Zoom 3D"><i class="fa-solid fa-minus"></i> Zoom -</button>
+                            <button type="button" class="btn-3d-tool highlight-btn3d" onclick="centralizarCamera3D()" title="Centralizar Câmera na Casa"><i class="fa-solid fa-crosshairs"></i> Centralizar 3D</button>
+                            <button type="button" class="btn-3d-tool" onclick="resetCamera3D()" title="Resetar Visão 3D"><i class="fa-solid fa-arrows-rotate"></i> Reset</button>
+                        </div>
+                    </div>
+
+                    <div class="canvas3d-wrapper">
+                        <div id="canvas3dContainer"></div>
+                    </div>
+
+                    <div class="stats3d-bar">
+                        <div class="stat3d-item">
+                            <span>Paredes 3D:</span>
+                            <strong id="lbl3DParedes">0</strong>
+                        </div>
+                        <div class="stat3d-item">
+                            <span>Altura Parede:</span>
+                            <strong>2.80 m</strong>
+                        </div>
+                        <div class="stat3d-item highlight3d">
+                            <span>Blocos 3D Necessários:</span>
+                            <strong id="lbl3DBlocos">0 un</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Tabela de Lista de Paredes & Resultado do Cálculo -->
+                <div class="calc-grid">
+                    <!-- Lista de Paredes Criadas -->
+                    <div class="calc-card input-card">
+                        <h3 class="wizard-title"><i class="fa-solid fa-list-ol"></i> Paredes & Esquadrias do Projeto</h3>
+                        <div id="wallListContainer" class="wall-list-container">
+                            <p class="empty-list-msg">Nenhuma parede desenhada ainda. Clique na planta acima para criar as paredes a cada 2 cliques!</p>
+                        </div>
+                    </div>
+
+                    <!-- Coluna de Resultado Final -->
+                    <div class="calc-card result-card">
+                        <h3><i class="fa-solid fa-calculator"></i> Resultado Final da Obra</h3>
+                        <p class="result-intro">Resumo calculado em tempo real para o seu projeto:</p>
+
+                        <div class="results-list">
+                            <div class="res-item">
+                                <span>Total de Paredes:</span>
+                                <strong id="resTotalParedes">0</strong>
+                            </div>
+                            <div class="res-item">
+                                <span>Perímetro Total das Paredes:</span>
+                                <strong id="resPerimetroTotal">0.00 m</strong>
+                            </div>
+                            <div class="res-item">
+                                <span>Área de Paredes (Pé-direito 2.8m):</span>
+                                <strong id="resAreaBruta">0.00 m²</strong>
+                            </div>
+                            <div class="res-item">
+                                <span>Desconto de Portas/Janelas:</span>
+                                <strong id="resAreaVaos">0.00 m²</strong>
+                            </div>
+                            <div class="res-item">
+                                <span>Área Líquida de Alvenaria:</span>
+                                <strong id="resAreaLiquida">0.00 m²</strong>
+                            </div>
+                            <div class="res-item highlight-res">
+                                <span>Blocos Exatos (14x19x39):</span>
+                                <strong id="resBlocosExatos">0 unidades</strong>
+                            </div>
+                            <div class="res-item main-result">
+                                <span>Total Recomendado (+10% margem):</span>
+                                <strong id="resBlocosFinais">0 unidades</strong>
+                            </div>
+                            <div class="res-item">
+                                <span>Argamassa Estimada (20kg):</span>
+                                <strong id="resArgamassa">0 sacos</strong>
+                            </div>
+                        </div>
+
+                        <div class="calc-cta-box">
+                            <p>Envie a maquete 3D e este orçamento direto para nosso WhatsApp <strong>(71) 98383-4217</strong>:</p>
+                            <a id="btnWhatsappCalc" href="https://wa.me/5571983834217?text=Ol%C3%A1!%20Fiz%20o%20projeto%20parede%20por%20parede%20no%20site." target="_blank" class="btn btn-primary btn-calc-wa">
+                                <i class="fa-brands fa-whatsapp"></i> Enviar Projeto via WhatsApp (71) 98383-4217
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <img src="logo.png" alt="Pra Toda Vida Logo" class="footer-logo">
+                <p>Pra Toda Vida - Construtora & Fábrica de Blocos de Cimento. Qualidade e resistência garantidas.</p>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Pra Toda Vida. Todos os direitos reservados. WhatsApp: (71) 98383-4217</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botão Flutuante do WhatsApp -->
+    <a href="https://wa.me/5571983834217?text=Ol%C3%A1!%20Vim%20pela%20Calculadora." target="_blank" class="whatsapp-float">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- ENGINE JAVASCRIPT CAD 2D (MAGNETISMO SNAP + ZOOM PDF) & 3D THREE.JS (PAN + ORBIT + ZOOM) -->
+    <script>
+        if (window.pdfjsLib) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+
+        // Menu Mobile Toggle
+        const toggleBtn = document.getElementById('menuToggle');
+        const navbar = document.getElementById('navbar');
+        if (toggleBtn && navbar) {
+            toggleBtn.addEventListener('click', () => navbar.classList.toggle('active'));
+        }
+
+        // ========================================================
+        // ESTADO CAD 2D & SNAP DE MAGNETISMO
+        // ========================================================
+        let currentTool = 'parede'; 
+        let walls = []; 
+        let tempP1 = null; 
+        let mousePosTemp = null; 
+        let activeSnapPoint = null; 
+
+        let pdfZoomScale = 1.0; 
+        let canvasCtx = null;
+        let imgOriginal = null;
+        const BASE_PIXELS_PER_METER = 14.5; 
+
+        // Three.js 3D Controls Vars
+        let scene, camera, renderer, house3DGroup;
+        let cameraTarget = new THREE ? new THREE.Vector3(0, 1.4, 0) : null;
+        let cameraRadius = 18;
+        let cameraTheta = 0.4;
+        let cameraPhi = 0.7;
+
+        let isMouseDown3D = false;
+        let isRightClick3D = false;
+        let mouseX3D = 0, mouseY3D = 0;
+
+        function setCadTool(tool) {
+            currentTool = tool;
+            tempP1 = null;
+            
+            document.querySelectorAll('.btn-cad').forEach(b => {
+                if(!b.classList.contains('btn-undo') && !b.classList.contains('btn-clear')) {
+                    b.classList.remove('active');
+                }
+            });
+
+            const btnMap = {
+                'parede': 'btnToolParede',
+                'porta': 'btnToolPorta',
+                'janela': 'btnToolJanela',
+                'basculante': 'btnToolBasculante',
+                'vidro': 'btnToolVidro'
+            };
+
+            if (btnMap[tool]) document.getElementById(btnMap[tool]).classList.add('active');
+
+            const textMap = {
+                'parede': 'Desenhar Parede (2 Cliques com Magnetismo Snap em Cantos)',
+                'porta': 'Inserir Porta (0.90m) - Clique sobre a parede desejada',
+                'janela': 'Inserir Janela (1.20m) - Clique sobre a parede desejada',
+                'basculante': 'Inserir Basculante (0.60m) - Clique sobre a parede desejada',
+                'vidro': 'Inserir Painel de Vidro (1.00m) - Clique sobre a parede desejada'
+            };
+
+            document.getElementById('lblModoAtual').innerText = textMap[tool];
+            updateInstructionText();
+        }
+
+        function updateInstructionText() {
+            const el = document.getElementById('instructionText');
+            if (currentTool === 'parede') {
+                if (!tempP1) {
+                    el.innerHTML = `<i class="fa-solid fa-hand-pointer"></i> <strong>Passo 1:</strong> Clique na planta para marcar o INÍCIO da parede... (Imã de canto ativo!)`;
+                } else {
+                    el.innerHTML = `<i class="fa-solid fa-location-crosshairs"></i> <strong>Passo 2:</strong> Clique no ponto final para CONCLUIR esta parede!`;
+                }
+            } else {
+                el.innerHTML = `<i class="fa-solid fa-plus"></i> Clique em qualquer parede desenhada para posicionar o elemento (${currentTool.toUpperCase()})!`;
+            }
+        }
+
+        // Funções de Zoom do PDF 2D
+        function zoomPDF(factor) {
+            pdfZoomScale = Math.max(0.5, Math.min(3.0, pdfZoomScale * factor));
+            document.getElementById('lblPdfZoom').innerText = Math.round(pdfZoomScale * 100) + '%';
+            redraw2DCad();
+        }
+
+        function resetZoomPDF() {
+            pdfZoomScale = 1.0;
+            document.getElementById('lblPdfZoom').innerText = '100%';
+            redraw2DCad();
+        }
+
+        // Upload de Planta em PDF ou Imagem
+        const pdfInput = document.getElementById('pdfInput');
+        const pdfCanvas = document.getElementById('pdfCanvas');
+        const pdfPreviewArea = document.getElementById('pdfPreviewArea');
+        const pdfFileName = document.getElementById('pdfFileName');
+
+        if (pdfInput) {
+            pdfInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                pdfFileName.innerHTML = `<i class="fa-solid fa-circle-check"></i> Planta Carregada: <strong>${file.name}</strong>`;
+                pdfPreviewArea.style.display = 'block';
+
+                if (file.type === 'application/pdf') {
+                    const fileReader = new FileReader();
+                    fileReader.onload = function() {
+                        const typedarray = new Uint8Array(this.result);
+                        pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
+                            pdf.getPage(1).then(function(page) {
+                                const viewport = page.getViewport({ scale: 0.9 });
+                                pdfCanvas.height = viewport.height;
+                                pdfCanvas.width = viewport.width;
+                                canvasCtx = pdfCanvas.getContext('2d');
+
+                                page.render({
+                                    canvasContext: canvasCtx,
+                                    viewport: viewport
+                                }).promise.then(() => {
+                                    imgOriginal = canvasCtx.getImageData(0, 0, pdfCanvas.width, pdfCanvas.height);
+                                    redraw2DCad();
+                                });
+                            });
+                        });
+                    };
+                    fileReader.readAsArrayBuffer(file);
+                } else if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = new Image();
+                        img.onload = function() {
+                            const scale = Math.min(750 / img.width, 1);
+                            pdfCanvas.width = img.width * scale;
+                            pdfCanvas.height = img.height * scale;
+                            canvasCtx = pdfCanvas.getContext('2d');
+                            canvasCtx.drawImage(img, 0, 0, pdfCanvas.width, pdfCanvas.height);
+                            imgOriginal = canvasCtx.getImageData(0, 0, pdfCanvas.width, pdfCanvas.height);
+                            redraw2DCad();
+                        };
+                        img.src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Movimento do mouse sobre o Canvas CAD + Detecção de Snap/Magnetismo em nós
+            pdfCanvas.addEventListener('mousemove', function(e) {
+                const rect = pdfCanvas.getBoundingClientRect();
+                const rawPos = {
+                    x: (e.clientX - rect.left) / pdfZoomScale,
+                    y: (e.clientY - rect.top) / pdfZoomScale
+                };
+
+                activeSnapPoint = getSnapPoint(rawPos);
+
+                if (currentTool === 'parede' && tempP1) {
+                    mousePosTemp = activeSnapPoint.x !== undefined ? activeSnapPoint : rawPos;
+                }
+                redraw2DCad();
+            });
+
+            // Clique no Canvas CAD
+            pdfCanvas.addEventListener('click', function(e) {
+                const rect = pdfCanvas.getBoundingClientRect();
+                const rawPos = {
+                    x: (e.clientX - rect.left) / pdfZoomScale,
+                    y: (e.clientY - rect.top) / pdfZoomScale
+                };
+
+                const clickPos = getSnapPoint(rawPos);
+
+                if (currentTool === 'parede') {
+                    if (!tempP1) {
+                        tempP1 = clickPos;
+                        updateInstructionText();
+                    } else {
+                        const p2 = clickPos;
+                        const dx = p2.x - tempP1.x;
+                        const dy = p2.y - tempP1.y;
+                        const distPx = Math.sqrt(dx*dx + dy*dy);
+
+                        if (distPx > 5) {
+                            const lengthMeters = parseFloat((distPx / BASE_PIXELS_PER_METER).toFixed(2));
+                            walls.push({
+                                id: Date.now(),
+                                p1: tempP1,
+                                p2: p2,
+                                lengthMeters: lengthMeters,
+                                openings: []
+                            });
+                        }
+                        tempP1 = null;
+                        mousePosTemp = null;
+                        updateInstructionText();
+                        recalcularTudo();
+                    }
+                } else {
+                    adicionarEsquadriaNaParedeMaisProxima(clickPos, currentTool);
+                }
+            });
+        }
+
+        // ALGORITMO DE MAGNETISMO (SNAP) EM CANTOS E INTERSEÇÕES DE PAREDES
+        function getSnapPoint(rawPos) {
+            const SNAP_RADIUS = 18; 
+            let snap = null;
+            let minD = Infinity;
+
+            walls.forEach(w => {
+                [w.p1, w.p2].forEach(pt => {
+                    const dx = rawPos.x - pt.x;
+                    const dy = rawPos.y - pt.y;
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if (d < SNAP_RADIUS && d < minD) {
+                        minD = d;
+                        snap = { x: pt.x, y: pt.y, isSnap: true };
+                    }
+                });
+            });
+
+            if (snap) return snap;
+
+            // Trava ortogonal (90 graus) em relação ao 1º ponto da parede
+            if (tempP1) {
+                const dx = Math.abs(rawPos.x - tempP1.x);
+                const dy = Math.abs(rawPos.y - tempP1.y);
+                if (dx < 12) return { x: tempP1.x, y: rawPos.y, isSnap: true, isOrtho: true };
+                if (dy < 12) return { x: rawPos.x, y: tempP1.y, isSnap: true, isOrtho: true };
+            }
+
+            return { x: rawPos.x, y: rawPos.y, isSnap: false };
+        }
+
+        function adicionarEsquadriaNaParedeMaisProxima(pos, tipo) {
+            if (walls.length === 0) return;
+
+            let melhorParede = null;
+            let menorDistancia = Infinity;
+
+            walls.forEach(w => {
+                const dist = pontoParaSegmentoDistancia(pos, w.p1, w.p2);
+                if (dist < menorDistancia) {
+                    menorDistancia = dist;
+                    melhorParede = w;
+                }
+            });
+
+            if (melhorParede && menorDistancia < 30) {
+                const configEsquadrias = {
+                    'porta': { nome: 'Porta', largura: 0.90, altura: 2.10 },
+                    'janela': { nome: 'Janela', largura: 1.20, altura: 1.20 },
+                    'basculante': { nome: 'Basculante', largura: 0.60, altura: 0.60 },
+                    'vidro': { nome: 'Painel de Vidro', largura: 1.00, altura: 2.00 }
+                };
+
+                const item = configEsquadrias[tipo];
+                if (item) {
+                    melhorParede.openings.push({
+                        id: Date.now(),
+                        tipo: tipo,
+                        nome: item.nome,
+                        largura: item.largura,
+                        altura: item.altura,
+                        area: parseFloat((item.largura * item.altura).toFixed(2)),
+                        pos: pos
+                    });
+                    recalcularTudo();
+                }
+            }
+        }
+
+        function pontoParaSegmentoDistancia(p, v, w) {
+            const l2 = (w.x - v.x)*(w.x - v.x) + (w.y - v.y)*(w.y - v.y);
+            if (l2 === 0) return Math.sqrt((p.x - v.x)*(p.x - v.x) + (p.y - v.y)*(p.y - v.y));
+            let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+            t = Math.max(0, Math.min(1, t));
+            const projX = v.x + t * (w.x - v.x);
+            const projY = v.y + t * (w.y - v.y);
+            return Math.sqrt((p.x - projX)*(p.x - projX) + (p.y - projY)*(p.y - projY));
+        }
+
+        // REDESENHAR PROJETO CAD 2D NO CANVAS
+        function redraw2DCad() {
+            if (!canvasCtx) return;
+
+            canvasCtx.save();
+            canvasCtx.scale(pdfZoomScale, pdfZoomScale);
+
+            if (imgOriginal) {
+                canvasCtx.putImageData(imgOriginal, 0, 0);
+            } else {
+                canvasCtx.fillStyle = '#0f172a';
+                canvasCtx.fillRect(0, 0, pdfCanvas.width, pdfCanvas.height);
+            }
+
+            // Desenhar paredes já criadas
+            walls.forEach((w, index) => {
+                canvasCtx.beginPath();
+                canvasCtx.strokeStyle = '#2563eb';
+                canvasCtx.lineWidth = 6;
+                canvasCtx.moveTo(w.p1.x, w.p1.y);
+                canvasCtx.lineTo(w.p2.x, w.p2.y);
+                canvasCtx.stroke();
+
+                canvasCtx.fillStyle = '#1d4ed8';
+                canvasCtx.beginPath();
+                canvasCtx.arc(w.p1.x, w.p1.y, 5, 0, Math.PI * 2);
+                canvasCtx.arc(w.p2.x, w.p2.y, 5, 0, Math.PI * 2);
+                canvasCtx.fill();
+
+                const midX = (w.p1.x + w.p2.x) / 2;
+                const midY = (w.p1.y + w.p2.y) / 2;
+                canvasCtx.fillStyle = '#ffffff';
+                canvasCtx.font = 'bold 12px Montserrat, sans-serif';
+                canvasCtx.textAlign = 'center';
+                canvasCtx.shadowColor = '#000000';
+                canvasCtx.shadowBlur = 4;
+                canvasCtx.fillText(`P${index+1}: ${w.lengthMeters}m`, midX, midY - 8);
+                canvasCtx.shadowBlur = 0;
+
+                w.openings.forEach(op => {
+                    canvasCtx.fillStyle = op.tipo === 'porta' ? '#8b5cf6' : (op.tipo === 'janela' ? '#3b82f6' : '#eab308');
+                    canvasCtx.beginPath();
+                    canvasCtx.arc(op.pos.x, op.pos.y, 7, 0, Math.PI * 2);
+                    canvasCtx.fill();
+                    canvasCtx.strokeStyle = '#ffffff';
+                    canvasCtx.lineWidth = 2;
+                    canvasCtx.stroke();
+                });
+            });
+
+            // Linha guia temporária durante o 2º clique da parede
+            if (currentTool === 'parede' && tempP1 && mousePosTemp) {
+                canvasCtx.beginPath();
+                canvasCtx.strokeStyle = '#ef4444';
+                canvasCtx.lineWidth = 3;
+                canvasCtx.setLineDash([6, 6]);
+                canvasCtx.moveTo(tempP1.x, tempP1.y);
+                canvasCtx.lineTo(mousePosTemp.x, mousePosTemp.y);
+                canvasCtx.stroke();
+                canvasCtx.setLineDash([]);
+
+                const dx = mousePosTemp.x - tempP1.x;
+                const dy = mousePosTemp.y - tempP1.y;
+                const distM = (Math.sqrt(dx*dx + dy*dy) / BASE_PIXELS_PER_METER).toFixed(2);
+                canvasCtx.fillStyle = '#ef4444';
+                canvasCtx.font = 'bold 12px Montserrat, sans-serif';
+                canvasCtx.fillText(`${distM}m`, mousePosTemp.x + 10, mousePosTemp.y - 10);
+            }
+
+            // Indicador de Magnetismo (Snap) Verde na tela
+            if (activeSnapPoint && activeSnapPoint.isSnap) {
+                canvasCtx.beginPath();
+                canvasCtx.arc(activeSnapPoint.x, activeSnapPoint.y, 9, 0, Math.PI * 2);
+                canvasCtx.strokeStyle = '#25d366';
+                canvasCtx.lineWidth = 3;
+                canvasCtx.stroke();
+
+                canvasCtx.fillStyle = '#25d366';
+                canvasCtx.font = 'bold 10px Montserrat, sans-serif';
+                canvasCtx.fillText('🟢 SNAP', activeSnapPoint.x + 12, activeSnapPoint.y - 6);
+            }
+
+            canvasCtx.restore();
+        }
+
+        function undoUltimaParede() {
+            if (walls.length > 0) {
+                walls.pop();
+                recalcularTudo();
+            }
+        }
+
+        function limparTudoCAD() {
+            walls = [];
+            tempP1 = null;
+            mousePosTemp = null;
+            recalcularTudo();
+        }
+
+        // ========================================================
+        // ENGINE 3D THREE.JS (COM ROTAÇÃO, PAN, ZOOM E CENTRALIZAÇÃO)
+        // ========================================================
+        function init3D() {
+            const container = document.getElementById('canvas3dContainer');
+            if (!container || !window.THREE) return;
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0f172a);
+
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            cameraTarget = new THREE.Vector3(0, 1.4, 0);
+
+            updateCameraPosition();
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            container.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+            dirLight.position.set(15, 30, 20);
+            scene.add(dirLight);
+
+            house3DGroup = new THREE.Group();
+            scene.add(house3DGroup);
+
+            const dom = renderer.domElement;
+
+            // Previne menu de contexto ao clicar com botão direito
+            dom.addEventListener('contextmenu', e => e.preventDefault());
+
+            // Rotação (Botão Esquerdo) e Pan/Movimento (Botão Direito / Shift)
+            dom.addEventListener('mousedown', e => {
+                isMouseDown3D = true;
+                isRightClick3D = (e.button === 2 || e.shiftKey);
+                mouseX3D = e.clientX;
+                mouseY3D = e.clientY;
+            });
+
+            dom.addEventListener('mouseup', () => { isMouseDown3D = false; isRightClick3D = false; });
+            dom.addEventListener('mouseleave', () => { isMouseDown3D = false; isRightClick3D = false; });
+
+            dom.addEventListener('mousemove', e => {
+                if (!isMouseDown3D) return;
+                const deltaX = e.clientX - mouseX3D;
+                const deltaY = e.clientY - mouseY3D;
+
+                if (isRightClick3D) {
+                    // Panorâmica / Mover Câmera 3D
+                    cameraTarget.x -= deltaX * 0.02;
+                    cameraTarget.y += deltaY * 0.02;
+                } else {
+                    // Rotação Orbit 3D
+                    cameraTheta -= deltaX * 0.008;
+                    cameraPhi = Math.max(0.1, Math.min(Math.PI / 2 - 0.05, cameraPhi - deltaY * 0.008));
+                }
+
+                mouseX3D = e.clientX;
+                mouseY3D = e.clientY;
+                updateCameraPosition();
+            });
+
+            // Zoom com a roda do mouse
+            dom.addEventListener('wheel', e => {
+                e.preventDefault();
+                zoom3D(e.deltaY > 0 ? 1.15 : 0.85);
+            }, { passive: false });
+
+            function animate() {
+                requestAnimationFrame(animate);
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                if (!container || !renderer || !camera) return;
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+        }
+
+        function updateCameraPosition() {
+            if (!camera || !cameraTarget) return;
+            camera.position.x = cameraTarget.x + cameraRadius * Math.sin(cameraPhi) * Math.sin(cameraTheta);
+            camera.position.y = cameraTarget.y + cameraRadius * Math.cos(cameraPhi);
+            camera.position.z = cameraTarget.z + cameraRadius * Math.sin(cameraPhi) * Math.cos(cameraTheta);
+            camera.lookAt(cameraTarget);
+        }
+
+        function zoom3D(factor) {
+            cameraRadius = Math.max(4, Math.min(60, cameraRadius * factor));
+            updateCameraPosition();
+        }
+
+        function centralizarCamera3D() {
+            if (walls.length === 0) {
+                resetCamera3D();
+                return;
+            }
+
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            walls.forEach(w => {
+                minX = Math.min(minX, w.p1.x, w.p2.x);
+                maxX = Math.max(maxX, w.p1.x, w.p2.x);
+                minY = Math.min(minY, w.p1.y, w.p2.y);
+                maxY = Math.max(maxY, w.p1.y, w.p2.y);
+            });
+
+            const midX = ((minX + maxX) / 2) / BASE_PIXELS_PER_METER;
+            const midZ = ((minY + maxY) / 2) / BASE_PIXELS_PER_METER;
+
+            cameraTarget.set(midX, 1.4, midZ);
+            const sizeX = (maxX - minX) / BASE_PIXELS_PER_METER;
+            const sizeZ = (maxY - minY) / BASE_PIXELS_PER_METER;
+            const maxDim = Math.max(sizeX, sizeZ, 5);
+
+            cameraRadius = maxDim * 2.2;
+            updateCameraPosition();
+        }
+
+        function resetCamera3D() {
+            cameraTarget.set(0, 1.4, 0);
+            cameraRadius = 18;
+            cameraTheta = 0.4;
+            cameraPhi = 0.7;
+            updateCameraPosition();
+        }
+
+        // RENDERIZAR CASA 3D COMPLETA
+        function update3DHouse() {
+            if (!house3DGroup || !window.THREE) return;
+
+            while (house3DGroup.children.length > 0) {
+                house3DGroup.remove(house3DGroup.children[0]);
+            }
+
+            // Piso 3D da Construção
+            const floorGeo = new THREE.PlaneGeometry(50, 50);
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, side: THREE.DoubleSide });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = Math.PI / 2;
+            floor.position.y = 0;
+            house3DGroup.add(floor);
+
+            if (walls.length === 0) return;
+
+            const wallMat = new THREE.MeshStandardMaterial({ color: 0x8a929a, roughness: 0.7 });
+            const doorMat = new THREE.MeshStandardMaterial({ color: 0x7c3aed });
+            const winMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.6 });
+
+            walls.forEach(w => {
+                const x1 = w.p1.x / BASE_PIXELS_PER_METER;
+                const z1 = w.p1.y / BASE_PIXELS_PER_METER;
+                const x2 = w.p2.x / BASE_PIXELS_PER_METER;
+                const z2 = w.p2.y / BASE_PIXELS_PER_METER;
+
+                const dx = x2 - x1;
+                const dz = z2 - z1;
+                const length = Math.sqrt(dx*dx + dz*dz);
+                const angle = Math.atan2(dz, dx);
+
+                const wallHeight = 2.8;
+                const wallThickness = 0.14;
+
+                const wallGeo = new THREE.BoxGeometry(length, wallHeight, wallThickness);
+                const wallMesh = new THREE.Mesh(wallGeo, wallMat);
+
+                const midX = (x1 + x2) / 2;
+                const midZ = (z1 + z2) / 2;
+                wallMesh.position.set(midX, wallHeight / 2, midZ);
+                wallMesh.rotation.y = -angle;
+
+                house3DGroup.add(wallMesh);
+
+                w.openings.forEach(op => {
+                    const opMat = op.tipo === 'porta' ? doorMat : winMat;
+                    const opGeo = new THREE.BoxGeometry(op.largura, op.altura, wallThickness + 0.04);
+                    const opMesh = new THREE.Mesh(opGeo, opMat);
+                    opMesh.position.set(midX, op.altura / 2 + (op.tipo === 'janela' ? 1.0 : 0), midZ);
+                    opMesh.rotation.y = -angle;
+                    house3DGroup.add(opMesh);
+                });
+            });
+
+            centralizarCamera3D();
+        }
+
+        // ==========================================
+        // CÁLCULO GERAL E RECALCULO DE MÉTRICAS
+        // ==========================================
+        function recalcularTudo() {
+            redraw2DCad();
+
+            let perimetroTotal = 0;
+            let totalEsquadriasArea = 0;
+            let totalQtdEsquadrias = 0;
+            const listContainer = document.getElementById('wallListContainer');
+            listContainer.innerHTML = '';
+
+            if (walls.length === 0) {
+                listContainer.innerHTML = `<p class="empty-list-msg">Nenhuma parede desenhada ainda. Clique na planta acima para criar as paredes a cada 2 cliques!</p>`;
+            } else {
+                walls.forEach((w, index) => {
+                    perimetroTotal += w.lengthMeters;
+                    
+                    let openingsText = [];
+                    w.openings.forEach(op => {
+                        totalEsquadriasArea += op.area;
+                        totalQtdEsquadrias++;
+                        openingsText.push(`${op.nome} (${op.largura}m)`);
+                    });
+
+                    const wallItem = document.createElement('div');
+                    wallItem.className = 'wall-item';
+                    wallItem.innerHTML = `
+                        <div class="wall-item-header">
+                            <strong>Parede ${index+1}</strong>
+                            <span class="wall-len">${w.lengthMeters} metros</span>
+                        </div>
+                        <div class="wall-item-details">
+                            <span>Esquadrias: ${openingsText.length > 0 ? openingsText.join(', ') : 'Nenhuma'}</span>
+                            <button type="button" class="btn-del-wall" onclick="removerParede(${w.id})"><i class="fa-solid fa-xmark"></i> Excluir</button>
+                        </div>
+                    `;
+                    listContainer.appendChild(wallItem);
+                });
+            }
+
+            const alturaParede = 2.8;
+            const areaBruta = perimetroTotal * alturaParede;
+            const areaLiquida = Math.max(0, areaBruta - totalEsquadriasArea);
+            const blocosExatos = Math.ceil(areaLiquida * 12.5);
+            const blocosFinais = Math.ceil(blocosExatos * 1.10);
+            const argamassaSacos = Math.ceil(areaLiquida * 0.4);
+
+            document.getElementById('lblQtdParedes').innerText = walls.length;
+            document.getElementById('lblMetrosParedes').innerText = perimetroTotal.toFixed(2) + ' m';
+            document.getElementById('lblQtdEsquadrias').innerText = totalQtdEsquadrias;
+
+            document.getElementById('resTotalParedes').innerText = walls.length;
+            document.getElementById('resPerimetroTotal').innerText = perimetroTotal.toFixed(2) + ' m';
+            document.getElementById('resAreaBruta').innerText = areaBruta.toFixed(2) + ' m²';
+            document.getElementById('resAreaVaos').innerText = totalEsquadriasArea.toFixed(2) + ' m²';
+            document.getElementById('resAreaLiquida').innerText = areaLiquida.toFixed(2) + ' m²';
+            document.getElementById('resBlocosExatos').innerText = blocosExatos + ' unidades';
+            document.getElementById('resBlocosFinais').innerText = blocosFinais + ' unidades';
+            document.getElementById('resArgamassa').innerText = argamassaSacos + ' sacos (20kg)';
+
+            document.getElementById('lbl3DParedes').innerText = walls.length;
+            document.getElementById('lbl3DBlocos').innerText = blocosFinais + ' un';
+
+            update3DHouse();
+
+            const msg = `Ol%C3%A1!%20Desenhei%20meu%20projeto%20parede%20por%20parede%20no%20site%20da%20Pra%20Toda%20Vida:%0A-%20Total%20de%20Paredes:%20${walls.length}%0A-%20Per%C3%ADmetro%20Total:%20${perimetroTotal.toFixed(2)}m%0A-%20Esquadrias:%20${totalQtdEsquadrias}%0A-%20%C3%81rea%20L%C3%ADquida:%20${areaLiquida.toFixed(2)}m%C2%B2%0A-%20Total%20de%20Blocos%20Recomendados:%20${blocosFinais}%20unidades%0A-%20Argamassa:%20${argamassaSacos}%20sacos%0AGostaria%20de%20solicitar%20um%20or%C3%A7amento!`;
+            document.getElementById('btnWhatsappCalc').href = `https://wa.me/5571983834217?text=${msg}`;
+        }
+
+        function removerParede(id) {
+            walls = walls.filter(w => w.id !== id);
+            recalcularTudo();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            init3D();
+            recalcularTudo();
+        });
+    </script>
+</body>
+</html>
