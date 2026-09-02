@@ -474,7 +474,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
 <header class="top">
   <div class="wrap top-in">
     <a href="#inicio" class="marca" data-nav>
-      <img src="logo.png" alt="Pra Toda Vida" onerror="this.remove()">
+      <img class="logo-img" alt="Pra Toda Vida" data-slot="topo">
       <span class="marca-txt">Pra Toda Vida<small>Blocos &amp; Construtora</small></span>
     </a>
     <button class="hamb" id="hamb" aria-label="Abrir menu" aria-expanded="false" aria-controls="menu">
@@ -1196,7 +1196,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
         </div>
 
         <div class="cta-card">
-          <span class="placa"><img src="logo.png" alt="Pra Toda Vida" onerror="this.closest('.placa').remove()"></span>
+          <span class="placa"><img class="logo-img" alt="Pra Toda Vida" data-slot="cartao"></span>
           <h3 style="color:#fff">Peça sua cotação</h3>
           <p>Diga o produto ou o tipo de obra e a região. Respondemos com preço e prazo.</p>
           <span class="tel">(71) 98383-4217</span>
@@ -1204,6 +1204,87 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
             <svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-wa"></use></svg> Abrir conversa no WhatsApp
           </a>
           <a class="btn btn-claro" href="#calculadora" data-nav>Calcular blocos antes de pedir</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TROCAR A LOGO (fora do menu, acesse por #logo)
+     ============================================================ -->
+<section class="view" id="logo">
+  <div class="secao">
+    <div class="wrap" style="max-width:900px">
+      <div class="cab">
+        <span class="eyebrow">Configuração da marca</span>
+        <h2>Trocar a logo do site</h2>
+        <p>Escolha o arquivo para ver como a logo fica no cabeçalho, no rodapé e no cartão de cotação. A troca aqui vale só para conferência no seu navegador: para publicar, salve o arquivo no repositório com o nome indicado no final.</p>
+      </div>
+
+      <div class="calc-card">
+        <div class="drop" id="dropLogo" role="button" tabindex="0" aria-label="Escolher arquivo da logo">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-imagem"></use></svg>
+          <h3>Clique aqui ou arraste a imagem da logo</h3>
+          <p>PNG com fundo transparente dá o melhor resultado. SVG, JPG e WEBP também funcionam.</p>
+          <span class="dica">Recomendado: altura mínima de 120 px</span>
+          <input type="file" id="arquivoLogo" accept="image/png,image/svg+xml,image/jpeg,image/webp">
+        </div>
+
+        <div class="aviso aviso-erro" id="logoErro" role="alert">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-alerta"></use></svg><span id="logoErroTxt"></span>
+        </div>
+        <div class="aviso aviso-ok" id="logoOk">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check-c"></use></svg><span id="logoOkTxt"></span>
+        </div>
+
+        <div class="escala-linha">
+          <label for="logoAltura">Altura no cabeçalho:</label>
+          <input type="number" id="logoAltura" min="24" max="90" step="1" value="44" style="width:90px"> px
+          <label style="display:inline-flex;align-items:center;gap:.45rem;margin-left:1rem">
+            <input type="checkbox" id="logoNome" checked> Mostrar o nome escrito ao lado da logo
+          </label>
+          <button class="btn btn-linha btn-sm" id="logoReset">Voltar ao arquivo publicado</button>
+        </div>
+      </div>
+
+      <div class="calc-card">
+        <h3><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-lupa"></use></svg> Como vai aparecer</h3>
+        <p class="sub">Os três lugares onde a logo entra no site.</p>
+
+        <div style="border:1px solid var(--linha);border-radius:10px;overflow:hidden">
+          <div style="background:#fff;padding:1rem 1.2rem;border-bottom:1px solid var(--linha);
+                      display:flex;align-items:center;gap:.6rem">
+            <img class="logo-img" alt="" data-slot="previa-claro">
+            <span class="marca-txt">Pra Toda Vida<small>Blocos &amp; Construtora</small></span>
+            <span style="margin-left:auto;font-size:.78rem;color:var(--texto-2)">cabeçalho</span>
+          </div>
+          <div style="background:var(--graf-900);padding:1.2rem;display:flex;align-items:center;gap:.7rem">
+            <span class="placa"><img class="logo-img" alt="" data-slot="previa-escuro"></span>
+            <span class="marca-txt" style="color:#fff">Pra Toda Vida<small style="color:#8b98a5">Blocos &amp; Construtora</small></span>
+            <span style="margin-left:auto;font-size:.78rem;color:#8b98a5">rodapé</span>
+          </div>
+          <div style="background:var(--azul-700);padding:1.4rem;text-align:center">
+            <span class="placa"><img class="logo-img" alt="" data-slot="previa-azul" style="height:64px"></span>
+            <p style="color:#cfe0f7;font-size:.82rem;margin:.6rem auto 0">cartão de cotação</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-card" style="background:var(--areia)">
+        <h3><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check-c"></use></svg> Para publicar de verdade</h3>
+        <ol style="display:grid;gap:.7rem;margin:1rem 0 1.2rem;padding-left:0">
+          <li style="display:flex;gap:.8rem"><b style="font-family:var(--disp);color:var(--azul-700);font-size:1.3rem;line-height:1">1</b><span style="font-size:.95rem">Renomeie o arquivo da sua logo para <b id="nomeArquivoSug">logo.png</b>.</span></li>
+          <li style="display:flex;gap:.8rem"><b style="font-family:var(--disp);color:var(--azul-700);font-size:1.3rem;line-height:1">2</b><span style="font-size:.95rem">Envie para a raiz do repositório do GitHub, no mesmo lugar do <b>index.html</b>.</span></li>
+          <li style="display:flex;gap:.8rem"><b style="font-family:var(--disp);color:var(--azul-700);font-size:1.3rem;line-height:1">3</b><span style="font-size:.95rem">Se você mudou a altura ou o nome ao lado, copie o trecho abaixo e substitua a linha <b>var LOGO = {...}</b> no começo do <b>&lt;script&gt;</b> do index.html.</span></li>
+        </ol>
+        <pre id="logoSnippet" style="background:var(--graf-900);color:#c8d0d8;padding:1rem;border-radius:9px;
+             overflow-x:auto;font-size:.86rem;line-height:1.6"></pre>
+        <div style="display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem">
+          <button class="btn btn-azul btn-sm" id="logoCopiar">
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-download"></use></svg> Copiar o trecho
+          </button>
+          <a class="btn btn-linha btn-sm" href="#inicio" data-nav>Voltar ao site</a>
         </div>
       </div>
     </div>
@@ -1220,7 +1301,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
     <div class="rodape-in">
       <div>
         <div class="marca" style="margin-bottom:.9rem">
-          <span class="placa"><img src="logo.png" alt="Pra Toda Vida" onerror="this.closest('.placa').remove()"></span>
+          <span class="placa"><img class="logo-img" alt="Pra Toda Vida" data-slot="rodape"></span>
           <span class="marca-txt" style="color:#fff">Pra Toda Vida<small style="color:#8b98a5">Blocos &amp; Construtora</small></span>
         </div>
         <p>Fábrica de blocos de cimento e construtora civil. Produção própria, entrega com frota própria e obra executada por equipe própria.</p>
@@ -1248,7 +1329,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
     </div>
     <div class="rodape-fim">
       <span>&copy; <span id="ano">2026</span> Pra Toda Vida. Todos os direitos reservados.</span>
-      <span>Quantidades da calculadora são estimativas e exigem conferência no projeto.</span>
+      <span>Quantidades da calculadora são estimativas e exigem conferência no projeto. <a href="#logo" data-nav style="text-decoration:underline">Trocar a logo</a></span>
     </div>
   </div>
 </footer>
@@ -1260,20 +1341,46 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
 <script>
 "use strict";
 /* ============================================================
-   0. AJUSTE DA MARCA
-   Se o arquivo logo.png já traz o nome "Pra Toda Vida" escrito,
-   mude a linha abaixo para false: o nome ao lado da imagem
-   deixa de aparecer e fica só a logo.
+   0. CAMPO DA LOGO
+   ------------------------------------------------------------
+   Altere só estas três linhas para trocar a logo do site.
+     arquivo     caminho ou endereço da imagem
+     altura      altura em pixels no cabeçalho
+     mostrarNome false esconde o nome escrito ao lado da imagem
+   Para conferir antes de publicar, abra o site em #logo.
    ============================================================ */
-var MOSTRAR_NOME_AO_LADO_DA_LOGO = true;
-(function(){
-  if(MOSTRAR_NOME_AO_LADO_DA_LOGO) return;
-  document.addEventListener('DOMContentLoaded',function(){
-    document.querySelectorAll('.marca-txt').forEach(function(el){
-      var img=el.parentNode.querySelector('img');
-      if(img) el.style.display='none';
+var LOGO = {
+  arquivo: 'logo.png',
+  altura: 44,
+  mostrarNome: true
+};
+
+var MARCA=(function(){
+  function aplica(src,altura,mostrarNome){
+    document.querySelectorAll('img.logo-img').forEach(function(img){
+      var slot=img.getAttribute('data-slot')||'';
+      img.onerror=function(){
+        img.style.visibility='hidden';
+        var placa=img.closest('.placa');
+        if(placa) placa.style.display='none';
+      };
+      img.onload=function(){
+        img.style.visibility='visible';
+        var placa=img.closest('.placa');
+        if(placa) placa.style.display='inline-flex';
+      };
+      if(slot==='topo'||slot==='previa-claro'||slot==='rodape'||slot==='previa-escuro'){
+        img.style.height=altura+'px';
+      }
+      img.src=src;
     });
-  });
+    document.querySelectorAll('.marca-txt').forEach(function(el){
+      el.style.display=mostrarNome?'':'none';
+    });
+  }
+  function padrao(){ aplica(LOGO.arquivo,LOGO.altura,LOGO.mostrarNome); }
+  document.addEventListener('DOMContentLoaded',padrao);
+  return {aplica:aplica,padrao:padrao};
 })();
 
 /* ============================================================
@@ -2139,6 +2246,104 @@ var CALC=(function(){
   return {
     aoAbrir:function(){ if(S.base) ajustaCanvas(); }
   };
+})();
+/* ============================================================
+   5. PAINEL DE TROCA DA LOGO (#logo)
+   ============================================================ */
+(function(){
+  document.addEventListener('DOMContentLoaded',function(){
+    var input=document.getElementById('arquivoLogo');
+    if(!input) return;
+    var drop=document.getElementById('dropLogo');
+    var alturaEl=document.getElementById('logoAltura');
+    var nomeEl=document.getElementById('logoNome');
+    var erro=document.getElementById('logoErro'), erroTxt=document.getElementById('logoErroTxt');
+    var okBox=document.getElementById('logoOk'), okTxt=document.getElementById('logoOkTxt');
+    var pre=document.getElementById('logoSnippet');
+    var sugestao=document.getElementById('nomeArquivoSug');
+    var urlAtual=null, arquivoAtual=LOGO.arquivo;
+
+    alturaEl.value=LOGO.altura;
+    nomeEl.checked=LOGO.mostrarNome;
+
+    function snippet(){
+      pre.textContent='var LOGO = {\n'+
+        "  arquivo: '"+arquivoAtual+"',\n"+
+        '  altura: '+(parseInt(alturaEl.value,10)||44)+',\n'+
+        '  mostrarNome: '+(nomeEl.checked?'true':'false')+'\n};';
+      sugestao.textContent=arquivoAtual;
+    }
+    function pinta(){
+      MARCA.aplica(urlAtual||LOGO.arquivo,parseInt(alturaEl.value,10)||44,nomeEl.checked);
+      snippet();
+    }
+    function falha(m){erroTxt.innerHTML=m;erro.classList.add('on');okBox.classList.remove('on');}
+    function certo(m){okTxt.innerHTML=m;okBox.classList.add('on');erro.classList.remove('on');}
+
+    function recebe(file){
+      if(!file) return;
+      if(!/^image\//.test(file.type)&&!/\.(png|jpe?g|svg|webp)$/i.test(file.name)){
+        falha('Formato não suportado. Envie PNG, SVG, JPG ou WEBP.');return;
+      }
+      if(file.size>5*1024*1024){
+        falha('Arquivo de '+(file.size/1048576).toFixed(1)+' MB. Reduza para menos de 5 MB antes de publicar.');return;
+      }
+      if(urlAtual) URL.revokeObjectURL(urlAtual);
+      urlAtual=URL.createObjectURL(file);
+      var ext=(file.name.match(/\.[a-z0-9]+$/i)||['.png'])[0].toLowerCase();
+      arquivoAtual='logo'+(ext==='.jpeg'?'.jpg':ext);
+      pinta();
+      var img=new Image();
+      img.onload=function(){
+        var alerta = img.naturalHeight<120
+          ? ' Atenção: a imagem tem só '+img.naturalHeight+' px de altura e vai sair serrilhada. Use uma versão maior.'
+          : '';
+        certo('<b>'+file.name+'</b> carregado ('+img.naturalWidth+'×'+img.naturalHeight+' px).'+
+              ' Renomeie para <b>'+arquivoAtual+'</b> e envie para a raiz do repositório.'+alerta);
+      };
+      img.onerror=function(){falha('Não foi possível ler a imagem. Tente outro arquivo.');};
+      img.src=urlAtual;
+    }
+
+    drop.addEventListener('click',function(){input.click();});
+    drop.addEventListener('keydown',function(e){
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();input.click();}
+    });
+    input.addEventListener('change',function(e){
+      recebe(e.target.files&&e.target.files[0]); e.target.value='';
+    });
+    ['dragenter','dragover'].forEach(function(t){
+      drop.addEventListener(t,function(e){e.preventDefault();drop.classList.add('sobre');});
+    });
+    ['dragleave','dragend','drop'].forEach(function(t){
+      drop.addEventListener(t,function(){drop.classList.remove('sobre');});
+    });
+    drop.addEventListener('drop',function(e){
+      e.preventDefault();
+      recebe(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]);
+    });
+
+    alturaEl.addEventListener('input',pinta);
+    nomeEl.addEventListener('change',pinta);
+    document.getElementById('logoReset').addEventListener('click',function(){
+      if(urlAtual){URL.revokeObjectURL(urlAtual);urlAtual=null;}
+      arquivoAtual=LOGO.arquivo;
+      alturaEl.value=LOGO.altura; nomeEl.checked=LOGO.mostrarNome;
+      pinta();
+      certo('Voltou para o arquivo publicado: <b>'+LOGO.arquivo+'</b>.');
+    });
+    document.getElementById('logoCopiar').addEventListener('click',function(){
+      var t=pre.textContent;
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(t).then(function(){certo('Trecho copiado.');},
+          function(){falha('O navegador bloqueou a cópia. Selecione o texto e copie na mão.');});
+      }else{
+        falha('Este navegador não permite copiar automaticamente. Selecione o texto e copie na mão.');
+      }
+    });
+
+    snippet();
+  });
 })();
 </script>
 </body>
