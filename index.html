@@ -92,7 +92,10 @@ p{max-width:68ch}
   backdrop-filter:blur(8px);border-bottom:1px solid var(--linha)}
 .top-in{display:flex;align-items:center;gap:1rem;min-height:70px}
 .marca{display:flex;align-items:center;gap:.6rem;flex:0 0 auto}
-.marca img{height:44px;width:auto}
+.marca img{height:44px;width:auto;object-fit:contain}
+.placa{display:inline-flex;align-items:center;justify-content:center;
+  background:#fff;border-radius:10px;padding:7px 11px;flex:0 0 auto}
+.placa img{height:42px;width:auto;object-fit:contain;display:block}
 .marca-txt{font-family:var(--disp);font-weight:700;font-size:1.32rem;line-height:.95;color:var(--azul-700)}
 .marca-txt small{display:block;font-family:var(--corpo);font-size:.62rem;font-weight:600;
   letter-spacing:.11em;color:var(--texto-2);text-transform:uppercase}
@@ -389,7 +392,8 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
 .info p{font-size:.95rem;color:var(--texto-2)}
 .cta-card{background:var(--azul-700);color:#fff;border-radius:var(--r);padding:2rem;text-align:center;
   display:flex;flex-direction:column;align-items:center;gap:.7rem}
-.cta-card img{height:64px;width:auto;margin-bottom:.4rem;filter:brightness(0) invert(1)}
+.cta-card .placa{margin-bottom:.5rem}
+.cta-card .placa img{height:64px}
 .cta-card p{color:#cfe0f7;font-size:.95rem}
 .cta-card .btn{width:100%;margin-top:.6rem}
 .cta-card .tel{font-family:var(--disp);font-size:1.9rem;letter-spacing:.01em}
@@ -405,7 +409,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
 
 .flut{position:fixed;right:18px;bottom:18px;z-index:70;display:flex;align-items:center;
   justify-content:center;width:58px;height:58px;border-radius:50%;background:var(--wa);
-  color:#08301b;box-shadow:0 8px 24px rgba(37,211,102,.45);transition:transform .18s}
+  color:#fff;box-shadow:0 8px 24px rgba(37,211,102,.45);transition:transform .18s}
 .flut:hover{transform:scale(1.08)}
 .flut .i{width:30px;height:30px}
 @media print{.top,.flut{display:none}}
@@ -419,7 +423,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
 <svg class="sr" aria-hidden="true"><defs>
 <g id="ic-menu"><path d="M3 6h18M3 12h18M3 18h18"/></g>
 <g id="ic-x"><path d="M6 6l12 12M18 6L6 18"/></g>
-<g id="ic-wa"><path d="M20.5 11.9a8.5 8.5 0 01-12.6 7.4L3.5 20.5l1.2-4.3A8.5 8.5 0 1120.5 11.9z"/><path d="M9 9.3c0 3 2.4 5.4 5.4 5.4.6 0 1-.4 1-1v-.6l-1.7-.7-.8.8a4.6 4.6 0 01-2.2-2.2l.8-.8-.7-1.7H10c-.6 0-1 .4-1 1z"/></g>
+<g id="ic-wa"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.966 1.164-.198.199-.396.223-.693.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.347-.446.52-.668.174-.223.232-.383.347-.643.115-.26.058-.482-.017-.681-.075-.198-.446-1.077-.61-1.475-.164-.397-.33-.397-.53-.397-.198 0-.446-.026-.694-.026-.247 0-.644.075-.98.446-.336.372-1.28 1.25-1.28 3.05 0 1.799 1.31 3.535 1.494 3.782.181.248 2.6 3.972 6.298 5.428 3.698 1.456 3.698.97 4.365.907.667-.062 2.157-.881 2.462-1.732.305-.851.305-1.58.213-1.732-.09-.153-.336-.244-.633-.393m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.8842.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></g>
 <g id="ic-fone"><path d="M21.5 16.8v2.6a1.8 1.8 0 01-2 1.8 17.8 17.8 0 01-7.8-2.8 17.5 17.5 0 01-5.4-5.4A17.8 17.8 0 013.5 5.2 1.8 1.8 0 015.3 3.2h2.6a1.8 1.8 0 011.8 1.6c.1.8.3 1.6.5 2.4a1.8 1.8 0 01-.4 1.9l-1 1a14.4 14.4 0 005.4 5.4l1-1a1.8 1.8 0 011.9-.4c.8.2 1.6.4 2.4.5a1.8 1.8 0 011.6 1.8z"/></g>
 <g id="ic-mail"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="M2.7 6.3l9.3 6.5 9.3-6.5"/></g>
 <g id="ic-pin"><path d="M12 21.5s6.8-6 6.8-10.8a6.8 6.8 0 10-13.6 0C5.2 15.5 12 21.5 12 21.5z"/><circle cx="12" cy="10.6" r="2.5"/></g>
@@ -470,11 +474,11 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
 <header class="top">
   <div class="wrap top-in">
     <a href="#inicio" class="marca" data-nav>
-      <img src="logo.png" alt="" onerror="this.remove()">
+      <img src="logo.png" alt="Pra Toda Vida" onerror="this.remove()">
       <span class="marca-txt">Pra Toda Vida<small>Blocos &amp; Construtora</small></span>
     </a>
     <button class="hamb" id="hamb" aria-label="Abrir menu" aria-expanded="false" aria-controls="menu">
-      <svg class="i" aria-hidden="true"><use href="#ic-menu"></use></svg>
+      <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-menu"></use></svg>
     </button>
     <nav class="menu" id="menu">
       <a href="#inicio" data-nav>Início</a>
@@ -484,7 +488,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
       <a href="#construtora" data-nav>Construtora</a>
       <a href="#sobre" data-nav>Sobre</a>
       <a href="#contato" class="btn btn-wa" data-nav>
-        <svg class="i i-fill" aria-hidden="true"><use href="#ic-wa"></use></svg> Fazer orçamento
+        <svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-wa"></use></svg> Fazer orçamento
       </a>
     </nav>
   </div>
@@ -501,17 +505,17 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
     <div class="wrap hero-in">
       <div>
         <span class="selo">
-          <svg class="i" aria-hidden="true"><use href="#ic-fabrica"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-fabrica"></use></svg>
           Fábrica própria em Salvador e região
         </span>
         <h1>Bloco de cimento de verdade.<em>Obra que não desanda.</em></h1>
         <p class="hero-lead">Produzimos blocos estruturais e de vedação com alta prensagem e cura controlada, e executamos a obra inteira, do terreno às chaves. Compre direto da fábrica e corte o intermediário.</p>
         <div class="hero-btns">
           <a class="btn btn-wa" target="_blank" rel="noopener" href="https://wa.me/5571983834217?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20um%20or%C3%A7amento.">
-            <svg class="i i-fill" aria-hidden="true"><use href="#ic-wa"></use></svg> Pedir orçamento no WhatsApp
+            <svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-wa"></use></svg> Pedir orçamento no WhatsApp
           </a>
           <a class="btn btn-claro" href="#calculadora" data-nav>
-            <svg class="i" aria-hidden="true"><use href="#ic-calc"></use></svg> Calcular blocos pela planta
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-calc"></use></svg> Calcular blocos pela planta
           </a>
         </div>
         <div class="hero-nums">
@@ -563,19 +567,19 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
     <div class="wrap">
       <div class="grade g4">
         <div class="vantagem">
-          <svg class="i" aria-hidden="true"><use href="#ic-fabrica"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-fabrica"></use></svg>
           <div><h3>Direto da fábrica</h3><p>Sem revenda no meio do caminho. O preço que você paga é o da produção.</p></div>
         </div>
         <div class="vantagem">
-          <svg class="i" aria-hidden="true"><use href="#ic-escudo"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-escudo"></use></svg>
           <div><h3>Resistência aferida</h3><p>Prensagem alta e cura controlada, peça a peça, lote a lote.</p></div>
         </div>
         <div class="vantagem">
-          <svg class="i" aria-hidden="true"><use href="#ic-caminhao"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-caminhao"></use></svg>
           <div><h3>Entrega com frota própria</h3><p>Descarga no canteiro, na data combinada com você.</p></div>
         </div>
         <div class="vantagem">
-          <svg class="i" aria-hidden="true"><use href="#ic-capacete"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-capacete"></use></svg>
           <div><h3>Obra executada</h3><p>Equipe própria para residencial, comercial e reforma.</p></div>
         </div>
       </div>
@@ -593,12 +597,12 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
             <p>Você marca as paredes com dois cliques sobre o próprio desenho, define a escala do projeto, insere portas e janelas, e o site devolve metragem, blocos e argamassa. A maquete 3D é montada na hora.</p>
           </div>
           <ul class="checks" style="margin-bottom:1.6rem">
-            <li><svg class="i" aria-hidden="true"><use href="#ic-check"></use></svg><span>Aceita PDF, PNG e JPG, inclusive plantas com várias páginas</span></li>
-            <li><svg class="i" aria-hidden="true"><use href="#ic-check"></use></svg><span>Escala real pela cota do desenho, não por estimativa</span></li>
-            <li><svg class="i" aria-hidden="true"><use href="#ic-check"></use></svg><span>Nada é enviado para servidor: o cálculo roda no seu navegador</span></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check"></use></svg><span>Aceita PDF, PNG e JPG, inclusive plantas com várias páginas</span></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check"></use></svg><span>Escala real pela cota do desenho, não por estimativa</span></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check"></use></svg><span>Nada é enviado para servidor: o cálculo roda no seu navegador</span></li>
           </ul>
           <a class="btn btn-azul" href="#calculadora" data-nav>
-            <svg class="i" aria-hidden="true"><use href="#ic-upload"></use></svg> Abrir a calculadora
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-upload"></use></svg> Abrir a calculadora
           </a>
         </div>
         <div class="card" style="background:var(--graf-900);border-color:var(--graf-700);color:#fff">
@@ -632,34 +636,34 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
       <div class="cab"><span class="eyebrow">Navegue</span><h2>Para onde você quer ir?</h2></div>
       <div class="grade g3">
         <a class="atalho" href="#blocos" data-nav>
-          <svg class="i" aria-hidden="true"><use href="#ic-cubos"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cubos"></use></svg>
           <h3>Catálogo de blocos</h3><p>Estrutural, vedação, meio bloco e canaletas, com medidas e uso de cada peça.</p>
-          <span class="ir">Ver catálogo <svg class="i" aria-hidden="true"><use href="#ic-seta"></use></svg></span>
+          <span class="ir">Ver catálogo <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-seta"></use></svg></span>
         </a>
         <a class="atalho" href="#calculadora" data-nav>
-          <svg class="i" aria-hidden="true"><use href="#ic-calc"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-calc"></use></svg>
           <h3>Calculadora de planta</h3><p>Anexe o PDF, marque as paredes e veja blocos, argamassa e maquete 3D.</p>
-          <span class="ir">Calcular agora <svg class="i" aria-hidden="true"><use href="#ic-seta"></use></svg></span>
+          <span class="ir">Calcular agora <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-seta"></use></svg></span>
         </a>
         <a class="atalho" href="#comparativo" data-nav>
-          <svg class="i" aria-hidden="true"><use href="#ic-camadas"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-camadas"></use></svg>
           <h3>Bloco x cerâmica</h3><p>Comparação item por item: argamassa, mão de obra, entulho e prazo.</p>
-          <span class="ir">Ver comparação <svg class="i" aria-hidden="true"><use href="#ic-seta"></use></svg></span>
+          <span class="ir">Ver comparação <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-seta"></use></svg></span>
         </a>
         <a class="atalho" href="#construtora" data-nav>
-          <svg class="i" aria-hidden="true"><use href="#ic-predio"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-predio"></use></svg>
           <h3>Serviços de construtora</h3><p>Casas, galpões, reformas, fundações e muros de arrimo.</p>
-          <span class="ir">Ver serviços <svg class="i" aria-hidden="true"><use href="#ic-seta"></use></svg></span>
+          <span class="ir">Ver serviços <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-seta"></use></svg></span>
         </a>
         <a class="atalho" href="#sobre" data-nav>
-          <svg class="i" aria-hidden="true"><use href="#ic-capacete"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-capacete"></use></svg>
           <h3>Sobre a empresa</h3><p>Como trabalhamos, o que controlamos na produção e o que garantimos.</p>
-          <span class="ir">Conhecer <svg class="i" aria-hidden="true"><use href="#ic-seta"></use></svg></span>
+          <span class="ir">Conhecer <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-seta"></use></svg></span>
         </a>
         <a class="atalho" href="#contato" data-nav>
-          <svg class="i" aria-hidden="true"><use href="#ic-fone"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-fone"></use></svg>
           <h3>Contato e orçamento</h3><p>WhatsApp (71) 98383-4217, e-mail e área de atendimento.</p>
-          <span class="ir">Falar com a equipe <svg class="i" aria-hidden="true"><use href="#ic-seta"></use></svg></span>
+          <span class="ir">Falar com a equipe <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-seta"></use></svg></span>
         </a>
       </div>
     </div>
@@ -770,7 +774,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
 
       <!-- estimativa rápida -->
       <div class="calc-card" style="margin-top:2.4rem;background:var(--areia)">
-        <h3><svg class="i" aria-hidden="true"><use href="#ic-regua"></use></svg> Estimativa rápida por metragem</h3>
+        <h3><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-regua"></use></svg> Estimativa rápida por metragem</h3>
         <p class="sub">Se você ainda não tem a planta em PDF, informe a metragem de parede e a altura do pé-direito.</p>
         <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-end">
           <label style="display:grid;gap:.3rem;font-size:.85rem;font-weight:600">Metros lineares de parede
@@ -794,7 +798,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
       </div>
 
       <div style="margin-top:2rem;display:flex;flex-wrap:wrap;gap:.9rem">
-        <a class="btn btn-obra" href="#calculadora" data-nav><svg class="i" aria-hidden="true"><use href="#ic-calc"></use></svg> Calcular pela planta em PDF</a>
+        <a class="btn btn-obra" href="#calculadora" data-nav><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-calc"></use></svg> Calcular pela planta em PDF</a>
         <a class="btn btn-linha" href="#comparativo" data-nav>Comparar com tijolo cerâmico</a>
       </div>
     </div>
@@ -816,7 +820,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
       <!-- 1. UPLOAD -->
       <div class="calc-card">
         <div class="drop" id="drop" role="button" tabindex="0" aria-label="Anexar planta em PDF ou imagem">
-          <svg class="i" aria-hidden="true"><use href="#ic-upload"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-upload"></use></svg>
           <h3>Anexe a planta: clique aqui ou arraste o arquivo</h3>
           <p>Use a planta baixa do projeto. Se o PDF tiver várias páginas, você escolhe a página depois.</p>
           <span class="dica">PDF, PNG ou JPG — até 40 MB</span>
@@ -824,18 +828,18 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
         </div>
 
         <div class="aviso aviso-erro" id="avisoErro" role="alert">
-          <svg class="i" aria-hidden="true"><use href="#ic-alerta"></use></svg><span id="avisoErroTxt"></span>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-alerta"></use></svg><span id="avisoErroTxt"></span>
         </div>
         <div class="aviso aviso-ok" id="avisoOk">
-          <svg class="i" aria-hidden="true"><use href="#ic-check-c"></use></svg><span id="avisoOkTxt"></span>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check-c"></use></svg><span id="avisoOkTxt"></span>
         </div>
 
         <div id="acoesArquivo" style="display:none;margin-top:1rem;gap:.6rem;flex-wrap:wrap">
           <a class="btn btn-linha btn-sm" id="abrirAnexo" target="_blank" rel="noopener">
-            <svg class="i" aria-hidden="true"><use href="#ic-pdf"></use></svg> Abrir o anexo em outra aba
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-pdf"></use></svg> Abrir o anexo em outra aba
           </a>
           <button class="btn btn-linha btn-sm" id="trocarArquivo">
-            <svg class="i" aria-hidden="true"><use href="#ic-upload"></use></svg> Trocar arquivo
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-upload"></use></svg> Trocar arquivo
           </button>
         </div>
       </div>
@@ -844,57 +848,57 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
       <div class="calc-card" id="cardFerramentas" style="display:none">
         <div class="barra">
           <div>
-            <h3><svg class="i" aria-hidden="true"><use href="#ic-regua"></use></svg> Ferramentas de desenho</h3>
+            <h3><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-regua"></use></svg> Ferramentas de desenho</h3>
             <span class="modo">Ferramenta ativa: <b id="lblModo">traçar parede</b></span>
           </div>
           <div style="display:flex;flex-wrap:wrap;gap:.6rem">
             <div class="ctrl">
               <span class="rot">Página</span>
-              <button class="ib" id="pgAnt" aria-label="Página anterior"><svg class="i" aria-hidden="true"><use href="#ic-esq"></use></svg></button>
+              <button class="ib" id="pgAnt" aria-label="Página anterior"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-esq"></use></svg></button>
               <b id="lblPagina">1 / 1</b>
-              <button class="ib" id="pgProx" aria-label="Próxima página"><svg class="i" aria-hidden="true"><use href="#ic-dir"></use></svg></button>
+              <button class="ib" id="pgProx" aria-label="Próxima página"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-dir"></use></svg></button>
             </div>
             <div class="ctrl">
               <span class="rot">Zoom</span>
-              <button class="ib" id="zoomMenos" aria-label="Reduzir zoom"><svg class="i" aria-hidden="true"><use href="#ic-menos"></use></svg></button>
+              <button class="ib" id="zoomMenos" aria-label="Reduzir zoom"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-menos"></use></svg></button>
               <b id="lblZoom">100%</b>
-              <button class="ib" id="zoomMais" aria-label="Aumentar zoom"><svg class="i" aria-hidden="true"><use href="#ic-mais"></use></svg></button>
-              <button class="ib" id="zoomReset" aria-label="Ajustar zoom à tela"><svg class="i" aria-hidden="true"><use href="#ic-ajusta"></use></svg></button>
+              <button class="ib" id="zoomMais" aria-label="Aumentar zoom"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-mais"></use></svg></button>
+              <button class="ib" id="zoomReset" aria-label="Ajustar zoom à tela"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-ajusta"></use></svg></button>
             </div>
           </div>
         </div>
 
         <div class="ferr">
           <button class="tool on" data-tool="parede">
-            <svg class="i" aria-hidden="true"><use href="#ic-cubos"></use></svg>
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cubos"></use></svg>
             <b>Parede</b><small>Dois cliques, com ímã nos cantos</small>
           </button>
           <button class="tool" data-tool="porta">
-            <svg class="i" aria-hidden="true"><use href="#ic-porta"></use></svg>
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-porta"></use></svg>
             <b>Porta</b><small>0,90 × 2,10 m sobre a parede</small>
           </button>
           <button class="tool" data-tool="janela">
-            <svg class="i" aria-hidden="true"><use href="#ic-janela"></use></svg>
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-janela"></use></svg>
             <b>Janela</b><small>1,20 × 1,20 m sobre a parede</small>
           </button>
           <button class="tool" data-tool="basculante">
-            <svg class="i" aria-hidden="true"><use href="#ic-janela"></use></svg>
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-janela"></use></svg>
             <b>Basculante</b><small>0,60 × 0,60 m sobre a parede</small>
           </button>
           <button class="tool" data-tool="vidro">
-            <svg class="i" aria-hidden="true"><use href="#ic-vidro"></use></svg>
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-vidro"></use></svg>
             <b>Painel de vidro</b><small>1,00 × 2,00 m sobre a parede</small>
           </button>
           <button class="tool tool-cal" data-tool="calibrar">
-            <svg class="i" aria-hidden="true"><use href="#ic-regua"></use></svg>
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-regua"></use></svg>
             <b>Calibrar escala</b><small>Clique nas duas pontas de uma cota conhecida</small>
           </button>
           <button class="tool tool-neutra" id="btnDesfazer">
-            <svg class="i" aria-hidden="true"><use href="#ic-desfaz"></use></svg>
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-desfaz"></use></svg>
             <b>Desfazer</b><small>Remove a última parede</small>
           </button>
           <button class="tool tool-neutra tool-apaga" id="btnLimpar">
-            <svg class="i" aria-hidden="true"><use href="#ic-lixo"></use></svg>
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-lixo"></use></svg>
             <b>Limpar</b><small>Apaga todo o traçado</small>
           </button>
         </div>
@@ -912,14 +916,14 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
             <option value="200">1:200</option>
           </select>
           <span class="pill" id="pillEscala">
-            <svg class="i" aria-hidden="true"><use href="#ic-info"></use></svg>
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-info"></use></svg>
             <span id="pillEscalaTxt">—</span>
           </span>
           <span style="font-size:.85rem;color:var(--texto-2)">Se a escala do projeto não estiver na lista, use “Calibrar escala”.</span>
         </div>
 
         <div class="aviso aviso-atencao on" id="avisoEscala">
-          <svg class="i" aria-hidden="true"><use href="#ic-alerta"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-alerta"></use></svg>
           <span id="avisoEscalaTxt"></span>
         </div>
       </div>
@@ -927,7 +931,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
       <!-- 3. TELA -->
       <div class="calc-card" id="cardTela" style="display:none">
         <div class="instru" id="instru">
-          <svg class="i" aria-hidden="true"><use href="#ic-mira"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-mira"></use></svg>
           <span id="instruTxt">Clique no primeiro canto da parede.</span>
         </div>
         <div class="tela" id="tela"><canvas id="telaCanvas"></canvas></div>
@@ -939,7 +943,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem">
           <button class="btn btn-linha btn-sm" id="btnBaixarImg">
-            <svg class="i" aria-hidden="true"><use href="#ic-download"></use></svg> Baixar o traçado em imagem
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-download"></use></svg> Baixar o traçado em imagem
           </button>
           <span style="font-size:.83rem;color:var(--texto-2);align-self:center">Atalhos: Esc cancela a parede em andamento, Ctrl+Z desfaz.</span>
         </div>
@@ -949,19 +953,19 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
       <div class="calc-card" id="card3d" style="display:none">
         <div class="barra">
           <div>
-            <h3><svg class="i" aria-hidden="true"><use href="#ic-cubo"></use></svg> Maquete 3D</h3>
+            <h3><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cubo"></use></svg> Maquete 3D</h3>
             <span class="modo">Arraste para girar. Botão direito ou Shift+arraste move. Roda do mouse aproxima.</span>
           </div>
           <div class="ctrl">
-            <button class="ib" id="z3dMais" aria-label="Aproximar"><svg class="i" aria-hidden="true"><use href="#ic-mais"></use></svg></button>
-            <button class="ib" id="z3dMenos" aria-label="Afastar"><svg class="i" aria-hidden="true"><use href="#ic-menos"></use></svg></button>
-            <button class="ib" id="z3dCentro" aria-label="Centralizar na casa"><svg class="i" aria-hidden="true"><use href="#ic-mira"></use></svg></button>
-            <button class="ib" id="z3dReset" aria-label="Resetar visão"><svg class="i" aria-hidden="true"><use href="#ic-gira"></use></svg></button>
+            <button class="ib" id="z3dMais" aria-label="Aproximar"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-mais"></use></svg></button>
+            <button class="ib" id="z3dMenos" aria-label="Afastar"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-menos"></use></svg></button>
+            <button class="ib" id="z3dCentro" aria-label="Centralizar na casa"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-mira"></use></svg></button>
+            <button class="ib" id="z3dReset" aria-label="Resetar visão"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-gira"></use></svg></button>
           </div>
         </div>
         <div id="caixa3d">
           <div class="sem3d" id="sem3d">
-            <svg class="i" aria-hidden="true"><use href="#ic-cubo"></use></svg>
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cubo"></use></svg>
             <span>Trace a primeira parede para montar a maquete.</span>
           </div>
         </div>
@@ -970,7 +974,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
       <!-- 5. LISTA + RESULTADO -->
       <div class="grade g2" id="cardResultado" style="display:none">
         <div class="calc-card" style="margin:0">
-          <h3><svg class="i" aria-hidden="true"><use href="#ic-lista"></use></svg> Paredes do projeto</h3>
+          <h3><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-lista"></use></svg> Paredes do projeto</h3>
           <p class="sub">Confira cada trecho antes de fechar o pedido.</p>
           <div class="paredes" id="listaParedes">
             <p class="vazia">Nenhuma parede traçada. Clique na planta para começar.</p>
@@ -978,7 +982,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
         </div>
 
         <div class="result">
-          <h3><svg class="i" aria-hidden="true"><use href="#ic-calc"></use></svg> Resultado da obra</h3>
+          <h3><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-calc"></use></svg> Resultado da obra</h3>
           <p class="sub">Recalculado a cada alteração no traçado.</p>
           <div>
             <div class="rlinha"><span>Paredes</span><b id="rParedes">0</b></div>
@@ -997,7 +1001,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
           </label>
           <div class="acoes">
             <a class="btn btn-wa" id="waResultado" target="_blank" rel="noopener">
-              <svg class="i i-fill" aria-hidden="true"><use href="#ic-wa"></use></svg> Enviar este cálculo no WhatsApp
+              <svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-wa"></use></svg> Enviar este cálculo no WhatsApp
             </a>
           </div>
           <p class="nota">Números gerados a partir do seu traçado e da escala informada. Confira contra o projeto antes de comprar: erro de escala ou parede fora de esquadro altera o total.</p>
@@ -1022,29 +1026,29 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
       <div class="vs">
         <div class="vs-col vs-bom">
           <div class="vs-cab">
-            <svg class="i" aria-hidden="true"><use href="#ic-check-c"></use></svg>
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check-c"></use></svg>
             <div><h3>Bloco de cimento</h3><span>O que produzimos</span></div>
           </div>
           <ul>
-            <li><svg class="i" aria-hidden="true"><use href="#ic-check"></use></svg><div><strong>Menos argamassa e menos reboco</strong><p>Peças alinhadas e prumadas aceitam camada fina de acabamento, e em muitos casos gesso direto.</p></div></li>
-            <li><svg class="i" aria-hidden="true"><use href="#ic-check"></use></svg><div><strong>Serve como estrutura</strong><p>Em alvenaria estrutural a parede recebe a carga, reduzindo pilares e vigas de concreto armado.</p></div></li>
-            <li><svg class="i" aria-hidden="true"><use href="#ic-check"></use></svg><div><strong>Parede sobe mais rápido</strong><p>12,5 peças por m² contra 25 a 30 do tijolo baiano: menos assentamento e menos junta.</p></div></li>
-            <li><svg class="i" aria-hidden="true"><use href="#ic-check"></use></svg><div><strong>Pouca quebra</strong><p>Resistência mecânica alta no transporte e no manuseio, o que reduz caçamba de entulho.</p></div></li>
-            <li><svg class="i" aria-hidden="true"><use href="#ic-check"></use></svg><div><strong>Mais isolamento</strong><p>A densidade do concreto barra mais ruído e estabiliza a temperatura interna.</p></div></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check"></use></svg><div><strong>Menos argamassa e menos reboco</strong><p>Peças alinhadas e prumadas aceitam camada fina de acabamento, e em muitos casos gesso direto.</p></div></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check"></use></svg><div><strong>Serve como estrutura</strong><p>Em alvenaria estrutural a parede recebe a carga, reduzindo pilares e vigas de concreto armado.</p></div></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check"></use></svg><div><strong>Parede sobe mais rápido</strong><p>12,5 peças por m² contra 25 a 30 do tijolo baiano: menos assentamento e menos junta.</p></div></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check"></use></svg><div><strong>Pouca quebra</strong><p>Resistência mecânica alta no transporte e no manuseio, o que reduz caçamba de entulho.</p></div></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check"></use></svg><div><strong>Mais isolamento</strong><p>A densidade do concreto barra mais ruído e estabiliza a temperatura interna.</p></div></li>
           </ul>
         </div>
 
         <div class="vs-col vs-ruim">
           <div class="vs-cab">
-            <svg class="i" aria-hidden="true"><use href="#ic-x-c"></use></svg>
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-x-c"></use></svg>
             <div><h3>Tijolo cerâmico (baiano)</h3><span>Pontos de atenção</span></div>
           </div>
           <ul>
-            <li><svg class="i" aria-hidden="true"><use href="#ic-x"></use></svg><div><strong>Fragilidade e perda</strong><p>Índice alto de quebra na descarga e no rasgo de parede, gerando entulho pago duas vezes.</p></div></li>
-            <li><svg class="i" aria-hidden="true"><use href="#ic-x"></use></svg><div><strong>Reboco grosso</strong><p>Irregularidade da peça exige camadas espessas de chapisco e reboco para nivelar.</p></div></li>
-            <li><svg class="i" aria-hidden="true"><use href="#ic-x"></use></svg><div><strong>Exige estrutura completa</strong><p>Não é elemento estrutural: pilares e vigas de concreto armado são obrigatórios em toda a obra.</p></div></li>
-            <li><svg class="i" aria-hidden="true"><use href="#ic-x"></use></svg><div><strong>Assentamento lento</strong><p>25 a 30 peças por m², mais tempo de pedreiro e o dobro de juntas de argamassa.</p></div></li>
-            <li><svg class="i" aria-hidden="true"><use href="#ic-x"></use></svg><div><strong>Menos conforto acústico</strong><p>Parede leve e vazada transmite mais ruído entre cômodos e vizinhos.</p></div></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-x"></use></svg><div><strong>Fragilidade e perda</strong><p>Índice alto de quebra na descarga e no rasgo de parede, gerando entulho pago duas vezes.</p></div></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-x"></use></svg><div><strong>Reboco grosso</strong><p>Irregularidade da peça exige camadas espessas de chapisco e reboco para nivelar.</p></div></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-x"></use></svg><div><strong>Exige estrutura completa</strong><p>Não é elemento estrutural: pilares e vigas de concreto armado são obrigatórios em toda a obra.</p></div></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-x"></use></svg><div><strong>Assentamento lento</strong><p>25 a 30 peças por m², mais tempo de pedreiro e o dobro de juntas de argamassa.</p></div></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-x"></use></svg><div><strong>Menos conforto acústico</strong><p>Parede leve e vazada transmite mais ruído entre cômodos e vizinhos.</p></div></li>
           </ul>
         </div>
       </div>
@@ -1065,7 +1069,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
       <div style="margin-top:2rem;display:flex;flex-wrap:wrap;gap:.9rem">
         <a class="btn btn-azul" href="#blocos" data-nav>Ver o catálogo de blocos</a>
         <a class="btn btn-wa" target="_blank" rel="noopener" href="https://wa.me/5571983834217?text=Ol%C3%A1!%20Quero%20comparar%20pre%C3%A7o%20de%20bloco%20de%20cimento%20para%20minha%20obra.">
-          <svg class="i i-fill" aria-hidden="true"><use href="#ic-wa"></use></svg> Comparar preço no WhatsApp
+          <svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-wa"></use></svg> Comparar preço no WhatsApp
         </a>
       </div>
     </div>
@@ -1085,25 +1089,25 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
       </div>
       <div class="grade g4">
         <div class="card" style="background:var(--graf-800);border-color:var(--graf-700);color:#fff">
-          <svg class="i" style="width:30px;height:30px;color:var(--obra);margin-bottom:.8rem" aria-hidden="true"><use href="#ic-casa"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" style="width:30px;height:30px;color:var(--obra);margin-bottom:.8rem" aria-hidden="true"><use href="#ic-casa"></use></svg>
           <h3 style="color:#fff">Casas residenciais</h3><p style="color:#c8d0d8">Médio e alto padrão, com gestão de materiais e cronograma controlado.</p>
         </div>
         <div class="card" style="background:var(--graf-800);border-color:var(--graf-700);color:#fff">
-          <svg class="i" style="width:30px;height:30px;color:var(--obra);margin-bottom:.8rem" aria-hidden="true"><use href="#ic-predio"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" style="width:30px;height:30px;color:var(--obra);margin-bottom:.8rem" aria-hidden="true"><use href="#ic-predio"></use></svg>
           <h3 style="color:#fff">Comercial e industrial</h3><p style="color:#c8d0d8">Galpões, salas e bases para indústria, com foco em rigidez estrutural.</p>
         </div>
         <div class="card" style="background:var(--graf-800);border-color:var(--graf-700);color:#fff">
-          <svg class="i" style="width:30px;height:30px;color:var(--obra);margin-bottom:.8rem" aria-hidden="true"><use href="#ic-martelo"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" style="width:30px;height:30px;color:var(--obra);margin-bottom:.8rem" aria-hidden="true"><use href="#ic-martelo"></use></svg>
           <h3 style="color:#fff">Reformas e ampliações</h3><p style="color:#c8d0d8">Expansão de imóvel em uso, com o mínimo de interferência na rotina.</p>
         </div>
         <div class="card" style="background:var(--graf-800);border-color:var(--graf-700);color:#fff">
-          <svg class="i" style="width:30px;height:30px;color:var(--obra);margin-bottom:.8rem" aria-hidden="true"><use href="#ic-colher"></use></svg>
+          <svg class="i" viewBox="0 0 24 24" style="width:30px;height:30px;color:var(--obra);margin-bottom:.8rem" aria-hidden="true"><use href="#ic-colher"></use></svg>
           <h3 style="color:#fff">Fundação e arrimo</h3><p style="color:#c8d0d8">Infraestrutura, contenção de solo e muro de arrimo em bloco estrutural.</p>
         </div>
       </div>
       <div style="margin-top:2.2rem;display:flex;flex-wrap:wrap;gap:.9rem">
         <a class="btn btn-wa" target="_blank" rel="noopener" href="https://wa.me/5571983834217?text=Ol%C3%A1!%20Quero%20or%C3%A7amento%20de%20execu%C3%A7%C3%A3o%20de%20obra.">
-          <svg class="i i-fill" aria-hidden="true"><use href="#ic-wa"></use></svg> Orçar minha obra
+          <svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-wa"></use></svg> Orçar minha obra
         </a>
         <a class="btn btn-claro" href="#contato" data-nav>Ver contatos</a>
       </div>
@@ -1125,10 +1129,10 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
             <p>A Pra Toda Vida junta duas frentes: produção própria de artefatos de cimento e execução de obra civil. Quem produz a peça conhece o limite dela, e isso muda o jeito de construir.</p>
           </div>
           <ul class="checks">
-            <li><svg class="i" aria-hidden="true"><use href="#ic-check"></use></svg><span>Controle de prensagem e cura em todos os lotes</span></li>
-            <li><svg class="i" aria-hidden="true"><use href="#ic-check"></use></svg><span>Atendimento a obra pequena, média e grande</span></li>
-            <li><svg class="i" aria-hidden="true"><use href="#ic-check"></use></svg><span>Prazo e escopo combinados por escrito antes de começar</span></li>
-            <li><svg class="i" aria-hidden="true"><use href="#ic-check"></use></svg><span>Entrega com frota própria e descarga no canteiro</span></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check"></use></svg><span>Controle de prensagem e cura em todos os lotes</span></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check"></use></svg><span>Atendimento a obra pequena, média e grande</span></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check"></use></svg><span>Prazo e escopo combinados por escrito antes de começar</span></li>
+            <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check"></use></svg><span>Entrega com frota própria e descarga no canteiro</span></li>
           </ul>
           <div style="margin-top:1.8rem;display:flex;flex-wrap:wrap;gap:.9rem">
             <a class="btn btn-azul" href="#contato" data-nav>Falar com a equipe</a>
@@ -1137,15 +1141,15 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
         </div>
         <div class="grade" style="gap:1rem">
           <div class="card" style="background:var(--areia)">
-            <svg class="i" style="width:28px;height:28px;color:var(--azul-700);margin-bottom:.6rem" aria-hidden="true"><use href="#ic-fabrica"></use></svg>
+            <svg class="i" viewBox="0 0 24 24" style="width:28px;height:28px;color:var(--azul-700);margin-bottom:.6rem" aria-hidden="true"><use href="#ic-fabrica"></use></svg>
             <h3>Fábrica</h3><p>Blocos estruturais, de vedação, canaletas e meio bloco, produzidos em Salvador e região.</p>
           </div>
           <div class="card" style="background:var(--areia)">
-            <svg class="i" style="width:28px;height:28px;color:var(--azul-700);margin-bottom:.6rem" aria-hidden="true"><use href="#ic-capacete"></use></svg>
+            <svg class="i" viewBox="0 0 24 24" style="width:28px;height:28px;color:var(--azul-700);margin-bottom:.6rem" aria-hidden="true"><use href="#ic-capacete"></use></svg>
             <h3>Obra</h3><p>Equipe de execução para residencial, comercial, reforma, fundação e contenção.</p>
           </div>
           <div class="card" style="background:var(--areia)">
-            <svg class="i" style="width:28px;height:28px;color:var(--azul-700);margin-bottom:.6rem" aria-hidden="true"><use href="#ic-pin"></use></svg>
+            <svg class="i" viewBox="0 0 24 24" style="width:28px;height:28px;color:var(--azul-700);margin-bottom:.6rem" aria-hidden="true"><use href="#ic-pin"></use></svg>
             <h3>Atendimento</h3><p>Salvador, Lauro de Freitas, Camaçari, Simões Filho e região metropolitana.</p>
           </div>
         </div>
@@ -1165,39 +1169,39 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
         <div class="card">
           <ul class="info">
             <li>
-              <svg class="i i-fill" aria-hidden="true"><use href="#ic-wa"></use></svg>
+              <svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-wa"></use></svg>
               <div><h4>WhatsApp</h4><p>(71) 98383-4217 — atendimento comercial e técnico</p></div>
             </li>
             <li>
-              <svg class="i" aria-hidden="true"><use href="#ic-mail"></use></svg>
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-mail"></use></svg>
               <div><h4>E-mail</h4><p>contato@pratodavida.com.br</p></div>
             </li>
             <li>
-              <svg class="i" aria-hidden="true"><use href="#ic-pin"></use></svg>
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-pin"></use></svg>
               <div><h4>Área de atendimento</h4><p>Salvador, região metropolitana e interior da Bahia sob consulta</p></div>
             </li>
             <li>
-              <svg class="i" aria-hidden="true"><use href="#ic-relogio"></use></svg>
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-relogio"></use></svg>
               <div><h4>Horário</h4><p>Segunda a sexta, 7h às 17h. Sábado, 7h às 12h.</p></div>
             </li>
           </ul>
           <div style="margin-top:1.2rem;display:flex;flex-wrap:wrap;gap:.7rem">
             <a class="btn btn-linha btn-sm" href="tel:+5571983834217">
-              <svg class="i" aria-hidden="true"><use href="#ic-fone"></use></svg> Ligar agora
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-fone"></use></svg> Ligar agora
             </a>
             <a class="btn btn-linha btn-sm" href="mailto:contato@pratodavida.com.br">
-              <svg class="i" aria-hidden="true"><use href="#ic-mail"></use></svg> Enviar e-mail
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-mail"></use></svg> Enviar e-mail
             </a>
           </div>
         </div>
 
         <div class="cta-card">
-          <img src="logo.png" alt="" onerror="this.remove()">
+          <span class="placa"><img src="logo.png" alt="Pra Toda Vida" onerror="this.closest('.placa').remove()"></span>
           <h3 style="color:#fff">Peça sua cotação</h3>
           <p>Diga o produto ou o tipo de obra e a região. Respondemos com preço e prazo.</p>
           <span class="tel">(71) 98383-4217</span>
           <a class="btn btn-wa" target="_blank" rel="noopener" href="https://wa.me/5571983834217?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20solicitar%20um%20or%C3%A7amento.">
-            <svg class="i i-fill" aria-hidden="true"><use href="#ic-wa"></use></svg> Abrir conversa no WhatsApp
+            <svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-wa"></use></svg> Abrir conversa no WhatsApp
           </a>
           <a class="btn btn-claro" href="#calculadora" data-nav>Calcular blocos antes de pedir</a>
         </div>
@@ -1216,7 +1220,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
     <div class="rodape-in">
       <div>
         <div class="marca" style="margin-bottom:.9rem">
-          <img src="logo.png" alt="" style="height:44px;filter:brightness(0) invert(1)" onerror="this.remove()">
+          <span class="placa"><img src="logo.png" alt="Pra Toda Vida" onerror="this.closest('.placa').remove()"></span>
           <span class="marca-txt" style="color:#fff">Pra Toda Vida<small style="color:#8b98a5">Blocos &amp; Construtora</small></span>
         </div>
         <p>Fábrica de blocos de cimento e construtora civil. Produção própria, entrega com frota própria e obra executada por equipe própria.</p>
@@ -1250,11 +1254,28 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
 </footer>
 
 <a class="flut" href="https://wa.me/5571983834217?text=Ol%C3%A1!%20Vim%20pelo%20site." target="_blank" rel="noopener" aria-label="Falar no WhatsApp">
-  <svg class="i i-fill" aria-hidden="true"><use href="#ic-wa"></use></svg>
+  <svg class="i i-fill" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-wa"></use></svg>
 </a>
 
 <script>
 "use strict";
+/* ============================================================
+   0. AJUSTE DA MARCA
+   Se o arquivo logo.png já traz o nome "Pra Toda Vida" escrito,
+   mude a linha abaixo para false: o nome ao lado da imagem
+   deixa de aparecer e fica só a logo.
+   ============================================================ */
+var MOSTRAR_NOME_AO_LADO_DA_LOGO = true;
+(function(){
+  if(MOSTRAR_NOME_AO_LADO_DA_LOGO) return;
+  document.addEventListener('DOMContentLoaded',function(){
+    document.querySelectorAll('.marca-txt').forEach(function(el){
+      var img=el.parentNode.querySelector('img');
+      if(img) el.style.display='none';
+    });
+  });
+})();
+
 /* ============================================================
    1. NAVEGAÇÃO POR HASH (site de página única)
    ============================================================ */
@@ -1263,7 +1284,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
   hamb.addEventListener('click',function(){
     var ab=menu.classList.toggle('abre');
     hamb.setAttribute('aria-expanded',ab?'true':'false');
-    hamb.innerHTML='<svg class="i" aria-hidden="true"><use href="#'+(ab?'ic-x':'ic-menu')+'"></use></svg>';
+    hamb.innerHTML='<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#'+(ab?'ic-x':'ic-menu')+'"></use></svg>';
   });
 
   function rotas(){
@@ -1278,7 +1299,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
     });
     menu.classList.remove('abre');
     hamb.setAttribute('aria-expanded','false');
-    hamb.innerHTML='<svg class="i" aria-hidden="true"><use href="#ic-menu"></use></svg>';
+    hamb.innerHTML='<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-menu"></use></svg>';
     if(rolar) window.scrollTo({top:0,behavior:'auto'});
     if(id==='calculadora') CALC.aoAbrir();
   }
@@ -1314,7 +1335,7 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
       img.remove();
       var d=document.createElement('div');
       d.className='vazio';
-      d.innerHTML='<svg class="i" aria-hidden="true"><use href="#'+it.ic+'"></use></svg>'+
+      d.innerHTML='<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#'+it.ic+'"></use></svg>'+
                   '<strong style="color:#c8d0d8;font-size:.9rem">'+it.tit+'</strong>'+
                   '<code>'+it.arq+'</code>';
       fig.insertBefore(d,fig.firstChild);
@@ -1962,7 +1983,7 @@ var CALC=(function(){
         '<div class="pitem-top"><b>Parede '+(i+1)+'</b>'+
         '<span class="med">'+(m!==null?nf(m)+' m':'sem escala')+'</span></div>'+
         '<div class="pitem-bot"><span>'+(nomes.length?nomes.join(' · '):'Sem esquadria')+'</span>'+
-        '<button class="del" data-del="'+w.id+'"><svg class="i" aria-hidden="true"><use href="#ic-x"></use></svg>Excluir</button></div>';
+        '<button class="del" data-del="'+w.id+'"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-x"></use></svg>Excluir</button></div>';
       lista.appendChild(div);
     });
 
