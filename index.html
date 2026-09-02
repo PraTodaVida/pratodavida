@@ -3,23 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Início | Pra Toda Vida Construtora e Fábrica de Blocos</title>
+    <title>Pra Toda Vida | Construtora & Fábrica de Blocos de Cimento</title>
     <meta name="description" content="Pra Toda Vida - Construtora civil e fábrica de blocos de cimento de alta resistência. WhatsApp: (71) 98383-4217.">
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+<base target="_blank">
 </head>
 <body>
 
-    <!-- Header / Navegação -->
-    <header class="header">
+    <!-- Header / Navegação - Glassmorphism -->
+    <header class="header" id="mainHeader">
         <div class="container nav-container">
             <a href="index.html" class="logo-link">
                 <img src="logo.png" alt="Pra Toda Vida Logo" class="logo-img">
@@ -39,20 +37,20 @@
         </div>
     </header>
 
-    <!-- Conteúdo Exclusivo: Início -->
     <main>
-        <!-- Hero Section -->
-        <section class="hero">
+        <!-- Hero Section com Partículas -->
+        <section class="hero animated-gradient">
+            <canvas id="particles-canvas"></canvas>
             <div class="hero-overlay"></div>
             <div class="container hero-content">
-                <span class="badge">Construtora & Fábrica de Blocos</span>
-                <h1>Construindo com Solidez e Qualidade <span class="highlight">Pra Toda Vida</span></h1>
-                <p>Fabricação própria de blocos de cimento de alta resistência e execução completa de obras residenciais e comerciais. Economize comprando direto da fábrica!</p>
-                <div class="hero-buttons">
+                <span class="badge reveal">Construtora & Fábrica de Blocos</span>
+                <h1 class="reveal">Construindo com Solidez e Qualidade <span class="highlight">Pra Toda Vida</span></h1>
+                <p class="reveal">Fabricação própria de blocos de cimento de alta resistência e execução completa de obras residenciais e comerciais. Economize comprando direto da fábrica!</p>
+                <div class="hero-buttons reveal">
                     <a href="https://wa.me/5571983834217?text=Ol%C3%A1!%20Gostaria%20de%20solicitar%20um%20or%C3%A7amento." target="_blank" class="btn btn-primary">
-                        <i class="fa-brands fa-whatsapp"></i> Orçamento no WhatsApp (71) 98383-4217
+                        <i class="fa-brands fa-whatsapp"></i> Orçamento no WhatsApp
                     </a>
-                    <a href="calculadora.html" class="btn btn-secondary"><i class="fa-solid fa-calculator"></i> Calcular Minha Planta</a>
+                    <a href="calculadora.html" class="btn btn-outline"><i class="fa-solid fa-calculator"></i> Calcular Minha Planta</a>
                 </div>
             </div>
         </section>
@@ -60,28 +58,28 @@
         <!-- Stats Bar -->
         <section class="stats-bar">
             <div class="container stats-grid">
-                <a href="blocos.html" class="stat-item">
+                <a href="blocos.html" class="stat-item reveal">
                     <i class="fa-solid fa-industry"></i>
                     <div>
                         <h3>Direto da Fábrica</h3>
                         <p>Melhor custo-benefício da região</p>
                     </div>
                 </a>
-                <a href="comparativo.html" class="stat-item">
+                <a href="comparativo.html" class="stat-item reveal">
                     <i class="fa-solid fa-shield-halved"></i>
                     <div>
                         <h3>Alta Resistência</h3>
                         <p>Blocos normatizados e testados</p>
                     </div>
                 </a>
-                <a href="blocos.html" class="stat-item">
+                <a href="blocos.html" class="stat-item reveal">
                     <i class="fa-solid fa-truck-fast"></i>
                     <div>
                         <h3>Entrega Rápida</h3>
                         <p>Frota própria para sua obra</p>
                     </div>
                 </a>
-                <a href="construtora.html" class="stat-item">
+                <a href="construtora.html" class="stat-item reveal">
                     <i class="fa-solid fa-helmet-safety"></i>
                     <div>
                         <h3>Obras Qualificadas</h3>
@@ -91,50 +89,50 @@
             </div>
         </section>
 
-        <!-- Atalhos Rápidos para Páginas -->
+        <!-- Atalhos Rápidos -->
         <section class="section home-shortcuts">
             <div class="container">
-                <div class="section-title">
+                <div class="section-title reveal">
                     <span class="section-subtitle">Navegue pelas Nossas Páginas</span>
                     <h2>O que você deseja acessar?</h2>
                 </div>
                 <div class="shortcuts-grid">
-                    <a href="sobre.html" class="shortcut-card">
+                    <a href="sobre.html" class="shortcut-card reveal">
                         <i class="fa-solid fa-users"></i>
                         <h3>Sobre a Empresa</h3>
                         <p>Conheça nossa história, compromisso de qualidade e estrutura.</p>
                         <span class="link-arrow">Acessar Página <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
 
-                    <a href="blocos.html" class="shortcut-card">
+                    <a href="blocos.html" class="shortcut-card reveal">
                         <i class="fa-solid fa-cubes"></i>
                         <h3>Fábrica de Blocos</h3>
                         <p>Conheça nossa linha completa de blocos estruturais e vedação.</p>
                         <span class="link-arrow">Acessar Página <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
 
-                    <a href="calculadora.html" class="shortcut-card">
+                    <a href="calculadora.html" class="shortcut-card reveal">
                         <i class="fa-solid fa-file-pdf"></i>
                         <h3>Calculadora de Planta PDF</h3>
                         <p>Anexe seu projeto em PDF, veja a maquete 3D e calcule os blocos.</p>
                         <span class="link-arrow">Acessar Página <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
 
-                    <a href="comparativo.html" class="shortcut-card">
+                    <a href="comparativo.html" class="shortcut-card reveal">
                         <i class="fa-solid fa-balance-scale"></i>
                         <h3>Bloco vs. Cerâmica</h3>
                         <p>Descubra por que o bloco de cimento gera 50% de economia na obra.</p>
                         <span class="link-arrow">Acessar Página <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
 
-                    <a href="construtora.html" class="shortcut-card">
+                    <a href="construtora.html" class="shortcut-card reveal">
                         <i class="fa-solid fa-building"></i>
                         <h3>Serviços de Construtora</h3>
                         <p>Construção de casas, galpões e reformas do chão até as chaves.</p>
                         <span class="link-arrow">Acessar Página <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
 
-                    <a href="contato.html" class="shortcut-card">
+                    <a href="contato.html" class="shortcut-card reveal">
                         <i class="fa-solid fa-headset"></i>
                         <h3>Contato e Orçamento</h3>
                         <p>Fale direto pelo WhatsApp (71) 98383-4217.</p>
@@ -148,7 +146,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container footer-content">
-            <div class="footer-brand">
+            <div class="footer-brand reveal">
                 <img src="logo.png" alt="Pra Toda Vida Logo" class="footer-logo">
                 <p>Pra Toda Vida - Construtora & Fábrica de Blocos de Cimento. Qualidade e resistência garantidas.</p>
             </div>
@@ -159,16 +157,126 @@
     </footer>
 
     <!-- Botão Flutuante do WhatsApp -->
-    <a href="https://wa.me/5571983834217?text=Ol%C3%A1!%20Gostaria%20de%20informa%C3%A7%C3%B5es." target="_blank" class="whatsapp-float">
+    <a href="https://wa.me/5571983834217?text=Ol%C3%A1!%20Gostaria%20de%20informa%C3%A7%C3%B5es." target="_blank" class="whatsapp-float" aria-label="Fale pelo WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
     <script>
+        // Menu Mobile Toggle
         const toggleBtn = document.getElementById('menuToggle');
         const navbar = document.getElementById('navbar');
+        const header = document.getElementById('mainHeader');
+
         if (toggleBtn && navbar) {
-            toggleBtn.addEventListener('click', () => navbar.classList.toggle('active'));
+            toggleBtn.addEventListener('click', () => {
+                navbar.classList.toggle('active');
+                const icon = toggleBtn.querySelector('i');
+                if (navbar.classList.contains('active')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-xmark');
+                } else {
+                    icon.classList.remove('fa-xmark');
+                    icon.classList.add('fa-bars');
+                }
+            });
         }
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Scroll Reveal Animation
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // Particles Canvas Animation
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animationId;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(100, 180, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const particleCount = Math.min(window.innerWidth / 10, 100);
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function connectParticles() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < 150) {
+                        ctx.strokeStyle = `rgba(100, 180, 255, ${0.1 * (1 - distance / 150)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            connectParticles();
+            animationId = requestAnimationFrame(animateParticles);
+        }
+
+        resizeCanvas();
+        initParticles();
+        animateParticles();
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles();
+        });
     </script>
 </body>
 </html>
