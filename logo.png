@@ -1,1 +1,5 @@
-
+var LOGO = {
+  arquivo: 'logo.png',
+  altura: 44,
+  mostrarNome: true
+};
