@@ -9,13 +9,15 @@
 <meta property="og:title" content="Pra Toda Vida | Fábrica de Blocos e Construtora">
 <meta property="og:description" content="Blocos direto da fábrica e obras completas. Calcule os blocos da sua planta em PDF.">
 <meta property="og:type" content="website">
-<!-- Ícone da aba: SVG embutido, não depende de arquivo externo.
-     Se quiser usar uma imagem própria, suba favicon.png (quadrada, 512x512)
-     no repositório e troque as duas linhas abaixo por:
-     <link rel="icon" type="image/png" href="favicon.png">
-     <link rel="apple-touch-icon" href="favicon.png"> -->
-<link rel="icon" id="iconeSvg" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='13' fill='%23ffffff'/><g fill='none' stroke='%231146d1' stroke-width='7' stroke-linecap='round'><path d='M13 32c0-8 9-11 13-4 3 5 5 9 9 12 6 4 16 1 16-8s-10-12-16-8c-4 3-6 7-9 12-4 7-13 4-13-4z'/></g></svg>">
-<link rel="apple-touch-icon" id="iconeApple" href="logo.png">
+<!-- Ícone da aba: arquivo próprio, declarado direto aqui e não por
+     JavaScript, porque o navegador lê o ícone antes de rodar o script.
+     O ?v=3 força o navegador a buscar de novo; se você trocar o
+     simbolo.png depois, aumente esse número para v=3, v=4 e assim por
+     diante, senão o ícone antigo fica preso no cache.
+     Se simbolo.png não carregar, o script instala um infinito em SVG
+     como reserva (função reservaIcone). -->
+<link rel="icon" id="iconePng" type="image/png" sizes="512x512" href="simbolo.png?v=3">
+<link rel="apple-touch-icon" id="iconeApple" href="simbolo.png?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1494,7 +1496,12 @@ var LOGO = {
 };
 
 var MARCA=(function(){
-  var iconePadrao=null;
+  /* infinito em SVG: reserva, usada só se simbolo.png não carregar */
+  var SVG_RESERVA="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>"+
+    "<rect width='64' height='64' rx='13' fill='%23ffffff'/>"+
+    "<g fill='none' stroke='%231146d1' stroke-width='7' stroke-linecap='round'>"+
+    "<path d='M13 32c0-8 9-11 13-4 3 5 5 9 9 12 6 4 16 1 16-8s-10-12-16-8c-4 3-6 7-9 12-4 7-13 4-13-4z'/>"+
+    "</g></svg>";
 
   function aplica(src,altura,mostrarNome){
     document.querySelectorAll('img.logo-img').forEach(function(img){
@@ -1519,42 +1526,68 @@ var MARCA=(function(){
     });
   }
 
-  /* segundo arquivo: só o símbolo. Entra nas prévias e, se ligado,
-     no ícone da aba e no atalho salvo na tela do celular. */
+  /* troca o ícone da aba. Só é chamado quando o usuário está
+     conferindo um arquivo novo em #logo, ou quando o simbolo.png
+     publicado falha. No carregamento normal o <head> já está certo. */
+  function defineIcone(src,tipo){
+    var l=document.getElementById('iconePng');
+    if(!l){
+      l=document.createElement('link');
+      l.id='iconePng'; l.rel='icon';
+      document.head.appendChild(l);
+    }
+    /* recriar o elemento faz o Chrome reler o ícone; só trocar o href
+       às vezes não surte efeito com a página já desenhada */
+    var novo=l.cloneNode(false);
+    novo.type=tipo; novo.href=src;
+    if(tipo==='image/png') novo.setAttribute('sizes','512x512');
+    else novo.removeAttribute('sizes');
+    l.parentNode.replaceChild(novo,l);
+    var apple=document.getElementById('iconeApple');
+    if(apple) apple.href=src;
+  }
+
+  /* prévias do símbolo dentro de #logo, mais o ícone quando pedido */
   function aplicaSimbolo(src,noIcone){
     document.querySelectorAll('img.logo-sim').forEach(function(img){
       img.onerror=function(){ img.style.visibility='hidden'; };
       img.onload=function(){ img.style.visibility='visible'; };
       img.src=src||'';
     });
-    var svg=document.getElementById('iconeSvg');
-    var apple=document.getElementById('iconeApple');
-    if(svg&&iconePadrao===null) iconePadrao=svg.getAttribute('href');
-    var png=document.getElementById('iconePng');
-    if(src&&noIcone){
-      if(!png){
-        png=document.createElement('link');
-        png.id='iconePng'; png.rel='icon';
-        document.head.appendChild(png);
-      }
-      png.type=/\.svg$|^data:image\/svg/i.test(src)?'image/svg+xml':'image/png';
-      png.href=src;
-      if(svg) svg.remove();
-      if(apple) apple.href=src;
+    if(!src) return;
+    if(noIcone){
+      defineIcone(src,/\.svg$|^data:image\/svg/i.test(src)?'image/svg+xml':'image/png');
     }else{
-      if(png) png.remove();
-      if(!document.getElementById('iconeSvg')&&iconePadrao){
-        var l=document.createElement('link');
-        l.id='iconeSvg'; l.rel='icon'; l.type='image/svg+xml'; l.href=iconePadrao;
-        document.head.appendChild(l);
-      }
-      if(apple) apple.href=LOGO.arquivo;
+      defineIcone(SVG_RESERVA,'image/svg+xml');
     }
+  }
+
+  /* confere se o arquivo publicado do símbolo existe e abre.
+     Se não abrir, instala o infinito em SVG para a aba não ficar
+     com o ícone genérico do navegador. */
+  function reservaIcone(){
+    var l=document.getElementById('iconePng');
+    if(!LOGO.simbolo||!LOGO.simboloNoIcone){
+      defineIcone(SVG_RESERVA,'image/svg+xml');
+      return;
+    }
+    var alvo=l?l.getAttribute('href'):LOGO.simbolo;
+    var teste=new Image();
+    teste.onerror=function(){
+      console.warn('simbolo.png não carregou; usando o infinito em SVG.');
+      defineIcone(SVG_RESERVA,'image/svg+xml');
+    };
+    teste.src=alvo;
   }
 
   function padrao(){
     aplica(LOGO.arquivo,LOGO.altura,LOGO.mostrarNome);
-    aplicaSimbolo(LOGO.simbolo,LOGO.simboloNoIcone);
+    /* só as prévias: o ícone da aba já vem pronto do <head> */
+    document.querySelectorAll('img.logo-sim').forEach(function(img){
+      img.onerror=function(){ img.style.visibility='hidden'; };
+      img.src=LOGO.simbolo||'';
+    });
+    reservaIcone();
   }
   document.addEventListener('DOMContentLoaded',padrao);
   return {aplica:aplica,aplicaSimbolo:aplicaSimbolo,padrao:padrao};
