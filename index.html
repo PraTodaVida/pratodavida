@@ -14,8 +14,8 @@
      no repositório e troque as duas linhas abaixo por:
      <link rel="icon" type="image/png" href="favicon.png">
      <link rel="apple-touch-icon" href="favicon.png"> -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='13' fill='%23ffffff'/><g fill='none' stroke='%231146d1' stroke-width='7' stroke-linecap='round'><path d='M13 32c0-8 9-11 13-4 3 5 5 9 9 12 6 4 16 1 16-8s-10-12-16-8c-4 3-6 7-9 12-4 7-13 4-13-4z'/></g></svg>">
-<link rel="apple-touch-icon" href="logo.png">
+<link rel="icon" id="iconeSvg" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='13' fill='%23ffffff'/><g fill='none' stroke='%231146d1' stroke-width='7' stroke-linecap='round'><path d='M13 32c0-8 9-11 13-4 3 5 5 9 9 12 6 4 16 1 16-8s-10-12-16-8c-4 3-6 7-9 12-4 7-13 4-13-4z'/></g></svg>">
+<link rel="apple-touch-icon" id="iconeApple" href="logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -336,9 +336,30 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
 .pill-alerta{background:#fff7e0;color:#6b4c00}
 .pill .i{width:15px;height:15px}
 
-.tela{background:var(--graf-800);border-radius:var(--r);padding:.75rem;overflow:auto;max-height:78vh}
-#telaCanvas{display:block;margin-inline:auto;max-width:100%;height:auto;cursor:crosshair;
-  background:#fff;border-radius:4px;touch-action:pan-x pan-y}
+.tela{background:var(--graf-800);border-radius:var(--r);padding:.75rem;overflow:auto;max-height:78vh;
+  -webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+#telaCanvas{display:block;margin-inline:auto;max-width:none;cursor:crosshair;
+  background:#fff;border-radius:4px;touch-action:none;user-select:none;-webkit-user-select:none;
+  -webkit-touch-callout:none}
+
+/* painel de seleção de parede / esquadria */
+.sel-card{margin-top:.9rem;border:1px solid var(--azul-500);border-radius:10px;background:var(--azul-100);
+  padding:.9rem 1rem;display:none}
+.sel-card.on{display:block}
+.sel-top{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.7rem}
+.sel-top .i{width:19px;height:19px;color:var(--azul-700)}
+.sel-top b{font-family:var(--disp);font-size:1.1rem}
+.sel-top .tag{font-size:.75rem;font-weight:600;background:var(--azul-700);color:#fff;
+  border-radius:999px;padding:.12rem .6rem}
+.sel-campos{display:flex;flex-wrap:wrap;gap:.7rem 1rem;align-items:flex-end}
+.sel-campo{display:flex;flex-direction:column;gap:.22rem}
+.sel-campo label{font-size:.76rem;font-weight:600;color:var(--texto-2)}
+.sel-campo input,.sel-campo select{width:112px}
+.sel-acoes{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.9rem}
+.sel-nota{font-size:.78rem;color:var(--texto-2);margin-top:.6rem}
+.gesto{font-size:.8rem;color:var(--texto-2);display:flex;flex-wrap:wrap;gap:.15rem .9rem;margin-top:.6rem}
+.gesto b{color:var(--azul-700)}
+.chk{display:inline-flex;align-items:center;gap:.4rem;font-size:.85rem;font-weight:600}
 .instru{display:flex;align-items:center;gap:.55rem;font-size:.92rem;background:var(--areia);
   border:1px solid var(--linha);border-radius:8px;padding:.7rem .9rem;margin-bottom:.9rem}
 .instru .i{width:19px;height:19px;color:var(--azul-700)}
@@ -471,6 +492,13 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
 <g id="ic-lista"><path d="M8.6 6.4h12M8.6 12h12M8.6 17.6h12M3.6 6.4h.01M3.6 12h.01M3.6 17.6h.01"/></g>
 <g id="ic-imagem"><rect x="3.2" y="4.4" width="17.6" height="15.2" rx="2"/><circle cx="8.6" cy="9.6" r="1.6"/><path d="M20.8 15.6l-4.8-4.4-8 8.4"/></g>
 <g id="ic-relogio"><circle cx="12" cy="12" r="9.2"/><path d="M12 7v5.4l3.4 2"/></g>
+<g id="ic-cursor"><path d="M4.2 2.8l7.2 18 2.4-6.6 6.6-2.4z"/></g>
+<g id="ic-mover"><path d="M12 2.6v18.8M2.6 12h18.8"/><path d="M12 2.6L9 5.6M12 2.6l3 3M12 21.4l-3-3M12 21.4l3-3M2.6 12l3-3M2.6 12l3 3M21.4 12l-3-3M21.4 12l-3 3"/></g>
+<g id="ic-canto"><path d="M4 3.6v16.8h16.8"/><path d="M4 3.6l7.4 7.4M11.4 20.4L4 13"/><circle cx="4" cy="20.4" r="2.2"/></g>
+<g id="ic-gira-d"><path d="M3.4 12a8.6 8.6 0 102.9-6.4"/><path d="M3.4 3.4v4.6H8"/></g>
+<g id="ic-gira-e"><path d="M20.6 12a8.6 8.6 0 00-2.9-6.4"/><path d="M20.6 3.4v4.6H16"/><path d="M20.6 12a8.6 8.6 0 11-8.6 8.6"/></g>
+<g id="ic-infinito"><path d="M4.6 12c0-3.1 3.4-4.2 5-1.5 1.2 1.9 1.9 3.4 3.5 4.6 2.3 1.6 6.2.4 6.2-3.1s-3.9-4.7-6.2-3.1c-1.6 1.2-2.3 2.7-3.5 4.6-1.6 2.7-5 1.6-5-1.5z"/></g>
+<g id="ic-aba"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="M2.5 8.5h19M6 6.5h.01M9 6.5h.01"/></g>
 </defs></svg>
 
 <!-- ============================================================
@@ -870,10 +898,20 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
               <button class="ib" id="zoomMais" aria-label="Aumentar zoom"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-mais"></use></svg></button>
               <button class="ib" id="zoomReset" aria-label="Ajustar zoom à tela"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-ajusta"></use></svg></button>
             </div>
+            <div class="ctrl">
+              <span class="rot">Girar</span>
+              <button class="ib" id="giraEsq" aria-label="Girar 90 graus à esquerda"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-gira-e"></use></svg></button>
+              <b id="lblRot">0°</b>
+              <button class="ib" id="giraDir" aria-label="Girar 90 graus à direita"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-gira-d"></use></svg></button>
+            </div>
           </div>
         </div>
 
         <div class="ferr">
+          <button class="tool" data-tool="sel">
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cursor"></use></svg>
+            <b>Selecionar</b><small>Toque na porta, janela ou parede para editar ou apagar</small>
+          </button>
           <button class="tool on" data-tool="parede">
             <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cubos"></use></svg>
             <b>Parede</b><small>Dois cliques, com ímã nos cantos</small>
@@ -927,6 +965,15 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
           <span style="font-size:.85rem;color:var(--texto-2)">Se a escala do projeto não estiver na lista, use “Calibrar escala”.</span>
         </div>
 
+        <div class="escala-linha">
+          <label class="chk" for="imaCanto">
+            <input type="checkbox" id="imaCanto" checked>
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true" style="width:17px;height:17px;color:var(--azul-700)"><use href="#ic-canto"></use></svg>
+            Ímã de canto
+          </label>
+          <span style="font-size:.85rem;color:var(--texto-2)">Ao clicar perto do encontro de duas linhas do desenho (parede lateral com parede frontal), o cursor pula para o canto exato. Desligue se o desenho for muito carregado e o ímã puxar para o lugar errado.</span>
+        </div>
+
         <div class="aviso aviso-atencao on" id="avisoEscala">
           <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-alerta"></use></svg>
           <span id="avisoEscalaTxt"></span>
@@ -940,6 +987,35 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
           <span id="instruTxt">Clique no primeiro canto da parede.</span>
         </div>
         <div class="tela" id="tela"><canvas id="telaCanvas"></canvas></div>
+
+        <div class="gesto">
+          <span><b>Um dedo</b> arrasta a planta</span>
+          <span><b>Toque rápido</b> marca o ponto</span>
+          <span><b>Dois dedos</b> ampliam e reduzem</span>
+          <span><b>Girar</b> deixa a planta na posição de leitura</span>
+        </div>
+
+        <div class="sel-card" id="cardSel">
+          <div class="sel-top">
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cursor"></use></svg>
+            <b id="selTitulo">Nada selecionado</b>
+            <span class="tag" id="selTag">—</span>
+          </div>
+          <div class="sel-campos" id="selCampos"></div>
+          <div class="sel-acoes">
+            <button class="btn btn-azul btn-sm" id="selAplicar">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check"></use></svg> Aplicar tamanho
+            </button>
+            <button class="btn btn-linha btn-sm" id="selExcluir" style="border-color:#f0c8c7;color:var(--alerta)">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-lixo"></use></svg> Apagar
+            </button>
+            <button class="btn btn-linha btn-sm" id="selFechar">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-x"></use></svg> Fechar
+            </button>
+          </div>
+          <p class="sel-nota" id="selNota"></p>
+        </div>
+
         <div class="metricas">
           <div class="metrica"><span>Paredes traçadas</span><b id="mParedes">0</b></div>
           <div class="metrica"><span>Metros lineares</span><b id="mMetros">0,00 m</b></div>
@@ -959,9 +1035,10 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
         <div class="barra">
           <div>
             <h3><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cubo"></use></svg> Maquete 3D</h3>
-            <span class="modo">Arraste para girar. Botão direito ou Shift+arraste move. Roda do mouse aproxima.</span>
+            <span class="modo">Modo atual: <b id="lbl3d">girar</b></span>
           </div>
           <div class="ctrl">
+            <button class="ib" id="z3dMover" aria-label="Alternar entre girar e mover"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-mover"></use></svg></button>
             <button class="ib" id="z3dMais" aria-label="Aproximar"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-mais"></use></svg></button>
             <button class="ib" id="z3dMenos" aria-label="Afastar"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-menos"></use></svg></button>
             <button class="ib" id="z3dCentro" aria-label="Centralizar na casa"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-mira"></use></svg></button>
@@ -973,6 +1050,12 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
             <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-cubo"></use></svg>
             <span>Trace a primeira parede para montar a maquete.</span>
           </div>
+        </div>
+        <div class="gesto">
+          <span><b>Um dedo</b> gira a maquete</span>
+          <span><b>Dois dedos</b> movem e aproximam</span>
+          <span><b>Botão Mover</b> troca o arraste de girar para mover</span>
+          <span><b>No mouse:</b> arrastar gira, botão direito ou Shift move, roda aproxima</span>
         </div>
       </div>
 
@@ -1254,6 +1337,49 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
       </div>
 
       <div class="calc-card">
+        <div class="sel-top" style="margin-bottom:.2rem">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-infinito"></use></svg>
+          <b>Logo símbolo — só o infinito</b>
+          <span class="tag">2º arquivo</span>
+        </div>
+        <p class="sub">Espaço separado para a versão só do símbolo, sem o nome escrito. É essa versão que entra no ícone da aba do navegador, no atalho salvo no celular e nos lugares apertados onde a logo completa não cabe.</p>
+
+        <div class="drop" id="dropSimbolo" role="button" tabindex="0" aria-label="Escolher arquivo do símbolo">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-infinito"></use></svg>
+          <h3>Clique aqui ou arraste o símbolo</h3>
+          <p>Precisa ser quadrado, com o símbolo centralizado e sobra pequena nas bordas. PNG transparente ou SVG.</p>
+          <span class="dica">Recomendado: 512 × 512 px</span>
+          <input type="file" id="arquivoSimbolo" accept="image/png,image/svg+xml,image/jpeg,image/webp">
+        </div>
+
+        <div class="aviso aviso-erro" id="simErro" role="alert">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-alerta"></use></svg><span id="simErroTxt"></span>
+        </div>
+        <div class="aviso aviso-ok" id="simOk">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check-c"></use></svg><span id="simOkTxt"></span>
+        </div>
+
+        <div class="escala-linha">
+          <label class="chk"><input type="checkbox" id="simIcone" checked> Usar o símbolo como ícone da aba e do atalho no celular</label>
+          <button class="btn btn-linha btn-sm" id="simReset">Voltar ao símbolo publicado</button>
+        </div>
+
+        <div class="escala-linha" style="border-top:1px dashed var(--linha)">
+          <span style="font-size:.82rem;font-weight:600;color:var(--texto-2)">Prévia:</span>
+          <span style="display:inline-flex;align-items:center;gap:.5rem;background:var(--graf-800);
+                       border-radius:8px;padding:.4rem .7rem">
+            <img class="logo-sim" alt="" data-slot="sim-aba" style="height:22px;width:22px;object-fit:contain">
+            <span style="color:#c8d0d8;font-size:.8rem">aba do navegador</span>
+          </span>
+          <span style="display:inline-flex;align-items:center;gap:.5rem;background:#fff;
+                       border:1px solid var(--linha);border-radius:8px;padding:.4rem .7rem">
+            <img class="logo-sim" alt="" data-slot="sim-atalho" style="height:52px;width:52px;object-fit:contain">
+            <span style="font-size:.8rem;color:var(--texto-2)">atalho no celular</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="calc-card">
         <h3><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-lupa"></use></svg> Como vai aparecer</h3>
         <p class="sub">Os três lugares onde a logo entra no site.</p>
 
@@ -1279,8 +1405,8 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
       <div class="calc-card" style="background:var(--areia)">
         <h3><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check-c"></use></svg> Para publicar de verdade</h3>
         <ol style="display:grid;gap:.7rem;margin:1rem 0 1.2rem;padding-left:0">
-          <li style="display:flex;gap:.8rem"><b style="font-family:var(--disp);color:var(--azul-700);font-size:1.3rem;line-height:1">1</b><span style="font-size:.95rem">Renomeie o arquivo da sua logo para <b id="nomeArquivoSug">logo.png</b>.</span></li>
-          <li style="display:flex;gap:.8rem"><b style="font-family:var(--disp);color:var(--azul-700);font-size:1.3rem;line-height:1">2</b><span style="font-size:.95rem">Envie para a raiz do repositório do GitHub, no mesmo lugar do <b>index.html</b>.</span></li>
+          <li style="display:flex;gap:.8rem"><b style="font-family:var(--disp);color:var(--azul-700);font-size:1.3rem;line-height:1">1</b><span style="font-size:.95rem">Renomeie a logo completa para <b id="nomeArquivoSug">logo.png</b> e o símbolo do infinito para <b id="nomeSimboloSug">simbolo.png</b>.</span></li>
+          <li style="display:flex;gap:.8rem"><b style="font-family:var(--disp);color:var(--azul-700);font-size:1.3rem;line-height:1">2</b><span style="font-size:.95rem">Envie os <b>dois arquivos</b> para a raiz do repositório do GitHub, no mesmo lugar do <b>index.html</b>.</span></li>
           <li style="display:flex;gap:.8rem"><b style="font-family:var(--disp);color:var(--azul-700);font-size:1.3rem;line-height:1">3</b><span style="font-size:.95rem">Se você mudou a altura ou o nome ao lado, copie o trecho abaixo e substitua a linha <b>var LOGO = {...}</b> no começo do <b>&lt;script&gt;</b> do index.html.</span></li>
         </ol>
         <pre id="logoSnippet" style="background:var(--graf-900);color:#c8d0d8;padding:1rem;border-radius:9px;
@@ -1348,19 +1474,28 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
 /* ============================================================
    0. CAMPO DA LOGO
    ------------------------------------------------------------
-   Altere só estas três linhas para trocar a logo do site.
-     arquivo     caminho ou endereço da imagem
+   Altere só estas linhas para trocar a marca do site.
+     arquivo     logo completa (imagem + nome), usada no
+                 cabeçalho, rodapé e cartão de cotação
      altura      altura em pixels no cabeçalho
      mostrarNome false esconde o nome escrito ao lado da imagem
+     simbolo     segundo arquivo, só o símbolo do infinito,
+                 sem o nome escrito
+     simboloNoIcone  true faz o símbolo virar o ícone da aba
+                 do navegador e o atalho no celular
    Para conferir antes de publicar, abra o site em #logo.
    ============================================================ */
 var LOGO = {
   arquivo: 'logo.png',
   altura: 64,
-  mostrarNome: true
+  mostrarNome: true,
+  simbolo: 'simbolo.png',
+  simboloNoIcone: true
 };
 
 var MARCA=(function(){
+  var iconePadrao=null;
+
   function aplica(src,altura,mostrarNome){
     document.querySelectorAll('img.logo-img').forEach(function(img){
       var slot=img.getAttribute('data-slot')||'';
@@ -1383,9 +1518,46 @@ var MARCA=(function(){
       el.style.display=mostrarNome?'':'none';
     });
   }
-  function padrao(){ aplica(LOGO.arquivo,LOGO.altura,LOGO.mostrarNome); }
+
+  /* segundo arquivo: só o símbolo. Entra nas prévias e, se ligado,
+     no ícone da aba e no atalho salvo na tela do celular. */
+  function aplicaSimbolo(src,noIcone){
+    document.querySelectorAll('img.logo-sim').forEach(function(img){
+      img.onerror=function(){ img.style.visibility='hidden'; };
+      img.onload=function(){ img.style.visibility='visible'; };
+      img.src=src||'';
+    });
+    var svg=document.getElementById('iconeSvg');
+    var apple=document.getElementById('iconeApple');
+    if(svg&&iconePadrao===null) iconePadrao=svg.getAttribute('href');
+    var png=document.getElementById('iconePng');
+    if(src&&noIcone){
+      if(!png){
+        png=document.createElement('link');
+        png.id='iconePng'; png.rel='icon';
+        document.head.appendChild(png);
+      }
+      png.type=/\.svg$|^data:image\/svg/i.test(src)?'image/svg+xml':'image/png';
+      png.href=src;
+      if(svg) svg.remove();
+      if(apple) apple.href=src;
+    }else{
+      if(png) png.remove();
+      if(!document.getElementById('iconeSvg')&&iconePadrao){
+        var l=document.createElement('link');
+        l.id='iconeSvg'; l.rel='icon'; l.type='image/svg+xml'; l.href=iconePadrao;
+        document.head.appendChild(l);
+      }
+      if(apple) apple.href=LOGO.arquivo;
+    }
+  }
+
+  function padrao(){
+    aplica(LOGO.arquivo,LOGO.altura,LOGO.mostrarNome);
+    aplicaSimbolo(LOGO.simbolo,LOGO.simboloNoIcone);
+  }
   document.addEventListener('DOMContentLoaded',padrao);
-  return {aplica:aplica,padrao:padrao};
+  return {aplica:aplica,aplicaSimbolo:aplicaSimbolo,padrao:padrao};
 })();
 
 /* ============================================================
@@ -1517,6 +1689,8 @@ var CALC=(function(){
     calibP1:null,
     zoom:1, escala:50, pxm:null, pxmOrigem:'',
     base:null, baseW:0, baseH:0, dpr:1,
+    origem:null, baseCtx:null, rot:0,
+    imaCanto:true, sel:null,
     doc:null, pagina:1, paginas:1, renderScale:1, ehPdf:false,
     url:null, nome:'', pd:2.80,
     pdfBase:null
@@ -1639,6 +1813,68 @@ var CALC=(function(){
     return Math.sqrt(dx*dx+dy*dy)/S.pxm;
   }
 
+  /* ---------- rotação da planta ----------
+     A planta gira em passos de 90°. A imagem de origem nunca é
+     alterada: o giro é redesenhado a partir dela, e todos os
+     pontos já marcados são remapeados para o novo sistema de
+     coordenadas. Girar não altera a escala em px/m. */
+  function montaBaseGirada(){
+    if(!S.origem) return;
+    var ow=S.origem.width, oh=S.origem.height;
+    var reto=(S.rot%180===0);
+    var nw=reto?ow:oh, nh=reto?oh:ow;
+    var off=document.createElement('canvas');
+    off.width=nw; off.height=nh;
+    var g=off.getContext('2d');
+    g.save();
+    if(S.rot===90){ g.translate(nw,0); g.rotate(Math.PI/2); }
+    else if(S.rot===180){ g.translate(nw,nh); g.rotate(Math.PI); }
+    else if(S.rot===270){ g.translate(0,nh); g.rotate(-Math.PI/2); }
+    g.drawImage(S.origem,0,0);
+    g.restore();
+    S.base=off; S.baseW=nw; S.baseH=nh; S.baseCtx=g;
+  }
+  function giraPlanta(sentido){
+    if(!S.origem) return;
+    var W=S.baseW, H=S.baseH;
+    var mapa=sentido>0
+      ? function(p){ return {x:H-p.y, y:p.x}; }   /* 90° à direita */
+      : function(p){ return {x:p.y, y:W-p.x}; };  /* 90° à esquerda */
+    S.rot=(S.rot+(sentido>0?90:270))%360;
+    montaBaseGirada();
+    S.walls.forEach(function(w){
+      w.p1=mapa(w.p1); w.p2=mapa(w.p2);
+    });
+    if(S.p1) S.p1=mapa(S.p1);
+    if(S.calibP1) S.calibP1=mapa(S.calibP1);
+    S.mouse=null; S.snap=null;
+    if(EL.lblRot) EL.lblRot.textContent=S.rot+'°';
+    S.zoom=1; if(EL.lblZoom) EL.lblZoom.textContent='100%';
+    ajustaCanvas();
+    recalcular();
+  }
+
+  /* ---------- zoom com âncora ----------
+     Mantém sob o dedo (ou sob o centro da tela) o mesmo ponto da
+     planta que estava lá antes de mudar o zoom. */
+  function aplicaZoom(z,ancX,ancY){
+    if(!S.base) return;
+    z=Math.max(0.3,Math.min(6,z));
+    var cvs=EL.canvas, tela=EL.tela;
+    var r0=cvs.getBoundingClientRect();
+    if(ancX===undefined){
+      var rt=tela.getBoundingClientRect();
+      ancX=rt.left+rt.width/2; ancY=rt.top+rt.height/2;
+    }
+    var mx=(ancX-r0.left)/S.zoom, my=(ancY-r0.top)/S.zoom;
+    S.zoom=z;
+    EL.lblZoom.textContent=Math.round(S.zoom*100)+'%';
+    ajustaCanvas();
+    var r1=cvs.getBoundingClientRect();
+    tela.scrollLeft+=(r1.left+mx*S.zoom)-ancX;
+    tela.scrollTop +=(r1.top +my*S.zoom)-ancY;
+  }
+
   /* ---------- desenho ---------- */
   function ajustaCanvas(){
     if(!S.base) return;
@@ -1708,9 +1944,53 @@ var CALC=(function(){
       g.beginPath(); g.moveTo(S.calibP1.x,S.calibP1.y); g.lineTo(S.mouse.x,S.mouse.y); g.stroke();
       g.restore();
     }
+    /* destaque do item selecionado */
+    if(S.sel){
+      var w=S.sel.wall;
+      if(w){
+        if(S.sel.tipo==='parede'){
+          g.save();
+          g.strokeStyle='#f4b41a'; g.lineWidth=esp+4; g.lineCap='round';
+          g.globalAlpha=.55;
+          g.beginPath(); g.moveTo(w.p1.x,w.p1.y); g.lineTo(w.p2.x,w.p2.y); g.stroke();
+          g.restore();
+        }else{
+          var o=w.openings[S.sel.idx];
+          if(o){
+            var ps=pontoEm(w,o.t);
+            g.save();
+            g.strokeStyle='#f4b41a'; g.lineWidth=3;
+            g.beginPath(); g.arc(ps.x,ps.y,Math.max(11,esp*1.3),0,6.2832); g.stroke();
+            g.strokeStyle='#fff'; g.lineWidth=1.2;
+            g.beginPath(); g.arc(ps.x,ps.y,Math.max(14,esp*1.3+3),0,6.2832); g.stroke();
+            g.restore();
+          }
+        }
+      }
+    }
+
     if(S.snap&&S.snap.grudou){
-      g.strokeStyle='#1f9d55'; g.lineWidth=2.4;
-      g.beginPath(); g.arc(S.snap.x,S.snap.y,10,0,6.2832); g.stroke();
+      if(S.snap.canto){
+        /* canto reconhecido: quadrado verde e as duas linhas do encontro */
+        g.save();
+        g.strokeStyle='#1f9d55'; g.lineWidth=2.2;
+        g.beginPath(); g.rect(S.snap.x-9,S.snap.y-9,18,18); g.stroke();
+        if(S.snap.ang1!==undefined){
+          g.setLineDash([5,4]); g.lineWidth=1.4; g.globalAlpha=.85;
+          [S.snap.ang1,S.snap.ang2].forEach(function(a){
+            var dx=Math.cos(a)*26, dy=Math.sin(a)*26;
+            g.beginPath();
+            g.moveTo(S.snap.x-dx,S.snap.y-dy);
+            g.lineTo(S.snap.x+dx,S.snap.y+dy);
+            g.stroke();
+          });
+        }
+        g.restore();
+        rotulo(g,'canto',S.snap.x,S.snap.y-20,'#1f9d55');
+      }else{
+        g.strokeStyle='#1f9d55'; g.lineWidth=2.4;
+        g.beginPath(); g.arc(S.snap.x,S.snap.y,10,0,6.2832); g.stroke();
+      }
     }
     g.setTransform(1,0,0,1,0,0);
   }
@@ -1732,7 +2012,15 @@ var CALC=(function(){
     return {x:w.p1.x+(w.p2.x-w.p1.x)*t, y:w.p1.y+(w.p2.y-w.p1.y)*t};
   }
 
-  /* ---------- ímã e geometria ---------- */
+  /* ---------- ímã e geometria ----------
+     Ordem de prioridade do ímã:
+       1. canto já marcado (ponta de parede traçada)
+       2. encontro de duas paredes já traçadas
+       3. canto do próprio desenho: duas linhas dominantes
+          detectadas na imagem em volta do clique
+       4. linha única do desenho (encosta na parede)
+       5. alinhamento ortogonal com o ponto anterior
+  */
   function imã(p){
     var raio=Math.max(10,16/S.zoom), melhor=null, dmin=Infinity;
     S.walls.forEach(function(w){
@@ -1742,6 +2030,15 @@ var CALC=(function(){
       });
     });
     if(melhor) return melhor;
+
+    var cp=cantoParedes(p,Math.max(16,26/S.zoom));
+    if(cp) return cp;
+
+    if(S.imaCanto){
+      var cr=cantoDesenho(p);
+      if(cr) return cr;
+    }
+
     var ref=S.tool==='calibrar'?S.calibP1:S.p1;
     if(ref){
       var tol=Math.max(6,10/S.zoom);
@@ -1749,6 +2046,148 @@ var CALC=(function(){
       if(Math.abs(p.y-ref.y)<tol) return {x:p.x,y:ref.y,grudou:true};
     }
     return {x:p.x,y:p.y,grudou:false};
+  }
+
+  /* encontro de duas paredes já traçadas, mesmo que as pontas não
+     se toquem: cruza as duas retas e devolve o vértice */
+  function cantoParedes(p,raio){
+    if(S.walls.length<2) return null;
+    var perto=S.walls.filter(function(w){
+      return distSeg(p,w.p1,w.p2).d<raio*1.8;
+    });
+    if(perto.length<2) return null;
+    var melhor=null, dmin=Infinity;
+    for(var i=0;i<perto.length;i++){
+      for(var j=i+1;j<perto.length;j++){
+        var a=perto[i], b=perto[j];
+        var a1=Math.atan2(a.p2.y-a.p1.y,a.p2.x-a.p1.x);
+        var b1=Math.atan2(b.p2.y-b.p1.y,b.p2.x-b.p1.x);
+        var dif=Math.abs(((a1-b1)*180/Math.PI)%180);
+        if(dif>90) dif=180-dif;
+        if(dif<18) continue;              /* quase paralelas: não é canto */
+        var x=cruzaRetas(a.p1,a.p2,b.p1,b.p2);
+        if(!x) continue;
+        var d=Math.hypot(p.x-x.x,p.y-x.y);
+        if(d<raio*1.8&&d<dmin){
+          dmin=d;
+          melhor={x:x.x,y:x.y,grudou:true,canto:true,ang1:a1,ang2:b1};
+        }
+      }
+    }
+    return melhor;
+  }
+  function cruzaRetas(a1,a2,b1,b2){
+    var dxa=a2.x-a1.x, dya=a2.y-a1.y, dxb=b2.x-b1.x, dyb=b2.y-b1.y;
+    var det=dxa*dyb-dya*dxb;
+    if(Math.abs(det)<1e-9) return null;
+    var t=((b1.x-a1.x)*dyb-(b1.y-a1.y)*dxb)/det;
+    return {x:a1.x+dxa*t, y:a1.y+dya*t};
+  }
+
+  /* ---------- canto do próprio desenho ----------
+     Lê um quadrado pequeno da planta em volta do clique, separa os
+     pixels de traço e roda uma transformada de Hough local para
+     achar as duas linhas dominantes. O cruzamento dessas duas
+     linhas é o canto. Funciona igual em PDF e em imagem, porque
+     trabalha sobre o que está desenhado na tela, não sobre o
+     vetor do arquivo. */
+  var HT=null;
+  function tabelaHough(nt){
+    if(HT&&HT.nt===nt) return HT;
+    var cos=new Float64Array(nt), sen=new Float64Array(nt);
+    for(var t=0;t<nt;t++){
+      var a=t*Math.PI/nt;
+      cos[t]=Math.cos(a); sen[t]=Math.sin(a);
+    }
+    HT={nt:nt,cos:cos,sen:sen};
+    return HT;
+  }
+  function cantoDesenho(p){
+    if(!S.base||!S.baseCtx) return null;
+    var R=Math.round(Math.max(16,Math.min(44,30/S.zoom)));
+    var L=R*2+1;
+    var x0=Math.round(p.x)-R, y0=Math.round(p.y)-R;
+    if(x0<0||y0<0||x0+L>S.baseW||y0+L>S.baseH) return null;
+
+    var dados;
+    try{ dados=S.baseCtx.getImageData(x0,y0,L,L).data; }catch(e){ return null; }
+
+    /* pixels de traço: escuros ou coloridos sobre fundo claro */
+    var px=[], py=[], passo=L>70?2:1;
+    for(var yy=0;yy<L;yy+=passo){
+      for(var xx=0;xx<L;xx+=passo){
+        var i=(yy*L+xx)*4;
+        if(dados[i+3]<40) continue;
+        var lum=dados[i]*0.299+dados[i+1]*0.587+dados[i+2]*0.114;
+        if(lum<200){ px.push(xx-R); py.push(yy-R); }
+      }
+    }
+    var n=px.length;
+    if(n<14) return null;
+    if(n>L*L*0.45) return null;          /* área preenchida, não é linha */
+
+    var NT=90, tab=tabelaHough(NT);
+    var RM=Math.ceil(R*1.4143), NR=2*RM+1;
+    var acc=new Int32Array(NT*NR);
+    for(var k=0;k<n;k++){
+      var vx=px[k], vy=py[k];
+      for(var t=0;t<NT;t++){
+        var r=Math.round(vx*tab.cos[t]+vy*tab.sen[t])+RM;
+        acc[t*NR+r]++;
+      }
+    }
+    /* soma dos três rho vizinhos: tolera linha com espessura */
+    function forca(t,r){
+      var s=0, base=t*NR;
+      for(var d=-1;d<=1;d++){
+        var rr=r+d;
+        if(rr>=0&&rr<NR) s+=acc[base+rr];
+      }
+      return s;
+    }
+    var t1=-1,r1=-1,f1=0;
+    for(var tt=0;tt<NT;tt++){
+      for(var rr2=0;rr2<NR;rr2++){
+        var f=forca(tt,rr2);
+        if(f>f1){f1=f;t1=tt;r1=rr2;}
+      }
+    }
+    var minF=Math.max(9,Math.round(R*0.5));
+    if(f1<minF) return null;
+
+    /* segunda linha: pelo menos 25° de diferença da primeira */
+    var sepT=Math.round(NT*25/180);
+    var t2=-1,r2=-1,f2=0;
+    for(var ta=0;ta<NT;ta++){
+      var dt=Math.abs(ta-t1); if(dt>NT/2) dt=NT-dt;
+      if(dt<sepT) continue;
+      for(var ra=0;ra<NR;ra++){
+        var g2=forca(ta,ra);
+        if(g2>f2){f2=g2;t2=ta;r2=ra;}
+      }
+    }
+    var a1=t1*Math.PI/NT+Math.PI/2;   /* direção da linha 1 */
+
+    if(t2>=0&&f2>=minF*0.6){
+      var c1=tab.cos[t1], s1=tab.sen[t1], c2=tab.cos[t2], s2=tab.sen[t2];
+      var det=c1*s2-c2*s1;
+      if(Math.abs(det)>1e-6){
+        var rho1=r1-RM, rho2=r2-RM;
+        var lx=(rho1*s2-rho2*s1)/det;
+        var ly=(c1*rho2-c2*rho1)/det;
+        if(Math.hypot(lx,ly)<=R*0.92){
+          return {x:p.x+lx, y:p.y+ly, grudou:true, canto:true,
+                  ang1:a1, ang2:t2*Math.PI/NT+Math.PI/2};
+        }
+      }
+    }
+
+    /* só uma linha: encosta o ponto sobre ela (perpendicular) */
+    var rho=r1-RM;
+    var dist=rho;                       /* distância do clique até a reta */
+    if(Math.abs(dist)>R*0.5) return null;
+    return {x:p.x+tab.cos[t1]*dist, y:p.y+tab.sen[t1]*dist,
+            grudou:true, linha:true};
   }
   function distSeg(p,a,b){
     var l2=(b.x-a.x)*(b.x-a.x)+(b.y-a.y)*(b.y-a.y);
@@ -1764,18 +2203,21 @@ var CALC=(function(){
     document.querySelectorAll('.tool[data-tool]').forEach(function(b){
       b.classList.toggle('on',b.dataset.tool===t);
     });
-    var nomes={parede:'traçar parede',porta:'inserir porta',janela:'inserir janela',
+    var nomes={sel:'selecionar e editar',parede:'traçar parede',porta:'inserir porta',janela:'inserir janela',
       basculante:'inserir basculante',vidro:'inserir painel de vidro',calibrar:'calibrar escala'};
     EL.lblModo.textContent=nomes[t]||t;
+    if(t!=='sel') limpaSel();
     instrucao();
     redesenha();
   }
   function instrucao(){
     var t=EL.instruTxt;
-    if(S.tool==='parede'){
+    if(S.tool==='sel'){
+      t.innerHTML='Toque na porta, janela ou painel para editar o tamanho ou apagar. Tocando fora da esquadria, seleciona a parede.';
+    }else if(S.tool==='parede'){
       t.innerHTML=S.p1
         ? 'Clique no segundo canto para fechar a parede. Esc cancela.'
-        : 'Clique no primeiro canto da parede. O cursor gruda nos cantos já marcados.';
+        : 'Clique no primeiro canto da parede. O cursor gruda nos cantos já marcados e nos cantos do próprio desenho.';
     }else if(S.tool==='calibrar'){
       t.innerHTML=S.calibP1
         ? 'Clique na outra ponta da cota conhecida.'
@@ -1785,9 +2227,149 @@ var CALC=(function(){
     }
   }
 
+  /* ---------- seleção e edição ---------- */
+  function limpaSel(){
+    S.sel=null;
+    if(EL.cardSel) EL.cardSel.classList.remove('on');
+  }
+  function selecionaEm(bruto){
+    /* primeiro procura esquadria, depois parede */
+    var tolE=Math.max(15,(S.pxm?S.pxm*0.30:22));
+    var achou=null, dmin=Infinity;
+    S.walls.forEach(function(w){
+      w.openings.forEach(function(o,idx){
+        var pt=pontoEm(w,o.t);
+        var d=Math.hypot(bruto.x-pt.x,bruto.y-pt.y);
+        if(d<tolE&&d<dmin){dmin=d;achou={tipo:'esq',wall:w,idx:idx};}
+      });
+    });
+    if(!achou){
+      var tolP=Math.max(14,(S.pxm?S.pxm*0.25:20)), dp=Infinity;
+      S.walls.forEach(function(w){
+        var r=distSeg(bruto,w.p1,w.p2);
+        if(r.d<tolP&&r.d<dp){dp=r.d;achou={tipo:'parede',wall:w};}
+      });
+    }
+    S.sel=achou;
+    mostraSel();
+    redesenha();
+    if(!achou) erro('Nada encontrado nesse ponto. Toque mais perto da esquadria ou da linha da parede.');
+    else limpaAvisos();
+  }
+  function indiceParede(w){
+    for(var i=0;i<S.walls.length;i++) if(S.walls[i]===w) return i+1;
+    return 0;
+  }
+  function mostraSel(){
+    var card=EL.cardSel;
+    if(!card) return;
+    if(!S.sel||!S.sel.wall){ card.classList.remove('on'); return; }
+    var w=S.sel.wall, np=indiceParede(w);
+    var campos=EL.selCampos;
+    campos.innerHTML='';
+
+    if(S.sel.tipo==='esq'){
+      var o=w.openings[S.sel.idx];
+      if(!o){ limpaSel(); return; }
+      EL.selTitulo.textContent=o.nome+' na Parede '+np;
+      EL.selTag.textContent='esquadria';
+      var op='';
+      Object.keys(ESQ).forEach(function(k){
+        op+='<option value="'+k+'"'+(k===o.tipo?' selected':'')+'>'+ESQ[k].nome+'</option>';
+      });
+      campos.innerHTML=
+        '<div class="sel-campo"><label for="selTipo">Tipo</label>'+
+        '<select id="selTipo">'+op+'</select></div>'+
+        '<div class="sel-campo"><label for="selL">Largura (m)</label>'+
+        '<input type="number" id="selL" min="0.2" max="12" step="0.05" value="'+o.l.toFixed(2)+'"></div>'+
+        '<div class="sel-campo"><label for="selH">Altura (m)</label>'+
+        '<input type="number" id="selH" min="0.2" max="6" step="0.05" value="'+o.h.toFixed(2)+'"></div>'+
+        '<div class="sel-campo"><label for="selT">Posição na parede (%)</label>'+
+        '<input type="number" id="selT" min="0" max="100" step="1" value="'+Math.round(o.t*100)+'"></div>';
+      EL.selNota.textContent='Trocar o tipo troca o tamanho padrão. Depois disso você ainda pode ajustar largura e altura na mão. O desconto de vãos é recalculado ao aplicar.';
+      var selTipo=document.getElementById('selTipo');
+      selTipo.addEventListener('change',function(){
+        var cfg=ESQ[selTipo.value];
+        if(cfg){
+          document.getElementById('selL').value=cfg.l.toFixed(2);
+          document.getElementById('selH').value=cfg.h.toFixed(2);
+        }
+      });
+    }else{
+      var m=metrosDe(w);
+      EL.selTitulo.textContent='Parede '+np;
+      EL.selTag.textContent='parede';
+      campos.innerHTML=
+        '<div class="sel-campo"><label for="selComp">Comprimento (m)</label>'+
+        '<input type="number" id="selComp" min="0.1" max="200" step="0.05" value="'+
+          (m!==null?m.toFixed(2):'')+'"'+(m===null?' disabled':'')+'></div>'+
+        '<div class="sel-campo"><label>Esquadrias nesta parede</label>'+
+        '<span style="font-family:var(--disp);font-size:1.2rem">'+w.openings.length+'</span></div>';
+      EL.selNota.textContent=m===null
+        ? 'Sem escala definida não é possível editar o comprimento. Defina a escala ou calibre por uma cota.'
+        : 'Alterar o comprimento move só a segunda ponta da parede, mantendo a direção e o primeiro canto. Apagar a parede apaga também as esquadrias dela.';
+    }
+    card.classList.add('on');
+  }
+  function aplicaSel(){
+    if(!S.sel||!S.sel.wall) return;
+    var w=S.sel.wall;
+    if(S.sel.tipo==='esq'){
+      var o=w.openings[S.sel.idx];
+      if(!o) return;
+      var tipo=document.getElementById('selTipo').value;
+      var l=parseFloat(String(document.getElementById('selL').value).replace(',','.'));
+      var h=parseFloat(String(document.getElementById('selH').value).replace(',','.'));
+      var t=parseFloat(String(document.getElementById('selT').value).replace(',','.'));
+      if(!isFinite(l)||l<=0||!isFinite(h)||h<=0){
+        erro('Largura e altura precisam ser números maiores que zero, em metros.');
+        return;
+      }
+      var mp=metrosDe(w);
+      if(mp!==null&&l>mp){
+        erro('Largura de '+nf(l)+' m não cabe na Parede '+indiceParede(w)+', que tem '+nf(mp)+' m. Ajuste o vão ou o traçado.');
+        return;
+      }
+      if(h>S.pd){
+        erro('Altura de '+nf(h)+' m passa do pé-direito de '+nf(S.pd)+' m. Corrija a altura ou o pé-direito.');
+        return;
+      }
+      o.tipo=tipo;
+      o.nome=ESQ[tipo]?ESQ[tipo].nome:o.nome;
+      o.l=l; o.h=h;
+      if(isFinite(t)) o.t=Math.max(0,Math.min(1,t/100));
+      limpaAvisos();
+      recalcular(); mostraSel();
+    }else{
+      var el=document.getElementById('selComp');
+      if(!el||el.disabled) return;
+      var novo=parseFloat(String(el.value).replace(',','.'));
+      if(!isFinite(novo)||novo<=0){ erro('Informe o comprimento em metros, por exemplo 3,20.'); return; }
+      var dx=w.p2.x-w.p1.x, dy=w.p2.y-w.p1.y, d=Math.hypot(dx,dy);
+      if(d<1){ erro('Parede muito curta para redimensionar. Apague e trace de novo.'); return; }
+      var k=(novo*S.pxm)/d;
+      w.p2={x:w.p1.x+dx*k, y:w.p1.y+dy*k};
+      limpaAvisos();
+      recalcular(); mostraSel();
+    }
+  }
+  function excluiSel(){
+    if(!S.sel||!S.sel.wall) return;
+    var w=S.sel.wall;
+    if(S.sel.tipo==='esq'){
+      w.openings.splice(S.sel.idx,1);
+      limpaSel(); recalcular(); return;
+    }
+    if(w.openings.length&&!window.confirm('Apagar a Parede '+indiceParede(w)+' e as '+w.openings.length+' esquadria(s) dela?')) return;
+    S.walls=S.walls.filter(function(x){return x!==w;});
+    limpaSel(); recalcular();
+  }
+
   function cliqueTela(ev){
     if(!S.base) return;
     var bruto=paraMundo(ev), p=imã(bruto);
+
+    if(S.tool==='sel'){ selecionaEm(bruto); return; }
 
     if(S.tool==='calibrar'){
       if(!S.calibP1){ S.calibP1=p; instrucao(); redesenha(); return; }
@@ -1844,12 +2426,14 @@ var CALC=(function(){
       var off=document.createElement('canvas');
       off.width=Math.round(vp.width); off.height=Math.round(vp.height);
       await pg.render({canvasContext:off.getContext('2d'),viewport:vp}).promise;
-      S.base=off; S.baseW=off.width; S.baseH=off.height;
+      S.origem=off;
+      montaBaseGirada();
       aplicaEscala();
     }
     EL.lblPagina.textContent=S.pagina+' / '+S.paginas;
     EL.pgAnt.disabled=S.pagina<=1;
     EL.pgProx.disabled=S.pagina>=S.paginas;
+    if(EL.lblRot) EL.lblRot.textContent=S.rot+'°';
     S.zoom=1; EL.lblZoom.textContent='100%';
     ajustaCanvas();
   }
@@ -1869,6 +2453,8 @@ var CALC=(function(){
     }
 
     S.walls=[]; S.p1=null; S.calibP1=null; S.mouse=null;
+    S.rot=0; S.origem=null; S.baseCtx=null; limpaSel();
+    if(EL.lblRot) EL.lblRot.textContent='0°';
     S.nome=file.name;
     if(S.url) URL.revokeObjectURL(S.url);
     S.url=URL.createObjectURL(file);
@@ -1935,7 +2521,9 @@ var CALC=(function(){
         var off=document.createElement('canvas');
         off.width=Math.round(img.width*k); off.height=Math.round(img.height*k);
         off.getContext('2d').drawImage(img,0,0,off.width,off.height);
-        S.base=off; S.baseW=off.width; S.baseH=off.height;
+        S.origem=off; S.rot=0;
+        if(EL.lblRot) EL.lblRot.textContent='0°';
+        montaBaseGirada();
         S.ehPdf=false; S.doc=null; S.paginas=1; S.pagina=1;
         S.pxm=null; S.pxmOrigem='';
         EL.selEscala.disabled=true;
@@ -1953,7 +2541,8 @@ var CALC=(function(){
 
   /* ---------- 3D ---------- */
   var T={pronto:false,cena:null,cam:null,rend:null,grupo:null,
-         alvo:null,raio:18,teta:0.6,fi:0.85,down:false,pan:false,mx:0,my:0};
+         alvo:null,raio:18,teta:0.6,fi:0.85,down:false,pan:false,mx:0,my:0,
+         mover:false,tn:0,tx:0,ty:0,td:0,tr0:18};
 
   function iniciar3D(){
     if(T.pronto) return;
@@ -1975,19 +2564,58 @@ var CALC=(function(){
       T.grupo=new THREE.Group(); T.cena.add(T.grupo);
 
       var dom=T.rend.domElement;
+      dom.style.touchAction='none';
       dom.addEventListener('contextmenu',function(e){e.preventDefault();});
       dom.addEventListener('mousedown',function(e){
-        T.down=true; T.pan=(e.button===2||e.shiftKey); T.mx=e.clientX; T.my=e.clientY;
+        T.down=true; T.pan=(e.button===2||e.shiftKey||T.mover); T.mx=e.clientX; T.my=e.clientY;
       });
       window.addEventListener('mouseup',function(){T.down=false;T.pan=false;});
       dom.addEventListener('mousemove',function(e){
         if(!T.down) return;
         var dx=e.clientX-T.mx, dy=e.clientY-T.my;
-        if(T.pan){ T.alvo.x-=dx*0.02; T.alvo.y+=dy*0.02; }
-        else{ T.teta-=dx*0.008; T.fi=Math.max(0.12,Math.min(1.52,T.fi-dy*0.008)); }
-        T.mx=e.clientX; T.my=e.clientY; camera3D();
+        if(T.pan) pan3D(dx,dy);
+        else orbita3D(dx,dy);
+        T.mx=e.clientX; T.my=e.clientY;
       });
       dom.addEventListener('wheel',function(e){e.preventDefault();zoom3D(e.deltaY>0?1.12:0.89);},{passive:false});
+
+      /* toque: 1 dedo gira (ou move, se o modo Mover estiver ligado),
+         2 dedos movem e aproximam ao mesmo tempo */
+      dom.addEventListener('touchstart',function(e){
+        if(e.touches.length===1){
+          T.tn=1; T.tx=e.touches[0].clientX; T.ty=e.touches[0].clientY;
+        }else if(e.touches.length>=2){
+          var a=e.touches[0], b=e.touches[1];
+          T.tn=2;
+          T.td=Math.hypot(b.clientX-a.clientX,b.clientY-a.clientY)||1;
+          T.tr0=T.raio;
+          T.tx=(a.clientX+b.clientX)/2; T.ty=(a.clientY+b.clientY)/2;
+        }
+        e.preventDefault();
+      },{passive:false});
+      dom.addEventListener('touchmove',function(e){
+        if(T.tn===1&&e.touches.length===1){
+          var t=e.touches[0];
+          var dx=t.clientX-T.tx, dy=t.clientY-T.ty;
+          if(T.mover) pan3D(dx,dy); else orbita3D(dx,dy);
+          T.tx=t.clientX; T.ty=t.clientY;
+        }else if(T.tn===2&&e.touches.length>=2){
+          var a2=e.touches[0], b2=e.touches[1];
+          var d2=Math.hypot(b2.clientX-a2.clientX,b2.clientY-a2.clientY)||1;
+          var cx=(a2.clientX+b2.clientX)/2, cy=(a2.clientY+b2.clientY)/2;
+          pan3D(cx-T.tx,cy-T.ty);
+          T.raio=Math.max(3,Math.min(120,T.tr0*(T.td/d2)));
+          T.tx=cx; T.ty=cy;
+          camera3D();
+        }
+        e.preventDefault();
+      },{passive:false});
+      dom.addEventListener('touchend',function(e){
+        if(e.touches.length===0) T.tn=0;
+        else if(e.touches.length===1){
+          T.tn=1; T.tx=e.touches[0].clientX; T.ty=e.touches[0].clientY;
+        }
+      });
       window.addEventListener('resize',function(){
         if(!T.rend) return;
         var l=cx.clientWidth||600,a=cx.clientHeight||340;
@@ -2010,6 +2638,30 @@ var CALC=(function(){
       T.alvo.y+T.raio*Math.cos(T.fi),
       T.alvo.z+T.raio*Math.sin(T.fi)*Math.cos(T.teta));
     T.cam.lookAt(T.alvo);
+  }
+  function orbita3D(dx,dy){
+    if(!T.cam) return;
+    T.teta-=dx*0.008;
+    T.fi=Math.max(0.12,Math.min(1.52,T.fi-dy*0.008));
+    camera3D();
+  }
+  /* move o alvo da câmera nas direções da própria tela, para o
+     arraste seguir o dedo em qualquer ângulo de visão */
+  function pan3D(dx,dy){
+    if(!T.cam) return;
+    T.cam.updateMatrixWorld();
+    var dir=new THREE.Vector3().setFromMatrixColumn(T.cam.matrixWorld,0);
+    var cima=new THREE.Vector3().setFromMatrixColumn(T.cam.matrixWorld,1);
+    var k=T.raio*0.0022;
+    T.alvo.addScaledVector(dir,-dx*k).addScaledVector(cima,dy*k);
+    camera3D();
+  }
+  function modo3D(mover){
+    T.mover=!!mover;
+    var b=$('z3dMover'), l=$('lbl3d');
+    if(b) b.style.background=T.mover?'var(--azul-700)':'#fff';
+    if(b) b.style.color=T.mover?'#fff':'var(--azul-700)';
+    if(l) l.textContent=T.mover?'mover':'girar';
   }
   function zoom3D(f){ if(!T.cam) return; T.raio=Math.max(3,Math.min(120,T.raio*f)); camera3D(); }
   function reset3D(){ if(!T.cam) return; T.alvo.set(0,1.4,0); T.raio=18; T.teta=0.6; T.fi=0.85; camera3D(); }
@@ -2075,6 +2727,7 @@ var CALC=(function(){
   function recalcular(){
     S.pd=parseFloat(EL.peDireito.value)||2.8;
     EL.rPd.textContent=nf(S.pd);
+    if(S.sel&&S.walls.indexOf(S.sel.wall)<0) limpaSel();
 
     var metros=0, areaVaos=0, qtdEsq=0, semEscala=!S.pxm;
     var lista=EL.listaParedes; lista.innerHTML='';
@@ -2146,8 +2799,10 @@ var CALC=(function(){
     EL.card3d=$('card3d'); EL.cardResultado=$('cardResultado');
     EL.selEscala=$('selEscala'); EL.pillEscala=$('pillEscala'); EL.pillEscalaTxt=$('pillEscalaTxt');
     EL.lblModo=$('lblModo'); EL.lblZoom=$('lblZoom'); EL.lblPagina=$('lblPagina');
-    EL.pgAnt=$('pgAnt'); EL.pgProx=$('pgProx');
+    EL.pgAnt=$('pgAnt'); EL.pgProx=$('pgProx'); EL.lblRot=$('lblRot');
     EL.instruTxt=$('instruTxt');
+    EL.cardSel=$('cardSel'); EL.selTitulo=$('selTitulo'); EL.selTag=$('selTag');
+    EL.selCampos=$('selCampos'); EL.selNota=$('selNota');
     EL.peDireito=$('peDireito'); EL.waResultado=$('waResultado');
     ['mParedes','mMetros','mEsq','mEscala','rParedes','rMetros','rBruta','rVaos',
      'rLiquida','rBlocos','rBlocosM','rArg','rPd','listaParedes'].forEach(function(k){EL[k]=$(k);});
@@ -2185,7 +2840,7 @@ var CALC=(function(){
     $('btnLimpar').addEventListener('click',function(){
       if(!S.walls.length) return;
       if(window.confirm('Apagar todas as paredes traçadas?')){
-        S.walls=[];S.p1=null;S.mouse=null;recalcular();
+        S.walls=[];S.p1=null;S.mouse=null;limpaSel();recalcular();
       }
     });
     EL.listaParedes.addEventListener('click',function(e){
@@ -2193,12 +2848,28 @@ var CALC=(function(){
       if(!b) return;
       var id=b.getAttribute('data-del');
       S.walls=S.walls.filter(function(w){return String(w.id)!==id;});
+      limpaSel();
       recalcular();
     });
 
-    $('zoomMais').addEventListener('click',function(){S.zoom=Math.min(4,S.zoom*1.25);EL.lblZoom.textContent=Math.round(S.zoom*100)+'%';ajustaCanvas();});
-    $('zoomMenos').addEventListener('click',function(){S.zoom=Math.max(.4,S.zoom/1.25);EL.lblZoom.textContent=Math.round(S.zoom*100)+'%';ajustaCanvas();});
-    $('zoomReset').addEventListener('click',function(){S.zoom=1;EL.lblZoom.textContent='100%';ajustaCanvas();});
+    $('zoomMais').addEventListener('click',function(){aplicaZoom(S.zoom*1.25);});
+    $('zoomMenos').addEventListener('click',function(){aplicaZoom(S.zoom/1.25);});
+    $('zoomReset').addEventListener('click',function(){
+      S.zoom=1; EL.lblZoom.textContent='100%'; ajustaCanvas();
+      EL.tela.scrollLeft=0; EL.tela.scrollTop=0;
+    });
+    $('giraEsq').addEventListener('click',function(){giraPlanta(-1);});
+    $('giraDir').addEventListener('click',function(){giraPlanta(1);});
+
+    var chkCanto=$('imaCanto');
+    S.imaCanto=chkCanto?chkCanto.checked:true;
+    if(chkCanto) chkCanto.addEventListener('change',function(){
+      S.imaCanto=chkCanto.checked; S.snap=null; redesenha();
+    });
+
+    $('selAplicar').addEventListener('click',aplicaSel);
+    $('selExcluir').addEventListener('click',excluiSel);
+    $('selFechar').addEventListener('click',function(){limpaSel();redesenha();});
     EL.pgAnt.addEventListener('click',function(){if(S.pagina>1){S.pagina--;renderPagina();}});
     EL.pgProx.addEventListener('click',function(){if(S.pagina<S.paginas){S.pagina++;renderPagina();}});
     EL.selEscala.addEventListener('change',aplicaEscala);
@@ -2213,24 +2884,71 @@ var CALC=(function(){
     });
     EL.canvas.addEventListener('mouseleave',function(){S.snap=null;S.mouse=null;redesenha();});
     EL.canvas.addEventListener('click',cliqueTela);
-    EL.canvas.addEventListener('touchend',function(e){
-      if(e.changedTouches&&e.changedTouches.length===1){
-        var t=e.changedTouches[0];
-        cliqueTela({clientX:t.clientX,clientY:t.clientY});
-        e.preventDefault();
+
+    /* ---------- toque na planta ----------
+       1 dedo parado e solto rápido = clique da ferramenta
+       1 dedo arrastando            = anda pela planta
+       2 dedos                      = amplia e reduz, com o zoom
+                                      ancorado no meio dos dedos  */
+    var TQ={n:0,x:0,y:0,d:0,z0:1,andou:false,t0:0};
+    EL.canvas.addEventListener('touchstart',function(e){
+      if(!S.base) return;
+      if(e.touches.length===1){
+        TQ.n=1; TQ.x=e.touches[0].clientX; TQ.y=e.touches[0].clientY;
+        TQ.andou=false; TQ.t0=Date.now();
+      }else if(e.touches.length>=2){
+        var a=e.touches[0], b=e.touches[1];
+        TQ.n=2; TQ.andou=true;
+        TQ.d=Math.hypot(b.clientX-a.clientX,b.clientY-a.clientY)||1;
+        TQ.z0=S.zoom;
+        TQ.x=(a.clientX+b.clientX)/2; TQ.y=(a.clientY+b.clientY)/2;
       }
+      e.preventDefault();
     },{passive:false});
+    EL.canvas.addEventListener('touchmove',function(e){
+      if(!S.base) return;
+      if(TQ.n===1&&e.touches.length===1){
+        var t=e.touches[0];
+        var dx=t.clientX-TQ.x, dy=t.clientY-TQ.y;
+        if(Math.abs(dx)+Math.abs(dy)>7) TQ.andou=true;
+        EL.tela.scrollLeft-=dx; EL.tela.scrollTop-=dy;
+        TQ.x=t.clientX; TQ.y=t.clientY;
+      }else if(e.touches.length>=2){
+        var a2=e.touches[0], b2=e.touches[1];
+        var d2=Math.hypot(b2.clientX-a2.clientX,b2.clientY-a2.clientY)||1;
+        var cx=(a2.clientX+b2.clientX)/2, cy=(a2.clientY+b2.clientY)/2;
+        if(TQ.n!==2){ TQ.n=2; TQ.d=d2; TQ.z0=S.zoom; }
+        aplicaZoom(TQ.z0*(d2/TQ.d),cx,cy);
+        TQ.andou=true;
+      }
+      e.preventDefault();
+    },{passive:false});
+    EL.canvas.addEventListener('touchend',function(e){
+      if(e.touches.length===0){
+        var toque=e.changedTouches&&e.changedTouches[0];
+        if(TQ.n===1&&!TQ.andou&&toque&&(Date.now()-TQ.t0)<700){
+          cliqueTela({clientX:toque.clientX,clientY:toque.clientY});
+        }
+        TQ.n=0;
+      }else if(e.touches.length===1){
+        TQ.n=1; TQ.x=e.touches[0].clientX; TQ.y=e.touches[0].clientY; TQ.andou=true;
+      }
+      e.preventDefault();
+    },{passive:false});
+    EL.canvas.addEventListener('touchcancel',function(){TQ.n=0;});
 
     document.addEventListener('keydown',function(e){
       if(!document.getElementById('calculadora').classList.contains('ativa')) return;
-      if(e.key==='Escape'){S.p1=null;S.calibP1=null;instrucao();redesenha();}
+      if(e.key==='Escape'){S.p1=null;S.calibP1=null;limpaSel();instrucao();redesenha();}
+      if(e.key==='Delete'&&S.sel){e.preventDefault();excluiSel();}
       if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();S.walls.pop();recalcular();}
     });
 
     $('z3dMais').addEventListener('click',function(){zoom3D(.85);});
     $('z3dMenos').addEventListener('click',function(){zoom3D(1.18);});
     $('z3dCentro').addEventListener('click',centraliza3D);
-    $('z3dReset').addEventListener('click',reset3D);
+    $('z3dReset').addEventListener('click',function(){reset3D();modo3D(false);});
+    $('z3dMover').addEventListener('click',function(){modo3D(!T.mover);});
 
     $('btnBaixarImg').addEventListener('click',function(){
       if(!S.base){erro('Anexe uma planta antes de baixar a imagem.');return;}
@@ -2268,18 +2986,32 @@ var CALC=(function(){
     var sugestao=document.getElementById('nomeArquivoSug');
     var urlAtual=null, arquivoAtual=LOGO.arquivo;
 
+    /* segundo espaço: símbolo do infinito */
+    var inputSim=document.getElementById('arquivoSimbolo');
+    var dropSim=document.getElementById('dropSimbolo');
+    var simIcone=document.getElementById('simIcone');
+    var simErro=document.getElementById('simErro'), simErroTxt=document.getElementById('simErroTxt');
+    var simOk=document.getElementById('simOk'), simOkTxt=document.getElementById('simOkTxt');
+    var sugSim=document.getElementById('nomeSimboloSug');
+    var urlSim=null, arquivoSim=LOGO.simbolo;
+
     alturaEl.value=LOGO.altura;
     nomeEl.checked=LOGO.mostrarNome;
+    if(simIcone) simIcone.checked=LOGO.simboloNoIcone;
 
     function snippet(){
       pre.textContent='var LOGO = {\n'+
         "  arquivo: '"+arquivoAtual+"',\n"+
         '  altura: '+(parseInt(alturaEl.value,10)||44)+',\n'+
-        '  mostrarNome: '+(nomeEl.checked?'true':'false')+'\n};';
+        '  mostrarNome: '+(nomeEl.checked?'true':'false')+',\n'+
+        "  simbolo: '"+arquivoSim+"',\n"+
+        '  simboloNoIcone: '+((simIcone&&simIcone.checked)?'true':'false')+'\n};';
       sugestao.textContent=arquivoAtual;
+      if(sugSim) sugSim.textContent=arquivoSim;
     }
     function pinta(){
       MARCA.aplica(urlAtual||LOGO.arquivo,parseInt(alturaEl.value,10)||44,nomeEl.checked);
+      MARCA.aplicaSimbolo(urlSim||LOGO.simbolo,simIcone?simIcone.checked:false);
       snippet();
     }
     function falha(m){erroTxt.innerHTML=m;erro.classList.add('on');okBox.classList.remove('on');}
@@ -2327,6 +3059,69 @@ var CALC=(function(){
       e.preventDefault();
       recebe(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]);
     });
+
+    /* ---------- símbolo do infinito ---------- */
+    function simFalha(m){simErroTxt.innerHTML=m;simErro.classList.add('on');simOk.classList.remove('on');}
+    function simCerto(m){simOkTxt.innerHTML=m;simOk.classList.add('on');simErro.classList.remove('on');}
+
+    function recebeSim(file){
+      if(!file) return;
+      if(!/^image\//.test(file.type)&&!/\.(png|jpe?g|svg|webp)$/i.test(file.name)){
+        simFalha('Formato não suportado. Envie PNG, SVG, JPG ou WEBP.');return;
+      }
+      if(file.size>2*1024*1024){
+        simFalha('Arquivo de '+(file.size/1048576).toFixed(1)+' MB. O símbolo é uma imagem pequena: mantenha abaixo de 2 MB.');return;
+      }
+      if(urlSim) URL.revokeObjectURL(urlSim);
+      urlSim=URL.createObjectURL(file);
+      var ext=(file.name.match(/\.[a-z0-9]+$/i)||['.png'])[0].toLowerCase();
+      arquivoSim='simbolo'+(ext==='.jpeg'?'.jpg':ext);
+      pinta();
+      var img=new Image();
+      img.onload=function(){
+        var avisos='';
+        var razao=img.naturalWidth/img.naturalHeight;
+        if(razao<0.8||razao>1.25){
+          avisos+=' Atenção: a imagem está '+img.naturalWidth+'×'+img.naturalHeight+
+                  ' px, fora do quadrado. Ícone de aba e atalho de celular cortam ou distorcem imagem retangular.';
+        }
+        if(Math.min(img.naturalWidth,img.naturalHeight)<180&&!/\.svg$/i.test(arquivoSim)){
+          avisos+=' Atenção: menos de 180 px no menor lado. Vai sair serrilhado no atalho do celular; use 512×512.';
+        }
+        simCerto('<b>'+file.name+'</b> carregado ('+img.naturalWidth+'×'+img.naturalHeight+' px).'+
+                 ' Renomeie para <b>'+arquivoSim+'</b> e envie para a raiz do repositório, junto do index.html.'+avisos);
+      };
+      img.onerror=function(){simFalha('Não foi possível ler a imagem do símbolo. Tente outro arquivo.');};
+      img.src=urlSim;
+    }
+
+    if(dropSim){
+      dropSim.addEventListener('click',function(){inputSim.click();});
+      dropSim.addEventListener('keydown',function(e){
+        if(e.key==='Enter'||e.key===' '){e.preventDefault();inputSim.click();}
+      });
+      inputSim.addEventListener('change',function(e){
+        recebeSim(e.target.files&&e.target.files[0]); e.target.value='';
+      });
+      ['dragenter','dragover'].forEach(function(t){
+        dropSim.addEventListener(t,function(e){e.preventDefault();dropSim.classList.add('sobre');});
+      });
+      ['dragleave','dragend','drop'].forEach(function(t){
+        dropSim.addEventListener(t,function(){dropSim.classList.remove('sobre');});
+      });
+      dropSim.addEventListener('drop',function(e){
+        e.preventDefault();
+        recebeSim(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]);
+      });
+      simIcone.addEventListener('change',pinta);
+      document.getElementById('simReset').addEventListener('click',function(){
+        if(urlSim){URL.revokeObjectURL(urlSim);urlSim=null;}
+        arquivoSim=LOGO.simbolo;
+        simIcone.checked=LOGO.simboloNoIcone;
+        pinta();
+        simCerto('Voltou para o símbolo publicado: <b>'+LOGO.simbolo+'</b>.');
+      });
+    }
 
     alturaEl.addEventListener('input',pinta);
     nomeEl.addEventListener('change',pinta);
