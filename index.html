@@ -1006,6 +1006,12 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
           </div>
           <div class="sel-campos" id="selCampos"></div>
           <div class="sel-acoes">
+            <button class="btn btn-linha btn-sm" id="selHoriz">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-ajusta"></use></svg> Deixar horizontal
+            </button>
+            <button class="btn btn-linha btn-sm" id="selVert">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-ajusta"></use></svg> Deixar vertical
+            </button>
             <button class="btn btn-azul btn-sm" id="selAplicar">
               <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-check"></use></svg> Aplicar tamanho
             </button>
@@ -1723,6 +1729,9 @@ var CALC=(function(){
     prev:null,           /* prévia da parede reconhecida em 1 clique: {p1,p2,esp} */
     criada:null,         /* última parede criada pela prévia: {id,t} */
     semIma:false,        /* próximo clique não reconhece: traçado à mão */
+    arr:null,            /* arrasto em andamento: {wall,tipo,ini,base,mexeu} */
+    ultimoArr:null,      /* geometria antes do último arrasto, para desfazer */
+    ignoraClique:false,  /* engole o clique que fecha um arrasto */
     calibP1:null,
     zoom:1, escala:50, pxm:null, pxmOrigem:'',
     base:null, baseW:0, baseH:0, dpr:1,
@@ -1884,7 +1893,7 @@ var CALC=(function(){
     });
     if(S.p1) S.p1=mapa(S.p1);
     if(S.calibP1) S.calibP1=mapa(S.calibP1);
-    S.mouse=null; S.snap=null; S.prev=null; S.criada=null;
+    S.mouse=null; S.snap=null; S.prev=null; S.criada=null; S.arr=null; S.ultimoArr=null;
     if(EL.lblRot) EL.lblRot.textContent=S.rot+'°';
     S.zoom=1; if(EL.lblZoom) EL.lblZoom.textContent='100%';
     ajustaCanvas();
@@ -1967,6 +1976,21 @@ var CALC=(function(){
       rotulo(g,'P'+(i+1)+(m!==null?'  '+nf(m)+' m':''),mx,my-esp-6,'#0d47a1');
     });
 
+    /* parede sendo arrastada: destaque, medida e aviso de prumo */
+    if(S.arr&&S.arr.mexeu){
+      var wa=S.arr.wall;
+      g.save();
+      g.strokeStyle='#f4b41a'; g.lineWidth=esp+5; g.lineCap='round'; g.globalAlpha=.55;
+      g.beginPath(); g.moveTo(wa.p1.x,wa.p1.y); g.lineTo(wa.p2.x,wa.p2.y); g.stroke();
+      g.restore();
+      var dv=desvio(wa), av='';
+      if(dv.h<PRUMO) av='  ·  vai ficar horizontal';
+      else if(dv.v<PRUMO) av='  ·  vai ficar vertical';
+      else av='  ·  '+nf(Math.min(dv.h,dv.v),1)+'° fora do eixo';
+      var ca=Math.hypot(wa.p2.x-wa.p1.x,wa.p2.y-wa.p1.y);
+      rotulo(g,(S.pxm?nf(ca/S.pxm)+' m':nf(ca,0)+' px')+av,
+             (wa.p1.x+wa.p2.x)/2,(wa.p1.y+wa.p2.y)/2-esp-20,'#8a5a00');
+    }
     /* prévia da parede reconhecida em 1 clique: dois cantos + traço verde */
     if(S.tool==='parede'&&S.prev){
       var qa=S.prev.p1, qb=S.prev.p2;
@@ -2641,10 +2665,142 @@ var CALC=(function(){
     limpaSel(); limpaAvisos(); instrucao(); recalcular();
   }
 
+  /* ---------- arrastar a parede azul ----------
+     Segurando sobre a linha azul: perto de uma ponta arrasta só aquele
+     canto; no meio arrasta a parede inteira, sem girar. Ao soltar, se a
+     parede estiver a menos de PRUMO grau do eixo, ela é endireitada.
+     Vale em qualquer ferramenta: só o arrasto move, o clique parado
+     continua fazendo o que a ferramenta faz. */
+  var PRUMO=4;
+
+  function pegaAlca(bruto){
+    var tolP=Math.max(11,16/S.zoom), tolL=Math.max(9,13/S.zoom);
+    var achou=null, dmin=Infinity;
+    S.walls.forEach(function(w){
+      var d1=Math.hypot(bruto.x-w.p1.x,bruto.y-w.p1.y);
+      if(d1<tolP&&d1<dmin){ dmin=d1; achou={wall:w,tipo:'p1'}; }
+      var d2=Math.hypot(bruto.x-w.p2.x,bruto.y-w.p2.y);
+      if(d2<tolP&&d2<dmin){ dmin=d2; achou={wall:w,tipo:'p2'}; }
+    });
+    if(achou) return achou;
+    dmin=Infinity;
+    S.walls.forEach(function(w){
+      var r=distSeg(bruto,w.p1,w.p2);
+      if(r.d<tolL&&r.d<dmin){ dmin=r.d; achou={wall:w,tipo:'mover'}; }
+    });
+    return achou;
+  }
+
+  function iniciaArrasto(bruto,alca){
+    var w=alca.wall;
+    S.arr={wall:w, tipo:alca.tipo, mexeu:false,
+           ini:{x:bruto.x,y:bruto.y},
+           base:{p1:{x:w.p1.x,y:w.p1.y}, p2:{x:w.p2.x,y:w.p2.y}}};
+  }
+
+  /* ímã da ponta arrastada: ignora a própria parede e alinha em
+     esquadro com o canto que ficou parado */
+  function imaPonta(bruto,fixo){
+    var guarda=S.walls;
+    S.walls=S.walls.filter(function(w){ return w!==S.arr.wall; });
+    var p;
+    try{ p=imã(bruto); }catch(e){ p={x:bruto.x,y:bruto.y,grudou:false}; }
+    S.walls=guarda;
+    if(Math.hypot(p.x-fixo.x,p.y-fixo.y)<Math.max(8,12/S.zoom)) p={x:bruto.x,y:bruto.y};
+    var tol=Math.max(6,10/S.zoom);
+    if(Math.abs(p.x-fixo.x)<tol) return {x:fixo.x,y:p.y};
+    if(Math.abs(p.y-fixo.y)<tol) return {x:p.x,y:fixo.y};
+    return {x:p.x,y:p.y};
+  }
+
+  function moveArrasto(bruto){
+    if(!S.arr) return;
+    var a=S.arr, w=a.wall;
+    var dx=bruto.x-a.ini.x, dy=bruto.y-a.ini.y;
+    if(!a.mexeu&&Math.hypot(dx,dy)<Math.max(3,4/S.zoom)) return;
+    a.mexeu=true;
+    if(a.tipo==='mover'){
+      w.p1={x:a.base.p1.x+dx, y:a.base.p1.y+dy};
+      w.p2={x:a.base.p2.x+dx, y:a.base.p2.y+dy};
+    }else{
+      var fixo=(a.tipo==='p1')?a.base.p2:a.base.p1;
+      var alvo=imaPonta(bruto,fixo);
+      if(a.tipo==='p1'){ w.p1={x:alvo.x,y:alvo.y}; w.p2={x:fixo.x,y:fixo.y}; }
+      else            { w.p2={x:alvo.x,y:alvo.y}; w.p1={x:fixo.x,y:fixo.y}; }
+    }
+    S.mouse={x:bruto.x,y:bruto.y}; S.snap=null;
+    redesenha();
+  }
+
+  /* quanto a parede está fora do prumo, em graus */
+  function desvio(w){
+    var g=Math.abs(Math.atan2(w.p2.y-w.p1.y,w.p2.x-w.p1.x)*180/Math.PI)%180;
+    return {h:Math.min(g,180-g), v:Math.abs(g-90)};
+  }
+  function endireita(w,eixo,tipo){
+    if(eixo==='h'){
+      if(tipo==='p1') w.p1.y=w.p2.y;
+      else if(tipo==='p2') w.p2.y=w.p1.y;
+      else { var my=(w.p1.y+w.p2.y)/2; w.p1.y=my; w.p2.y=my; }
+    }else{
+      if(tipo==='p1') w.p1.x=w.p2.x;
+      else if(tipo==='p2') w.p2.x=w.p1.x;
+      else { var mx=(w.p1.x+w.p2.x)/2; w.p1.x=mx; w.p2.x=mx; }
+    }
+  }
+
+  function cancelaArrasto(){
+    if(!S.arr) return false;
+    var a=S.arr; S.arr=null;
+    S.ignoraClique=true;      /* o clique que fecha o gesto não vale */
+    a.wall.p1={x:a.base.p1.x,y:a.base.p1.y};
+    a.wall.p2={x:a.base.p2.x,y:a.base.p2.y};
+    S.mouse=null; instrucao(); recalcular();
+    return true;
+  }
+
+  function terminaArrasto(){
+    if(!S.arr) return false;
+    var a=S.arr, w=a.wall, mexeu=a.mexeu;
+    S.arr=null;
+    if(!mexeu){ redesenha(); return false; }
+    var d=desvio(w);
+    if(d.h<PRUMO) endireita(w,'h',a.tipo);
+    else if(d.v<PRUMO) endireita(w,'v',a.tipo);
+    if(Math.hypot(w.p2.x-w.p1.x,w.p2.y-w.p1.y)<4){   /* virou um ponto */
+      w.p1={x:a.base.p1.x,y:a.base.p1.y}; w.p2={x:a.base.p2.x,y:a.base.p2.y};
+      erro('Parede muito curta para ficar assim. O arrasto foi desfeito.');
+      S.mouse=null; recalcular(); return true;
+    }
+    S.ultimoArr={wall:w, p1:a.base.p1, p2:a.base.p2};
+    S.ignoraClique=true;
+    S.prev=null; S.p1=null; S.mouse=null;
+    S.sel={tipo:'parede',wall:w};
+    limpaAvisos(); mostraSel(); instrucao(); recalcular();
+    return true;
+  }
+
+  /* botões Deixar horizontal / Deixar vertical */
+  function poePrumo(eixo){
+    if(!S.sel||S.sel.tipo!=='parede'||!S.sel.wall) return;
+    var w=S.sel.wall, np=indiceParede(w);
+    var antes=Math.hypot(w.p2.x-w.p1.x,w.p2.y-w.p1.y);
+    var depois=(eixo==='h')?Math.abs(w.p2.x-w.p1.x):Math.abs(w.p2.y-w.p1.y);
+    if(antes>0&&depois<antes*0.45){
+      erro('A Parede '+np+' está mais próxima da '+(eixo==='h'?'vertical':'horizontal')+
+           '. Deixar '+(eixo==='h'?'horizontal':'vertical')+' encolheria ela para '+
+           (S.pxm?nf(depois/S.pxm)+' m':Math.round(depois)+' px')+'. Use o outro botão.');
+      return;
+    }
+    S.ultimoArr={wall:w, p1:{x:w.p1.x,y:w.p1.y}, p2:{x:w.p2.x,y:w.p2.y}};
+    endireita(w,eixo,'mover');
+    limpaAvisos(); mostraSel(); recalcular();
+  }
+
   /* ---------- ferramentas ---------- */
   function setTool(t){
     S.tool=t; S.p1=null; S.calibP1=null; S.mouse=null; S.prev=null;
-    S.criada=null; S.semIma=false;
+    S.criada=null; S.semIma=false; S.arr=null;
     document.querySelectorAll('.tool[data-tool]').forEach(function(b){
       b.classList.toggle('on',b.dataset.tool===t);
     });
@@ -2758,10 +2914,16 @@ var CALC=(function(){
           (m!==null?m.toFixed(2):'')+'"'+(m===null?' disabled':'')+'></div>'+
         '<div class="sel-campo"><label>Esquadrias nesta parede</label>'+
         '<span style="font-family:var(--disp);font-size:1.2rem">'+w.openings.length+'</span></div>';
-      EL.selNota.textContent=m===null
-        ? 'Sem escala definida não é possível editar o comprimento. Defina a escala ou calibre por uma cota.'
-        : 'Alterar o comprimento move só a segunda ponta da parede, mantendo a direção e o primeiro canto. Apagar a parede apaga também as esquadrias dela.';
+      var dsv=desvio(w);
+      EL.selNota.textContent=(m===null
+        ? 'Sem escala definida não é possível editar o comprimento. Defina a escala ou calibre por uma cota. '
+        : 'Alterar o comprimento move só a segunda ponta da parede, mantendo a direção e o primeiro canto. Apagar a parede apaga também as esquadrias dela. ')
+        +'Fora do prumo: '+nf(Math.min(dsv.h,dsv.v),1)+'° do eixo '+(dsv.h<=dsv.v?'horizontal':'vertical')+'.';
     }
+    /* prumo só faz sentido para parede */
+    var bh=$('selHoriz'), bv=$('selVert'), ehP=(S.sel.tipo==='parede');
+    if(bh) bh.style.display=ehP?'':'none';
+    if(bv) bv.style.display=ehP?'':'none';
     card.classList.add('on');
   }
   function aplicaSel(){
@@ -2820,6 +2982,7 @@ var CALC=(function(){
 
   function cliqueTela(ev){
     if(!S.base) return;
+    if(S.ignoraClique){ S.ignoraClique=false; return; }   /* fim de arrasto */
     /* segundo clique de um duplo clique não traça nada: quem age é o
        duploClique, que apaga a parede */
     if(S.tool==='parede'&&ev&&ev.detail>=2) return;
@@ -2918,6 +3081,7 @@ var CALC=(function(){
     }
 
     S.walls=[]; S.p1=null; S.calibP1=null; S.mouse=null; S.prev=null; S.criada=null; S.semIma=false;
+    S.arr=null; S.ultimoArr=null; S.ignoraClique=false;
     S.rot=0; S.origem=null; S.baseCtx=null; limpaSel();
     if(EL.lblRot) EL.lblRot.textContent='0°';
     S.nome=file.name;
@@ -3299,6 +3463,11 @@ var CALC=(function(){
       b.addEventListener('click',function(){setTool(b.dataset.tool);});
     });
     $('btnDesfazer').addEventListener('click',function(){
+      if(S.ultimoArr&&S.walls.indexOf(S.ultimoArr.wall)>=0){
+        var u=S.ultimoArr; S.ultimoArr=null;
+        u.wall.p1={x:u.p1.x,y:u.p1.y}; u.wall.p2={x:u.p2.x,y:u.p2.y};
+        mostraSel(); recalcular(); return;
+      }
       if(S.prev){descartaPrev();return;}
       if(S.p1){S.p1=null;instrucao();redesenha();return;}
       S.criada=null; S.walls.pop(); recalcular();
@@ -3306,7 +3475,8 @@ var CALC=(function(){
     $('btnLimpar').addEventListener('click',function(){
       if(!S.walls.length) return;
       if(window.confirm('Apagar todas as paredes traçadas?')){
-        S.walls=[];S.p1=null;S.mouse=null;S.prev=null;S.criada=null;S.semIma=false;limpaSel();recalcular();
+        S.walls=[];S.p1=null;S.mouse=null;S.prev=null;S.criada=null;S.semIma=false;
+        S.arr=null;S.ultimoArr=null;limpaSel();recalcular();
       }
     });
     EL.listaParedes.addEventListener('click',function(e){
@@ -3335,6 +3505,8 @@ var CALC=(function(){
       redesenha();
     });
 
+    $('selHoriz').addEventListener('click',function(){poePrumo('h');});
+    $('selVert').addEventListener('click',function(){poePrumo('v');});
     $('selAplicar').addEventListener('click',aplicaSel);
     $('selExcluir').addEventListener('click',excluiSel);
     $('selFechar').addEventListener('click',function(){limpaSel();redesenha();});
@@ -3343,9 +3515,19 @@ var CALC=(function(){
     EL.selEscala.addEventListener('change',aplicaEscala);
     EL.peDireito.addEventListener('input',recalcular);
 
+    EL.canvas.addEventListener('mousedown',function(e){
+      if(!S.base||e.button!==0) return;
+      S.ignoraClique=false;
+      var bruto=paraMundo(e), alca=pegaAlca(bruto);
+      if(alca){ iniciaArrasto(bruto,alca); e.preventDefault(); }
+    });
+    window.addEventListener('mouseup',function(){ terminaArrasto(); });
     EL.canvas.addEventListener('mousemove',function(e){
       if(!S.base) return;
       var bruto=paraMundo(e);
+      if(S.arr){ moveArrasto(bruto); return; }
+      var alca=pegaAlca(bruto);
+      EL.canvas.style.cursor=alca?(alca.tipo==='mover'?'move':'grab'):'';
       S.snap=imã(bruto);
       S.mouse=S.snap.grudou?{x:S.snap.x,y:S.snap.y}:bruto;
       redesenha();
@@ -3365,7 +3547,11 @@ var CALC=(function(){
       if(e.touches.length===1){
         TQ.n=1; TQ.x=e.touches[0].clientX; TQ.y=e.touches[0].clientY;
         TQ.andou=false; TQ.t0=Date.now();
+        /* dedo sobre a linha azul: arrasta a parede, não a planta */
+        var bt=paraMundo(e.touches[0]), al=pegaAlca(bt);
+        if(al) iniciaArrasto(bt,al);
       }else if(e.touches.length>=2){
+        if(S.arr) cancelaArrasto();
         var a=e.touches[0], b=e.touches[1];
         TQ.n=2; TQ.andou=true;
         TQ.d=Math.hypot(b.clientX-a.clientX,b.clientY-a.clientY)||1;
@@ -3376,6 +3562,11 @@ var CALC=(function(){
     },{passive:false});
     EL.canvas.addEventListener('touchmove',function(e){
       if(!S.base) return;
+      if(S.arr&&e.touches.length===1){
+        moveArrasto(paraMundo(e.touches[0]));
+        if(S.arr.mexeu) TQ.andou=true;
+        e.preventDefault(); return;
+      }
       if(TQ.n===1&&e.touches.length===1){
         var t=e.touches[0];
         var dx=t.clientX-TQ.x, dy=t.clientY-TQ.y;
@@ -3395,6 +3586,9 @@ var CALC=(function(){
     EL.canvas.addEventListener('touchend',function(e){
       if(e.touches.length===0){
         var toque=e.changedTouches&&e.changedTouches[0];
+        if(S.arr&&S.arr.mexeu){ terminaArrasto(); S.ignoraClique=false; TQ.n=0; TQ.ut=0; e.preventDefault(); return; }
+        if(S.arr) S.arr=null;                 /* toque parado: vale o toque */
+        S.ignoraClique=false;
         if(TQ.n===1&&!TQ.andou&&toque&&(Date.now()-TQ.t0)<700){
           /* dois toques rápidos no mesmo lugar = dois cliques */
           var ag=Date.now();
@@ -3414,11 +3608,11 @@ var CALC=(function(){
       }
       e.preventDefault();
     },{passive:false});
-    EL.canvas.addEventListener('touchcancel',function(){TQ.n=0;});
+    EL.canvas.addEventListener('touchcancel',function(){TQ.n=0;cancelaArrasto();});
 
     document.addEventListener('keydown',function(e){
       if(!document.getElementById('calculadora').classList.contains('ativa')) return;
-      if(e.key==='Escape'){descartaPrev();S.p1=null;S.prev=null;S.calibP1=null;limpaSel();instrucao();redesenha();}
+      if(e.key==='Escape'){if(cancelaArrasto())return;descartaPrev();S.p1=null;S.prev=null;S.calibP1=null;limpaSel();instrucao();redesenha();}
       if(e.key==='Enter'&&S.prev){
         var foco=e.target&&e.target.tagName;
         if(foco!=='INPUT'&&foco!=='SELECT'&&foco!=='TEXTAREA'){e.preventDefault();confirmaPrev();}
