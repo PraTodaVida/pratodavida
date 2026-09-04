@@ -1719,6 +1719,7 @@ var CALC=(function(){
     tool:'parede',
     walls:[],            /* {id,p1,p2,openings:[{t,tipo,nome,l,h}]} em px de origem */
     p1:null, mouse:null, snap:null,
+    prev:null,           /* prévia da parede reconhecida em 1 clique: {p1,p2,esp} */
     calibP1:null,
     zoom:1, escala:50, pxm:null, pxmOrigem:'',
     base:null, baseW:0, baseH:0, dpr:1,
@@ -1880,7 +1881,7 @@ var CALC=(function(){
     });
     if(S.p1) S.p1=mapa(S.p1);
     if(S.calibP1) S.calibP1=mapa(S.calibP1);
-    S.mouse=null; S.snap=null;
+    S.mouse=null; S.snap=null; S.prev=null;
     if(EL.lblRot) EL.lblRot.textContent=S.rot+'°';
     S.zoom=1; if(EL.lblZoom) EL.lblZoom.textContent='100%';
     ajustaCanvas();
@@ -1963,6 +1964,26 @@ var CALC=(function(){
       rotulo(g,'P'+(i+1)+(m!==null?'  '+nf(m)+' m':''),mx,my-esp-6,'#0d47a1');
     });
 
+    /* prévia da parede reconhecida em 1 clique: dois cantos + traço verde */
+    if(S.tool==='parede'&&S.prev){
+      var qa=S.prev.p1, qb=S.prev.p2;
+      g.save();
+      g.strokeStyle='#1f9d55'; g.lineCap='butt';
+      g.globalAlpha=.30; g.lineWidth=Math.max(esp,S.prev.esp||6);
+      g.beginPath(); g.moveTo(qa.x,qa.y); g.lineTo(qb.x,qb.y); g.stroke();
+      g.globalAlpha=1; g.lineWidth=2.2; g.setLineDash([9,5]);
+      g.beginPath(); g.moveTo(qa.x,qa.y); g.lineTo(qb.x,qb.y); g.stroke();
+      g.setLineDash([]);
+      [qa,qb].forEach(function(v){
+        g.beginPath(); g.rect(v.x-9,v.y-9,18,18); g.stroke();
+        g.fillStyle='#1f9d55';
+        g.beginPath(); g.arc(v.x,v.y,2.6,0,6.2832); g.fill();
+      });
+      g.restore();
+      var qd=Math.hypot(qb.x-qa.x,qb.y-qa.y);
+      rotulo(g,'parede inteira  '+(S.pxm?nf(qd/S.pxm)+' m':nf(qd,0)+' px'),
+             (qa.x+qb.x)/2,(qa.y+qb.y)/2+24,'#1f9d55');
+    }
     if(S.tool==='parede'&&S.p1&&S.mouse){
       g.save();
       g.strokeStyle='#d9534f'; g.lineWidth=2; g.setLineDash([7,6]);
@@ -2230,9 +2251,337 @@ var CALC=(function(){
     return {d:Math.hypot(p.x-(a.x+t*(b.x-a.x)),p.y-(a.y+t*(b.y-a.y))),t:t};
   }
 
+  /* ---------- parede inteira em 1 clique ----------
+     Clicando sobre a linha da parede no desenho, o programa:
+       1. acha a direção dominante do traço em volta do clique
+          (mesma Hough local do ímã de canto) e a espessura dele;
+       2. caminha pelo traço para os dois lados, pixel por pixel,
+          acompanhando pequenos desvios;
+       3. para em cada ponta no cruzamento com a parede perpendicular
+          (o traço alarga na perpendicular) e devolve o meio desse
+          alargamento, que é o canto;
+       4. vãos de porta e linhas finas de cota não interrompem o
+          caminho: o vão é pulado e o cruzamento fino é ignorado.
+     Nada é criado direto: os dois cantos entram como prévia verde e a
+     parede só é gravada quando o usuário confirma. */
+
+  /* leitor de pixels da planta em blocos, para não chamar
+     getImageData a cada pixel do caminho */
+  function amostrador(ehTraco){
+    var W=S.baseW, H=S.baseH, ctx=S.baseCtx, L=256;
+    var bx0=0, by0=0, bw=0, bh=0, dd=null;
+    function carrega(xi,yi){
+      var x0=Math.max(0,Math.min(Math.max(0,W-L),xi-(L>>1)));
+      var y0=Math.max(0,Math.min(Math.max(0,H-L),yi-(L>>1)));
+      var w=Math.min(L,W-x0), h=Math.min(L,H-y0);
+      if(w<1||h<1){ dd=null; return false; }
+      try{ dd=ctx.getImageData(x0,y0,w,h).data; }
+      catch(e){ dd=null; return false; }
+      bx0=x0; by0=y0; bw=w; bh=h; return true;
+    }
+    function dentro(xi,yi){
+      return dd&&xi>=bx0&&yi>=by0&&xi<bx0+bw&&yi<by0+bh;
+    }
+    return {
+      /* mantém o bloco centrado na estação atual do caminho */
+      foco:function(x,y,marg){
+        var xi=Math.round(x), yi=Math.round(y);
+        if(!dd||xi<bx0+marg||yi<by0+marg||xi>=bx0+bw-marg||yi>=by0+bh-marg) carrega(xi,yi);
+      },
+      traco:function(x,y){
+        var xi=Math.round(x), yi=Math.round(y);
+        if(xi<0||yi<0||xi>=W||yi>=H) return false;
+        if(!dentro(xi,yi)){
+          if(!carrega(xi,yi)) return false;
+          if(!dentro(xi,yi)) return false;
+        }
+        var i=((yi-by0)*bw+(xi-bx0))*4;
+        return ehTraco(dd[i],dd[i+1],dd[i+2],dd[i+3]);
+      }
+    };
+  }
+
+  /* direção, eixo, espessura e cor do traço clicado */
+  function linhaLocal(p){
+    if(!S.base||!S.baseCtx) return null;
+    var R=Math.round(Math.max(20,Math.min(52,34/S.zoom)));
+    var L=R*2+1;
+    var x0=Math.round(p.x)-R, y0=Math.round(p.y)-R;
+    if(x0<0||y0<0||x0+L>S.baseW||y0+L>S.baseH) return null;
+    var dados;
+    try{ dados=S.baseCtx.getImageData(x0,y0,L,L).data; }catch(e){ return null; }
+
+    /* todos os pixels de traço da janela */
+    var vx=[], vy=[], vc=[], perto=-1, dperto=Infinity;
+    for(var yy=0;yy<L;yy++){
+      for(var xx=0;xx<L;xx++){
+        var i=(yy*L+xx)*4;
+        if(dados[i+3]<40) continue;
+        if(dados[i]*0.299+dados[i+1]*0.587+dados[i+2]*0.114>=200) continue;
+        var dx=xx-R, dy=yy-R;
+        vx.push(dx); vy.push(dy); vc.push(i);
+        var dc=dx*dx+dy*dy;
+        if(dc<dperto){ dperto=dc; perto=vx.length-1; }
+      }
+    }
+    var raioC=Math.max(7,10/S.zoom);
+    if(perto<0||dperto>raioC*raioC) return null;   /* clique fora de qualquer traço */
+
+    /* cor de referência: média do traço em volta do pixel clicado */
+    var sr=0,sg=0,sb=0,ns=0, ax=vx[perto], ay=vy[perto];
+    for(var k=0;k<vx.length;k++){
+      if(Math.abs(vx[k]-ax)<=3&&Math.abs(vy[k]-ay)<=3){
+        sr+=dados[vc[k]]; sg+=dados[vc[k]+1]; sb+=dados[vc[k]+2]; ns++;
+      }
+    }
+    if(!ns) return null;
+    var cor={r:sr/ns,g:sg/ns,b:sb/ns};
+    var crom=Math.max(cor.r,cor.g,cor.b)-Math.min(cor.r,cor.g,cor.b);
+    var acro=crom<45;
+    /* só segue tinta parecida com a clicada: preto da parede não se
+       mistura com o laranja das cotas, nem o contrário */
+    var ehTraco=function(r,g,b,a){
+      if(a<40) return false;
+      if(r*0.299+g*0.587+b*0.114>=200) return false;
+      var c=Math.max(r,g,b)-Math.min(r,g,b);
+      if(acro) return c<70;
+      return Math.hypot(r-cor.r,g-cor.g,b-cor.b)<120;
+    };
+
+    /* Hough local só na tinta escolhida */
+    var fx=[], fy=[];
+    for(var k2=0;k2<vx.length;k2++){
+      var j=vc[k2];
+      if(ehTraco(dados[j],dados[j+1],dados[j+2],dados[j+3])){ fx.push(vx[k2]); fy.push(vy[k2]); }
+    }
+    var n=fx.length;
+    if(n<16||n>L*L*0.72) return null;
+
+    var NT=90, tab=tabelaHough(NT);
+    var RM=Math.ceil(R*1.4143), NR=2*RM+1;
+    var acc=new Int32Array(NT*NR);
+    for(var k3=0;k3<n;k3++){
+      for(var t=0;t<NT;t++){
+        acc[t*NR+Math.round(fx[k3]*tab.cos[t]+fy[k3]*tab.sen[t])+RM]++;
+      }
+    }
+    /* trecho contínuo de um histograma em volta de um bin, tolerando
+       um furo de 1 bin */
+    function trechoEm(arr,off,tam,bin0,lim){
+      var lo=bin0, hi=bin0, f=0, a, b;
+      for(a=bin0-1;a>=0;a--){
+        if(arr[off+a]>=lim){ lo=a; f=0; } else { f++; if(f>1) break; }
+      }
+      f=0;
+      for(b=bin0+1;b<tam;b++){
+        if(arr[off+b]>=lim){ hi=b; f=0; } else { f++; if(f>1) break; }
+      }
+      return {lo:lo,hi:hi};
+    }
+
+    /* força máxima do acumulador */
+    var fmax=0, t, r, bt, s;
+    for(t=0;t<NT;t++){
+      bt=t*NR;
+      for(r=0;r<NR;r++){
+        s=acc[bt+r]+(r>0?acc[bt+r-1]:0)+(r<NR-1?acc[bt+r+1]:0);
+        if(s>fmax) fmax=s;
+      }
+    }
+    if(fmax<Math.max(12,R*0.7)) return null;
+
+    /* traço grosso dá empate de ângulo na Hough: entre os ângulos
+       fortes, vale o que deixa a banda mais estreita — é o único
+       paralelo de verdade ao traço */
+    var escT=-1, escLo=0, escHi=0, escF=0, escLarg=1e9;
+    for(t=0;t<NT;t++){
+      bt=t*NR;
+      var melhorR=-1, melhorS=0, pmax=0;
+      for(r=0;r<NR;r++){
+        s=acc[bt+r]+(r>0?acc[bt+r-1]:0)+(r<NR-1?acc[bt+r+1]:0);
+        if(s>melhorS){ melhorS=s; melhorR=r; }
+        if(acc[bt+r]>pmax) pmax=acc[bt+r];
+      }
+      if(melhorR<0||melhorS<fmax*0.80) continue;
+      var pk=melhorR, vp=acc[bt+melhorR];
+      for(var q=Math.max(0,melhorR-2);q<=Math.min(NR-1,melhorR+2);q++){
+        if(acc[bt+q]>vp){ vp=acc[bt+q]; pk=q; }
+      }
+      var tr=trechoEm(acc,bt,NR,pk,Math.max(3,pmax*0.30));
+      var larg=tr.hi-tr.lo+1;
+      if(larg<escLarg||(larg===escLarg&&melhorS>escF)){
+        escLarg=larg; escF=melhorS; escT=t; escLo=tr.lo; escHi=tr.hi;
+      }
+    }
+    if(escT<0) return null;
+
+    /* ângulo fino: eixo principal dos pixels da banda escolhida */
+    var c1=tab.cos[escT], s1=tab.sen[escT];
+    var idx=[], mx=0, my=0, cnt=0;
+    for(var k4=0;k4<n;k4++){
+      var rb=Math.round(fx[k4]*c1+fy[k4]*s1)+RM;
+      if(rb>=escLo&&rb<=escHi){ idx.push(k4); mx+=fx[k4]; my+=fy[k4]; cnt++; }
+    }
+    if(cnt<12) return null;
+    mx/=cnt; my/=cnt;
+    var sxx=0, syy=0, sxy=0;
+    for(var k5=0;k5<cnt;k5++){
+      var ex=fx[idx[k5]]-mx, ey=fy[idx[k5]]-my;
+      sxx+=ex*ex; syy+=ey*ey; sxy+=ex*ey;
+    }
+    sxx/=cnt; syy/=cnt; sxy/=cnt;
+    if(sxx+syy<=0) return null;
+    var mei=(sxx+syy)/2, rai=Math.hypot((sxx-syy)/2,sxy);
+    var lam1=mei+rai, lam2=mei-rai;
+    if(lam2>0&&lam1/lam2<2.0) return null;   /* mancha, não linha */
+    var ang=0.5*Math.atan2(2*sxy,sxx-syy);
+    var pnx=-Math.sin(ang), pny=Math.cos(ang);
+
+    /* espessura e eixo do traço, medidos na perpendicular fina */
+    var hist=new Int32Array(NR), hmax=0;
+    for(var k6=0;k6<n;k6++){
+      var pr=Math.round(fx[k6]*pnx+fy[k6]*pny)+RM;
+      if(pr<0) pr=0; else if(pr>=NR) pr=NR-1;
+      hist[pr]++;
+      if(hist[pr]>hmax) hmax=hist[pr];
+    }
+    var limH=Math.max(3,hmax*0.30), bini=RM;
+    if(hist[RM]<limH){
+      var vb=-1;
+      for(var q2=Math.max(0,RM-8);q2<=Math.min(NR-1,RM+8);q2++){
+        if(hist[q2]>vb){ vb=hist[q2]; bini=q2; }
+      }
+    }
+    var trh=trechoEm(hist,0,NR,bini,limH);
+    var esp=Math.max(2,trh.hi-trh.lo+1);
+    if(esp>L*0.6) return null;               /* mancha cheia, não é linha */
+    var centro=(trh.lo+trh.hi)/2-RM;
+    if(Math.abs(centro)>Math.max(esp*0.75+5,R*0.6)) return null;
+
+    return {
+      x:p.x+pnx*centro, y:p.y+pny*centro,
+      ang:ang, esp:esp, tinta:ehTraco
+    };
+  }
+
+  /* gruda a ponta em canto já traçado, para as paredes fecharem */
+  function grudaPonta(v){
+    var raio=Math.max(10,16/S.zoom), melhor=v, dmin=Infinity;
+    S.walls.forEach(function(w){
+      [w.p1,w.p2].forEach(function(q){
+        var d=Math.hypot(v.x-q.x,v.y-q.y);
+        if(d<raio&&d<dmin){ dmin=d; melhor={x:q.x,y:q.y}; }
+      });
+    });
+    return melhor;
+  }
+
+  function paredeDaLinha(p){
+    var lin=linhaLocal(p);
+    if(!lin) return null;
+
+    var ux=Math.cos(lin.ang), uy=Math.sin(lin.ang);   /* ao longo do traço */
+    var nx=-uy, ny=ux;                                /* perpendicular    */
+    var esp=lin.esp;
+    var banda=Math.round(Math.min(70,Math.max(12,esp*3.2)));
+    var vaza=Math.max(2,Math.round(esp*0.9));
+    var deriva=esp*0.45+2.5;                 /* desvio lateral aceito */
+    var alarga=Math.max(esp*1.9,esp+7);      /* traço alargou: cruzamento */
+    var persist=Math.max(3,Math.round(esp*0.45));
+    /* vão de porta a pular: pela escala, se houver, ou pela espessura */
+    var pulo=Math.round(Math.min(260,Math.max(40,esp*7,S.pxm?S.pxm*1.4:0)));
+    var limite=Math.round(Math.hypot(S.baseW,S.baseH))+8;
+    var am=amostrador(lin.tinta);
+
+    /* mede o traço na perpendicular, na estação (bx,by), perto de off */
+    function perfil(bx,by,off){
+      var k0=null;
+      for(var d=0;d<=vaza;d++){
+        if(am.traco(bx+nx*(off+d),by+ny*(off+d))){ k0=off+d; break; }
+        if(d&&am.traco(bx+nx*(off-d),by+ny*(off-d))){ k0=off-d; break; }
+      }
+      if(k0===null) return null;
+      var lo=k0, hi=k0, f=0, a, b;
+      for(a=k0-1;a>=-banda;a--){
+        if(am.traco(bx+nx*a,by+ny*a)){ lo=a; f=0; }
+        else { f++; if(f>1) break; }
+      }
+      f=0;
+      for(b=k0+1;b<=banda;b++){
+        if(am.traco(bx+nx*b,by+ny*b)){ hi=b; f=0; }
+        else { f++; if(f>1) break; }
+      }
+      return {c:(lo+hi)/2, e:hi-lo+1};
+    }
+
+    function caminha(sg){
+      var off=0, s=0, vazio=0, larg=0, ini=-1;
+      var fim={x:lin.x,y:lin.y};
+      while(s<limite){
+        s++;
+        var bx=lin.x+ux*s*sg, by=lin.y+uy*s*sg;
+        am.foco(bx,by,banda+2);
+        var r=perfil(bx,by,off);
+        if(!r){
+          vazio++;
+          if(vazio>pulo) break;            /* acabou o traço de verdade */
+          continue;
+        }
+        if(r.e<=alarga&&Math.abs(r.c)>deriva){
+          vazio++;                         /* saiu da linha do traço */
+          if(vazio>pulo) break;
+          continue;
+        }
+        vazio=0;
+        if(r.e>alarga){
+          /* traço alargou: candidato a cruzamento com parede perpendicular */
+          if(ini<0) ini=s;
+          larg++;
+          if(larg>=persist){
+            var sf=s, g2=0, teto=ini+banda*2+esp*4;
+            while(sf<limite&&sf<teto){
+              sf++;
+              var cx=lin.x+ux*sf*sg, cy=lin.y+uy*sf*sg;
+              am.foco(cx,cy,banda+2);
+              var r2=perfil(cx,cy,off);
+              if(!r2){ g2++; if(g2>2) break; continue; }
+              g2=0;
+              if(r2.e<=alarga) break;      /* saiu do cruzamento */
+            }
+            var sm=(ini+sf-1)/2;           /* canto = meio do cruzamento */
+            return {x:lin.x+ux*sm*sg+nx*off, y:lin.y+uy*sm*sg+ny*off};
+          }
+        }else{
+          larg=0; ini=-1;
+          off=Math.max(-deriva,Math.min(deriva,r.c));
+          fim={x:bx+nx*off, y:by+ny*off};
+        }
+      }
+      return fim;
+    }
+
+    var A=caminha(-1), B=caminha(1);
+    var comp=Math.hypot(B.x-A.x,B.y-A.y);
+    if(comp<Math.max(14,esp*2.2)) return null;
+    return {p1:grudaPonta(A), p2:grudaPonta(B), esp:esp};
+  }
+
+  /* grava a parede da prévia */
+  function confirmaPrev(){
+    if(!S.prev) return false;
+    var a=S.prev.p1, b=S.prev.p2;
+    S.prev=null; S.p1=null; S.mouse=null;
+    if(Math.hypot(b.x-a.x,b.y-a.y)>6){
+      S.walls.push({id:Date.now()+Math.random(),
+                    p1:{x:a.x,y:a.y}, p2:{x:b.x,y:b.y}, openings:[]});
+    }
+    limpaAvisos(); instrucao(); recalcular();
+    return true;
+  }
+
   /* ---------- ferramentas ---------- */
   function setTool(t){
-    S.tool=t; S.p1=null; S.calibP1=null; S.mouse=null;
+    S.tool=t; S.p1=null; S.calibP1=null; S.mouse=null; S.prev=null;
     document.querySelectorAll('.tool[data-tool]').forEach(function(b){
       b.classList.toggle('on',b.dataset.tool===t);
     });
@@ -2248,9 +2597,15 @@ var CALC=(function(){
     if(S.tool==='sel'){
       t.innerHTML='Toque na porta, janela ou painel para editar o tamanho ou apagar. Tocando fora da esquadria, seleciona a parede.';
     }else if(S.tool==='parede'){
-      t.innerHTML=S.p1
-        ? 'Clique no segundo canto para fechar a parede. Esc cancela.'
-        : 'Clique no primeiro canto da parede. O cursor gruda nos cantos já marcados e nos cantos do próprio desenho.';
+      if(S.prev){
+        var qd=Math.hypot(S.prev.p2.x-S.prev.p1.x,S.prev.p2.y-S.prev.p1.y);
+        t.innerHTML='Parede reconhecida de canto a canto'+(S.pxm?' — <b>'+nf(qd/S.pxm)+' m</b>':'')+
+          '. Clique sobre ela (ou <b>Enter</b>) para confirmar. Clicando em outro ponto, fecha a parede à mão no modo de dois cliques. Esc cancela.';
+      }else{
+        t.innerHTML=S.p1
+          ? 'Clique no segundo canto para fechar a parede. Esc cancela.'
+          : 'Clique no primeiro canto da parede. O cursor gruda nos cantos já marcados e nos cantos do próprio desenho. Clicando sobre a linha da parede, ela é reconhecida inteira, com os dois cantos.';
+      }
     }else if(S.tool==='calibrar'){
       t.innerHTML=S.calibP1
         ? 'Clique na outra ponta da cota conhecida.'
@@ -2425,7 +2780,21 @@ var CALC=(function(){
     }
 
     if(S.tool==='parede'){
-      if(!S.p1){ S.p1=p; instrucao(); redesenha(); return; }
+      if(!S.p1){
+        S.p1=p;
+        /* 1 clique sobre a linha: tenta reconhecer a parede inteira.
+           Não reconhecendo, segue o modo de dois cliques. */
+        S.prev=S.imaCanto?paredeDaLinha(bruto):null;
+        instrucao(); redesenha(); return;
+      }
+      if(S.prev){
+        var tolPv=Math.max(16,(S.prev.esp||6)*1.6);
+        var dSeg=distSeg(bruto,S.prev.p1,S.prev.p2).d;
+        var dPta=Math.min(Math.hypot(bruto.x-S.prev.p1.x,bruto.y-S.prev.p1.y),
+                          Math.hypot(bruto.x-S.prev.p2.x,bruto.y-S.prev.p2.y));
+        if(dSeg<tolPv||dPta<tolPv){ confirmaPrev(); return; }
+        S.prev=null;                     /* clicou longe: vale o traçado à mão */
+      }
       if(Math.hypot(p.x-S.p1.x,p.y-S.p1.y)>6){
         S.walls.push({id:Date.now()+Math.random(),p1:S.p1,p2:p,openings:[]});
       }
@@ -2485,7 +2854,7 @@ var CALC=(function(){
       return;
     }
 
-    S.walls=[]; S.p1=null; S.calibP1=null; S.mouse=null;
+    S.walls=[]; S.p1=null; S.calibP1=null; S.mouse=null; S.prev=null;
     S.rot=0; S.origem=null; S.baseCtx=null; limpaSel();
     if(EL.lblRot) EL.lblRot.textContent='0°';
     S.nome=file.name;
@@ -2867,13 +3236,14 @@ var CALC=(function(){
       b.addEventListener('click',function(){setTool(b.dataset.tool);});
     });
     $('btnDesfazer').addEventListener('click',function(){
+      if(S.prev){S.prev=null;S.p1=null;instrucao();redesenha();return;}
       if(S.p1){S.p1=null;instrucao();redesenha();return;}
       S.walls.pop(); recalcular();
     });
     $('btnLimpar').addEventListener('click',function(){
       if(!S.walls.length) return;
       if(window.confirm('Apagar todas as paredes traçadas?')){
-        S.walls=[];S.p1=null;S.mouse=null;limpaSel();recalcular();
+        S.walls=[];S.p1=null;S.mouse=null;S.prev=null;limpaSel();recalcular();
       }
     });
     EL.listaParedes.addEventListener('click',function(e){
@@ -2897,7 +3267,9 @@ var CALC=(function(){
     var chkCanto=$('imaCanto');
     S.imaCanto=chkCanto?chkCanto.checked:true;
     if(chkCanto) chkCanto.addEventListener('change',function(){
-      S.imaCanto=chkCanto.checked; S.snap=null; redesenha();
+      S.imaCanto=chkCanto.checked; S.snap=null;
+      if(!S.imaCanto){ S.prev=null; instrucao(); }
+      redesenha();
     });
 
     $('selAplicar').addEventListener('click',aplicaSel);
@@ -2972,7 +3344,11 @@ var CALC=(function(){
 
     document.addEventListener('keydown',function(e){
       if(!document.getElementById('calculadora').classList.contains('ativa')) return;
-      if(e.key==='Escape'){S.p1=null;S.calibP1=null;limpaSel();instrucao();redesenha();}
+      if(e.key==='Escape'){S.p1=null;S.prev=null;S.calibP1=null;limpaSel();instrucao();redesenha();}
+      if(e.key==='Enter'&&S.prev){
+        var foco=e.target&&e.target.tagName;
+        if(foco!=='INPUT'&&foco!=='SELECT'&&foco!=='TEXTAREA'){e.preventDefault();confirmaPrev();}
+      }
       if(e.key==='Delete'&&S.sel){e.preventDefault();excluiSel();}
       if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();S.walls.pop();recalcular();}
     });
