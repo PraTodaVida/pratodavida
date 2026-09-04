@@ -363,7 +363,8 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
 .gesto b{color:var(--azul-700)}
 .chk{display:inline-flex;align-items:center;gap:.4rem;font-size:.85rem;font-weight:600}
 .instru{display:flex;align-items:center;gap:.55rem;font-size:.92rem;background:var(--areia);
-  border:1px solid var(--linha);border-radius:8px;padding:.7rem .9rem;margin-bottom:.9rem}
+  border:1px solid var(--linha);border-radius:8px;padding:.7rem .9rem;margin-bottom:.9rem;
+  min-height:4.4rem}   /* altura reservada: a planta não pula quando o texto muda */
 .instru .i{width:19px;height:19px;color:var(--azul-700)}
 
 .metricas{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.7rem;margin-top:1rem}
@@ -1720,6 +1721,8 @@ var CALC=(function(){
     walls:[],            /* {id,p1,p2,openings:[{t,tipo,nome,l,h}]} em px de origem */
     p1:null, mouse:null, snap:null,
     prev:null,           /* prévia da parede reconhecida em 1 clique: {p1,p2,esp} */
+    criada:null,         /* última parede criada pela prévia: {id,t} */
+    semIma:false,        /* próximo clique não reconhece: traçado à mão */
     calibP1:null,
     zoom:1, escala:50, pxm:null, pxmOrigem:'',
     base:null, baseW:0, baseH:0, dpr:1,
@@ -1881,7 +1884,7 @@ var CALC=(function(){
     });
     if(S.p1) S.p1=mapa(S.p1);
     if(S.calibP1) S.calibP1=mapa(S.calibP1);
-    S.mouse=null; S.snap=null; S.prev=null;
+    S.mouse=null; S.snap=null; S.prev=null; S.criada=null;
     if(EL.lblRot) EL.lblRot.textContent=S.rot+'°';
     S.zoom=1; if(EL.lblZoom) EL.lblZoom.textContent='100%';
     ajustaCanvas();
@@ -2454,7 +2457,7 @@ var CALC=(function(){
     }
     var trh=trechoEm(hist,0,NR,bini,limH);
     var esp=Math.max(2,trh.hi-trh.lo+1);
-    if(esp>L*0.6) return null;               /* mancha cheia, não é linha */
+    if(esp>L*0.42) return null;              /* mancha grossa, não é linha */
     var centro=(trh.lo+trh.hi)/2-RM;
     if(Math.abs(centro)>Math.max(esp*0.75+5,R*0.6)) return null;
 
@@ -2474,6 +2477,29 @@ var CALC=(function(){
       });
     });
     return melhor;
+  }
+
+  /* a parede proposta já está traçada? mesmo eixo, mesma direção e
+     mesmo trecho — evita propor duas vezes a mesma parede e deixa o
+     duplo clique servir para apagar a que já existe */
+  function jaTracada(pa,pb,esp){
+    var vx=pb.x-pa.x, vy=pb.y-pa.y, comp=Math.hypot(vx,vy);
+    if(comp<1) return true;
+    var ux=vx/comp, uy=vy/comp, tol=Math.max(12,esp*1.6);
+    for(var i=0;i<S.walls.length;i++){
+      var w=S.walls[i];
+      var wx=w.p2.x-w.p1.x, wy=w.p2.y-w.p1.y, cw=Math.hypot(wx,wy);
+      if(cw<1) continue;
+      if(Math.abs((ux*wx+uy*wy)/cw)<0.985) continue;   /* mais de ~10° */
+      var t1=(w.p1.x-pa.x)*ux+(w.p1.y-pa.y)*uy;
+      var t2=(w.p2.x-pa.x)*ux+(w.p2.y-pa.y)*uy;
+      var d1=Math.hypot(w.p1.x-(pa.x+ux*t1),w.p1.y-(pa.y+uy*t1));
+      var d2=Math.hypot(w.p2.x-(pa.x+ux*t2),w.p2.y-(pa.y+uy*t2));
+      if(d1>tol||d2>tol) continue;                     /* outro eixo */
+      var lo=Math.max(0,Math.min(t1,t2)), hi=Math.min(comp,Math.max(t1,t2));
+      if(hi-lo>0.6*Math.min(comp,cw)) return true;     /* mesmo trecho */
+    }
+    return false;
   }
 
   function paredeDaLinha(p){
@@ -2563,7 +2589,9 @@ var CALC=(function(){
     var A=caminha(-1), B=caminha(1);
     var comp=Math.hypot(B.x-A.x,B.y-A.y);
     if(comp<Math.max(14,esp*2.2)) return null;
-    return {p1:grudaPonta(A), p2:grudaPonta(B), esp:esp};
+    var pa=grudaPonta(A), pb=grudaPonta(B);
+    if(jaTracada(pa,pb,esp)) return null;    /* essa parede já está na lista */
+    return {p1:pa, p2:pb, esp:esp};
   }
 
   /* grava a parede da prévia */
@@ -2572,16 +2600,51 @@ var CALC=(function(){
     var a=S.prev.p1, b=S.prev.p2;
     S.prev=null; S.p1=null; S.mouse=null;
     if(Math.hypot(b.x-a.x,b.y-a.y)>6){
-      S.walls.push({id:Date.now()+Math.random(),
-                    p1:{x:a.x,y:a.y}, p2:{x:b.x,y:b.y}, openings:[]});
+      var id=Date.now()+Math.random();
+      S.walls.push({id:id, p1:{x:a.x,y:a.y}, p2:{x:b.x,y:b.y}, openings:[]});
+      S.criada={id:id,t:Date.now()};        /* dois cliques desfazem esta */
     }
     limpaAvisos(); instrucao(); recalcular();
     return true;
   }
 
+  /* descarta a prévia; o próximo clique traça à mão */
+  function descartaPrev(){
+    if(!S.prev) return false;
+    S.prev=null; S.p1=null; S.mouse=null; S.semIma=true;
+    instrucao(); redesenha();
+    return true;
+  }
+
+  /* dois cliques: apaga a parede que o clique anterior acabou de criar
+     (é o jeito de recusar o reconhecimento) ou, não havendo, a parede
+     que está embaixo do cursor */
+  function duploClique(ev){
+    if(!S.base||S.tool!=='parede') return;
+    var alvo=null, recusa=false;
+    if(S.criada&&Date.now()-S.criada.t<500){
+      S.walls.forEach(function(w){ if(w.id===S.criada.id) alvo=w; });
+      if(alvo) recusa=true;
+    }
+    if(!alvo){
+      var bruto=paraMundo(ev), tol=Math.max(26,(S.pxm?S.pxm*0.35:30)), dmin=Infinity;
+      S.walls.forEach(function(w){
+        var r=distSeg(bruto,w.p1,w.p2);
+        if(r.d<tol&&r.d<dmin){ dmin=r.d; alvo=w; }
+      });
+    }
+    /* o segundo clique do duplo pode ter deixado ponto ou prévia no ar */
+    S.p1=null; S.prev=null; S.mouse=null; S.criada=null;
+    if(!alvo){ instrucao(); redesenha(); return; }
+    S.walls=S.walls.filter(function(w){ return w!==alvo; });
+    S.semIma=recusa;
+    limpaSel(); limpaAvisos(); instrucao(); recalcular();
+  }
+
   /* ---------- ferramentas ---------- */
   function setTool(t){
     S.tool=t; S.p1=null; S.calibP1=null; S.mouse=null; S.prev=null;
+    S.criada=null; S.semIma=false;
     document.querySelectorAll('.tool[data-tool]').forEach(function(b){
       b.classList.toggle('on',b.dataset.tool===t);
     });
@@ -2599,12 +2662,14 @@ var CALC=(function(){
     }else if(S.tool==='parede'){
       if(S.prev){
         var qd=Math.hypot(S.prev.p2.x-S.prev.p1.x,S.prev.p2.y-S.prev.p1.y);
-        t.innerHTML='Parede reconhecida de canto a canto'+(S.pxm?' — <b>'+nf(qd/S.pxm)+' m</b>':'')+
-          '. Clique sobre ela (ou <b>Enter</b>) para confirmar. Clicando em outro ponto, fecha a parede à mão no modo de dois cliques. Esc cancela.';
+        t.innerHTML='Parede reconhecida'+(S.pxm?' — <b>'+nf(qd/S.pxm)+' m</b>':'')+
+          '. <b>Um clique cria a parede.</b> Dois cliques descartam.';
+      }else if(S.semIma){
+        t.innerHTML='Reconhecimento descartado. Clique nos <b>dois cantos</b> da parede.';
       }else{
         t.innerHTML=S.p1
           ? 'Clique no segundo canto para fechar a parede. Esc cancela.'
-          : 'Clique no primeiro canto da parede. O cursor gruda nos cantos já marcados e nos cantos do próprio desenho. Clicando sobre a linha da parede, ela é reconhecida inteira, com os dois cantos.';
+          : 'Clique no primeiro canto da parede, ou <b>sobre a linha</b> para reconhecer a parede inteira. O cursor gruda nos cantos do desenho.';
       }
     }else if(S.tool==='calibrar'){
       t.innerHTML=S.calibP1
@@ -2755,6 +2820,9 @@ var CALC=(function(){
 
   function cliqueTela(ev){
     if(!S.base) return;
+    /* segundo clique de um duplo clique não traça nada: quem age é o
+       duploClique, que apaga a parede */
+    if(S.tool==='parede'&&ev&&ev.detail>=2) return;
     var bruto=paraMundo(ev), p=imã(bruto);
 
     if(S.tool==='sel'){ selecionaEm(bruto); return; }
@@ -2780,20 +2848,15 @@ var CALC=(function(){
     }
 
     if(S.tool==='parede'){
+      /* prévia na tela: qualquer clique fecha e cria a parede */
+      if(S.prev){ confirmaPrev(); return; }
       if(!S.p1){
-        S.p1=p;
-        /* 1 clique sobre a linha: tenta reconhecer a parede inteira.
-           Não reconhecendo, segue o modo de dois cliques. */
-        S.prev=S.imaCanto?paredeDaLinha(bruto):null;
-        instrucao(); redesenha(); return;
-      }
-      if(S.prev){
-        var tolPv=Math.max(16,(S.prev.esp||6)*1.6);
-        var dSeg=distSeg(bruto,S.prev.p1,S.prev.p2).d;
-        var dPta=Math.min(Math.hypot(bruto.x-S.prev.p1.x,bruto.y-S.prev.p1.y),
-                          Math.hypot(bruto.x-S.prev.p2.x,bruto.y-S.prev.p2.y));
-        if(dSeg<tolPv||dPta<tolPv){ confirmaPrev(); return; }
-        S.prev=null;                     /* clicou longe: vale o traçado à mão */
+        /* 1 clique sobre a linha: reconhece a parede inteira e mostra a
+           prévia. Não reconhecendo, segue o modo de dois cliques. */
+        var seg=(S.imaCanto&&!S.semIma)?paredeDaLinha(bruto):null;
+        S.semIma=false;
+        if(seg){ S.prev=seg; S.mouse=null; instrucao(); redesenha(); return; }
+        S.p1=p; instrucao(); redesenha(); return;
       }
       if(Math.hypot(p.x-S.p1.x,p.y-S.p1.y)>6){
         S.walls.push({id:Date.now()+Math.random(),p1:S.p1,p2:p,openings:[]});
@@ -2854,7 +2917,7 @@ var CALC=(function(){
       return;
     }
 
-    S.walls=[]; S.p1=null; S.calibP1=null; S.mouse=null; S.prev=null;
+    S.walls=[]; S.p1=null; S.calibP1=null; S.mouse=null; S.prev=null; S.criada=null; S.semIma=false;
     S.rot=0; S.origem=null; S.baseCtx=null; limpaSel();
     if(EL.lblRot) EL.lblRot.textContent='0°';
     S.nome=file.name;
@@ -3236,14 +3299,14 @@ var CALC=(function(){
       b.addEventListener('click',function(){setTool(b.dataset.tool);});
     });
     $('btnDesfazer').addEventListener('click',function(){
-      if(S.prev){S.prev=null;S.p1=null;instrucao();redesenha();return;}
+      if(S.prev){descartaPrev();return;}
       if(S.p1){S.p1=null;instrucao();redesenha();return;}
-      S.walls.pop(); recalcular();
+      S.criada=null; S.walls.pop(); recalcular();
     });
     $('btnLimpar').addEventListener('click',function(){
       if(!S.walls.length) return;
       if(window.confirm('Apagar todas as paredes traçadas?')){
-        S.walls=[];S.p1=null;S.mouse=null;S.prev=null;limpaSel();recalcular();
+        S.walls=[];S.p1=null;S.mouse=null;S.prev=null;S.criada=null;S.semIma=false;limpaSel();recalcular();
       }
     });
     EL.listaParedes.addEventListener('click',function(e){
@@ -3289,13 +3352,14 @@ var CALC=(function(){
     });
     EL.canvas.addEventListener('mouseleave',function(){S.snap=null;S.mouse=null;redesenha();});
     EL.canvas.addEventListener('click',cliqueTela);
+    EL.canvas.addEventListener('dblclick',function(e){e.preventDefault();duploClique(e);});
 
     /* ---------- toque na planta ----------
        1 dedo parado e solto rápido = clique da ferramenta
        1 dedo arrastando            = anda pela planta
        2 dedos                      = amplia e reduz, com o zoom
                                       ancorado no meio dos dedos  */
-    var TQ={n:0,x:0,y:0,d:0,z0:1,andou:false,t0:0};
+    var TQ={n:0,x:0,y:0,d:0,z0:1,andou:false,t0:0,ut:0,ux:0,uy:0};
     EL.canvas.addEventListener('touchstart',function(e){
       if(!S.base) return;
       if(e.touches.length===1){
@@ -3332,7 +3396,17 @@ var CALC=(function(){
       if(e.touches.length===0){
         var toque=e.changedTouches&&e.changedTouches[0];
         if(TQ.n===1&&!TQ.andou&&toque&&(Date.now()-TQ.t0)<700){
-          cliqueTela({clientX:toque.clientX,clientY:toque.clientY});
+          /* dois toques rápidos no mesmo lugar = dois cliques */
+          var ag=Date.now();
+          var dobro=TQ.ut&&(ag-TQ.ut)<420&&
+                    Math.abs(toque.clientX-TQ.ux)<34&&Math.abs(toque.clientY-TQ.uy)<34;
+          if(dobro){
+            duploClique({clientX:toque.clientX,clientY:toque.clientY});
+            TQ.ut=0;
+          }else{
+            cliqueTela({clientX:toque.clientX,clientY:toque.clientY});
+            TQ.ut=ag; TQ.ux=toque.clientX; TQ.uy=toque.clientY;
+          }
         }
         TQ.n=0;
       }else if(e.touches.length===1){
@@ -3344,7 +3418,7 @@ var CALC=(function(){
 
     document.addEventListener('keydown',function(e){
       if(!document.getElementById('calculadora').classList.contains('ativa')) return;
-      if(e.key==='Escape'){S.p1=null;S.prev=null;S.calibP1=null;limpaSel();instrucao();redesenha();}
+      if(e.key==='Escape'){descartaPrev();S.p1=null;S.prev=null;S.calibP1=null;limpaSel();instrucao();redesenha();}
       if(e.key==='Enter'&&S.prev){
         var foco=e.target&&e.target.tagName;
         if(foco!=='INPUT'&&foco!=='SELECT'&&foco!=='TEXTAREA'){e.preventDefault();confirmaPrev();}
