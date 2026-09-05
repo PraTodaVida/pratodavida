@@ -660,8 +660,9 @@ select,input[type=number],input[type=text]{font:inherit;font-size:.92rem;padding
       <div class="cab"><span class="eyebrow">Fábrica e canteiro</span><h2>O que a gente produz e onde a gente entrega</h2></div>
       <div class="gal" id="galeria"></div>
       <p style="margin-top:1rem;font-size:.85rem;color:var(--texto-2)">
-        Para publicar suas fotos, crie a pasta <code>img/</code> no repositório com os arquivos
-        <code>fabrica.jpg</code>, <code>bloco.jpg</code>, <code>obra.jpg</code> e <code>entrega.jpg</code>.
+        As fotos são os arquivos <code>fabrica.jpg</code>, <code>bloco.jpg</code>, <code>obra.jpg</code>
+        e <code>entrega.jpg</code>. Podem ficar na raiz do repositório, junto do <code>index.html</code>,
+        ou dentro de <code>img/</code>. O nome tem que ser exatamente esse, tudo em minúsculo.
       </p>
     </div>
   </div>
@@ -1645,17 +1646,24 @@ var MARCA=(function(){
    ============================================================ */
 (function(){
   var itens=[
-    {arq:'img/fabrica.jpg',tit:'Linha de produção de blocos',ic:'ic-fabrica'},
-    {arq:'img/bloco.jpg',tit:'Bloco estrutural 14×19×39',ic:'ic-cubos'},
-    {arq:'img/obra.jpg',tit:'Alvenaria em execução',ic:'ic-capacete'},
-    {arq:'img/entrega.jpg',tit:'Entrega no canteiro',ic:'ic-caminhao'}
+    {arq:'fabrica.jpg',tit:'Linha de produção de blocos',ic:'ic-fabrica'},
+    {arq:'bloco.jpg',tit:'Bloco estrutural 14×19×39',ic:'ic-cubos'},
+    {arq:'obra.jpg',tit:'Alvenaria em execução',ic:'ic-capacete'},
+    {arq:'entrega.jpg',tit:'Entrega no canteiro',ic:'ic-caminhao'}
   ];
+  /* a foto pode estar na raiz do repositório, junto do index.html, ou
+     dentro de img/ ou fotos/. Tenta um caminho de cada vez e só mostra
+     a reserva quando nenhum carrega. */
+  var PASTAS=['','img/','fotos/'];
   var alvo=document.getElementById('galeria');
   itens.forEach(function(it){
     var fig=document.createElement('figure');
     var img=document.createElement('img');
-    img.alt=it.tit; img.loading='lazy'; img.src=it.arq;
+    var tent=0;
+    img.alt=it.tit; img.loading='lazy';
     img.onerror=function(){
+      tent++;
+      if(tent<PASTAS.length){ img.src=PASTAS[tent]+it.arq; return; }
       img.remove();
       var d=document.createElement('div');
       d.className='vazio';
@@ -1664,6 +1672,7 @@ var MARCA=(function(){
                   '<code>'+it.arq+'</code>';
       fig.insertBefore(d,fig.firstChild);
     };
+    img.src=PASTAS[0]+it.arq;
     var cap=document.createElement('figcaption');
     cap.textContent=it.tit;
     fig.appendChild(img); fig.appendChild(cap);
